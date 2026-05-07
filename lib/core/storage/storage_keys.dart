@@ -5,4 +5,5 @@ class StorageKeys {
   static const String refreshToken = 'refresh_token';
   // iOSアプリ削除時にSecureStorageが残る問題への対策フラグ
   static const String installFlag = 'install_flag';
+  static const String selectedHouseholdId = 'selected_household_id';
 }

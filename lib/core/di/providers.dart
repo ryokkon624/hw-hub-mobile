@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/auth_notifier.dart';
 import '../auth/auth_state.dart';
 import '../auth/token_storage.dart';
+import '../household/household_notifier.dart';
+import '../household/household_state.dart';
 import '../network/dio_client.dart';
 
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
@@ -23,3 +25,7 @@ final dioProvider = Provider<Dio>((ref) {
     ref: ref,
   );
 });
+
+final householdNotifierProvider =
+    AsyncNotifierProvider<HouseholdNotifier, HouseholdState>(
+        HouseholdNotifier.new);
