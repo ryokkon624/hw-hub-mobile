@@ -33,6 +33,9 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # Routing
+  go_router: ^14.0.0
+
   # Network
   dio: ^5.7.0
   retrofit: ^4.4.0

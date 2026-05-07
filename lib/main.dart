@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/app_color_scheme.dart';
+import 'app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/ui/app_snack_bar.dart';
 
@@ -8,36 +8,19 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
       title: 'HwHub',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       scaffoldMessengerKey: AppSnackBar.messengerKey,
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorScheme>()!;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colors.primary,
-        title: Text('HwHub', style: TextStyle(color: colors.onPrimary)),
-      ),
-      body: Center(
-        child: Text('Hello HwHub', style: Theme.of(context).textTheme.headlineMedium),
-      ),
+      routerConfig: router,
     );
   }
 }
