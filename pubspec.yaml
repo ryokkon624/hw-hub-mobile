@@ -59,9 +59,12 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.4.13
-  retrofit_generator: ^9.1.4
   freezed: ^2.5.7
   json_serializable: ^6.9.0
+  # retrofit_generator は Phase 3 (API実装時) に追加予定
+
+  # Testing
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
