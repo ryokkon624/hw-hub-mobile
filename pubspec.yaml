@@ -41,6 +41,12 @@ dependencies:
 
   # Storage
   flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.0
+
+  # State management
+  flutter_riverpod: ^2.6.0
+  hooks_riverpod: ^2.6.0
+  flutter_hooks: ^0.20.5
 
 dev_dependencies:
   flutter_test:

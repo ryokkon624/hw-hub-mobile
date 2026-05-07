@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/app_config.dart';
 import 'app_exception.dart';
@@ -8,7 +9,18 @@ import 'auth_interceptor.dart';
 class DioClient {
   DioClient._();
 
-  static Dio create({required FlutterSecureStorage storage}) {
+  static Dio create({
+    required FlutterSecureStorage storage,
+    required Ref ref,
+  }) {
+    final unauthDio = Dio(
+      BaseOptions(
+        baseUrl: AppConfig.baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+
     final dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.baseUrl,
@@ -19,7 +31,7 @@ class DioClient {
     );
 
     dio.interceptors.addAll([
-      AuthInterceptor(storage),
+      AuthInterceptor(storage: storage, ref: ref, unauthDio: unauthDio),
       _ErrorInterceptor(),
       if (kDebugMode)
         LogInterceptor(
