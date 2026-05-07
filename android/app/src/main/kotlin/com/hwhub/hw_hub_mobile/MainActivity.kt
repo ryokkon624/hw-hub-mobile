@@ -1,4 +1,4 @@
-package com.hwhub.hw_hub_mobile
+package com.hwhub.app
 
 import io.flutter.embedding.android.FlutterActivity
 
