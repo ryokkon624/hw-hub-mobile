@@ -33,6 +33,8 @@ migrate_working_dir/
 /build/
 /coverage/
 **/GeneratedPluginRegistrant.*
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
 
 # Symbolication related
 app.*.symbols
