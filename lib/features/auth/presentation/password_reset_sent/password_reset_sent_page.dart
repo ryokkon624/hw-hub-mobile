@@ -20,7 +20,7 @@ class PasswordResetSentPage extends ConsumerWidget {
     ref.listen(passwordResetSentNotifierProvider(email), (_, next) {
       if (next.resentSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('メールを再送しました')),
+          SnackBar(content: Text(l10n.passwordResetSentResendSuccess)),
         );
       }
       if (next.errorMessage != null) {

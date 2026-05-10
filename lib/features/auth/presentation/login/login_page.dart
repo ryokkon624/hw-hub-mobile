@@ -50,7 +50,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             children: [
               const SizedBox(height: 24),
               Text(
-                'Housework Hub',
+                l10n.appName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -58,7 +58,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                '家族みんなで家事を分担しよう',
+                l10n.appTagline,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),

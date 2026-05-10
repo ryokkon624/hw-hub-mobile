@@ -35,7 +35,7 @@ class SignupPage extends ConsumerWidget {
             children: [
               const SizedBox(height: 24),
               Text(
-                'Housework Hub',
+                l10n.appName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

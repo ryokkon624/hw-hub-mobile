@@ -61,7 +61,7 @@ class InvitationPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('INVITATION',
+                  Text(l10n.invitePageLabel,
                       style: Theme.of(context).textTheme.labelLarge),
                   const SizedBox(height: 8),
                   Text(l10n.inviteHeading,
@@ -71,9 +71,9 @@ class InvitationPage extends ConsumerWidget {
                   const Divider(height: 32),
                   _InfoRow(label: l10n.inviteHouseholdTitle, value: info.householdName),
                   const SizedBox(height: 8),
-                  _InfoRow(label: '招待者', value: info.inviterName),
+                  _InfoRow(label: l10n.inviteInviterLabel, value: info.inviterName),
                   const SizedBox(height: 8),
-                  _InfoRow(label: '招待先メール', value: info.invitedEmail),
+                  _InfoRow(label: l10n.inviteInvitedEmailLabel, value: info.invitedEmail),
                   const SizedBox(height: 24),
                   if (isAuth) ...[
                     Text(l10n.inviteConfirmMessage(info.householdName)),
