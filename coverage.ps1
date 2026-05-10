@@ -15,26 +15,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`n=== Filtering lcov.info ===" -ForegroundColor Cyan
-& $perl $lcovPath `
-    --remove coverage/lcov.info `
-    'lib/main.dart' `
-    'lib/app_router.dart' `
-    'lib/l10n/*' `
-    'lib/core/config/*' `
-    'lib/core/storage/*' `
-    'lib/core/theme/*' `
-    'lib/core/di/*' `
-    'lib/features/shell/*' `
-    'lib/core/network/dio_client.dart' `
-    'lib/core/network/app_exception.dart' `
-    'lib/core/network/auth_interceptor.dart' `
-    'lib/features/auth/auth_providers.dart' `
-    'lib/features/auth/data/models/*' `
-    'lib/core/models/*' `
-    '*/*.g.dart' `
-    '*/*.mocks.dart' `
-    '*/presentation/*_page.dart' `
-    --output-file coverage/lcov_filtered.info
+$excludePatterns = Get-Content lcov_exclude.txt |
+    Where-Object { $_ -notmatch '^\s*#' -and $_ -notmatch '^\s*$' }
+& $perl $lcovPath --remove coverage/lcov.info @excludePatterns --output-file coverage/lcov_filtered.info
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "lcov --remove failed." -ForegroundColor Red

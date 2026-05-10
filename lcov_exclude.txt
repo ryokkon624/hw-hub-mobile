@@ -1,0 +1,34 @@
+# lcov_exclude.txt - lcov --remove に渡す除外パターン
+# coverage.ps1 と GitHub Actions の両方がこのファイルを参照する
+# 行頭 # はコメント、空行は無視する
+
+# エントリポイント・ルーティング（ロジックなし）
+lib/main.dart
+lib/app_router.dart
+
+# 生成ファイル
+lib/l10n/*
+*/*.g.dart
+*/*.mocks.dart
+
+# 設定・定数のみ
+lib/core/config/*
+lib/core/storage/*
+lib/core/theme/*
+lib/core/di/*
+lib/core/models/*
+
+# ネットワーク基盤（フレームワーク設定・インターセプター）
+lib/core/network/dio_client.dart
+lib/core/network/app_exception.dart
+lib/core/network/auth_interceptor.dart
+
+# DI配線
+lib/features/auth/auth_providers.dart
+
+# データモデル（fromJsonのみ）
+lib/features/auth/data/models/*
+
+# UIウィジェット（ユニットテスト対象外）
+lib/features/shell/*
+*/presentation/*_page.dart
