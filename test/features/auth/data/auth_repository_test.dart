@@ -140,12 +140,95 @@ void main() {
       });
     });
 
+    group('googleLoginMobile', () {
+      test('成功時にLoginResponseを返す', () async {
+        const resp = LoginResponse(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          user: AuthUser(userId: 1, email: 'a@b.com', displayName: 'A'),
+        );
+        when(mockApi.googleLoginMobile(any)).thenAnswer((_) async => resp);
+
+        expect(await sut.googleLoginMobile(idToken: 'id-token'), resp);
+      });
+
+      test('DioException → NetworkException', () {
+        when(mockApi.googleLoginMobile(any)).thenThrow(_dioErr());
+
+        expect(
+          () => sut.googleLoginMobile(idToken: 'id-token'),
+          throwsA(isA<NetworkException>()),
+        );
+      });
+    });
+
+    group('resendVerification', () {
+      test('成功時に例外なし', () async {
+        when(mockApi.resendVerification(any)).thenAnswer((_) async {});
+
+        await expectLater(sut.resendVerification(email: 'a@b.com'), completes);
+      });
+
+      test('DioException → NetworkException', () {
+        when(mockApi.resendVerification(any)).thenThrow(_dioErr());
+
+        expect(
+          () => sut.resendVerification(email: 'a@b.com'),
+          throwsA(isA<NetworkException>()),
+        );
+      });
+    });
+
     group('requestPasswordReset', () {
+      test('成功時に例外なし', () async {
+        when(mockApi.requestPasswordReset(any)).thenAnswer((_) async {});
+
+        await expectLater(
+            sut.requestPasswordReset(email: 'a@b.com'), completes);
+      });
+
       test('DioException → NetworkException', () {
         when(mockApi.requestPasswordReset(any)).thenThrow(_dioErr());
 
         expect(
           () => sut.requestPasswordReset(email: 'a@b.com'),
+          throwsA(isA<NetworkException>()),
+        );
+      });
+    });
+
+    group('confirmPasswordReset', () {
+      test('成功時に例外なし', () async {
+        when(mockApi.confirmPasswordReset(any)).thenAnswer((_) async {});
+
+        await expectLater(
+          sut.confirmPasswordReset(token: 'tok', newPassword: 'newpass'),
+          completes,
+        );
+      });
+
+      test('DioException → NetworkException', () {
+        when(mockApi.confirmPasswordReset(any)).thenThrow(_dioErr());
+
+        expect(
+          () => sut.confirmPasswordReset(token: 'tok', newPassword: 'newpass'),
+          throwsA(isA<NetworkException>()),
+        );
+      });
+    });
+
+    group('declineInvitation', () {
+      test('成功時に例外なし', () async {
+        when(mockApi.declineInvitation(any)).thenAnswer((_) async {});
+
+        await expectLater(sut.declineInvitation(token: 'tok'), completes);
+      });
+
+      test('DioException → NetworkException', () {
+        when(mockApi.declineInvitation(any)).thenThrow(_dioErr());
+
+        expect(
+          () => sut.declineInvitation(token: 'tok'),
           throwsA(isA<NetworkException>()),
         );
       });
