@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'core/auth/auth_state.dart';
 import 'core/di/providers.dart';
+import 'features/auth/presentation/auth_result/auth_result_page.dart';
+import 'features/auth/presentation/email_verify/email_verify_page.dart';
+import 'features/auth/presentation/email_verify_wait/email_verify_wait_page.dart';
+import 'features/auth/presentation/invitation/invitation_page.dart';
+import 'features/auth/presentation/login/login_page.dart';
+import 'features/auth/presentation/password_forgot/password_forgot_page.dart';
+import 'features/auth/presentation/password_reset/password_reset_page.dart';
+import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.dart';
+import 'features/auth/presentation/signup/signup_page.dart';
 import 'features/shell/main_shell.dart';
 
 // ログイン不要なパス（前方一致）
@@ -50,38 +60,63 @@ class _RouterNotifier extends ChangeNotifier {
 
 final _routes = <RouteBase>[
   // ─── 未認証ルート ────────────────────────────────────────
-  GoRoute(path: '/login',         builder: (_, _) => const _P('ログイン')),
-  GoRoute(path: '/signup',        builder: (_, _) => const _P('サインアップ')),
-  GoRoute(path: '/email-waiting', builder: (_, _) => const _P('認証メール待機')),
+  GoRoute(
+    path: '/login',
+    builder: (_, state) => LoginPage(
+      notice: state.uri.queryParameters['notice'],
+    ),
+  ),
+  GoRoute(
+    path: '/signup',
+    builder: (_, state) => SignupPage(
+      invitationToken: state.uri.queryParameters['invitationToken'],
+    ),
+  ),
+  GoRoute(
+    path: '/email-waiting',
+    builder: (_, state) => EmailVerifyWaitPage(
+      email: state.uri.queryParameters['email'] ?? '',
+    ),
+  ),
   GoRoute(
     path: '/forgot-password',
-    builder: (_, _) => const _P('パスワード忘れ'),
+    builder: (_, state) => PasswordForgotPage(
+      initialEmail: state.uri.queryParameters['email'],
+    ),
     routes: [
-      GoRoute(path: 'sent', builder: (_, _) => const _P('リセットメール送信')),
+      GoRoute(
+        path: 'sent',
+        builder: (_, state) => PasswordResetSentPage(
+          email: state.uri.queryParameters['email'] ?? '',
+        ),
+      ),
     ],
   ),
-  GoRoute(path: '/auth-result', builder: (_, _) => const _P('認証結果')),
+  GoRoute(
+    path: '/auth-result',
+    builder: (_, state) => AuthResultPage(
+      type: state.uri.queryParameters['type'] ?? '',
+      status: state.uri.queryParameters['status'] ?? 'invalid',
+    ),
+  ),
 
   // ─── ディープリンク（認証状態問わず受け取る）──────────────
-  // /email-verify?token=<TOKEN>
   GoRoute(
     path: '/email-verify',
-    builder: (_, state) => _P(
-      'メール認証\ntoken: ${state.uri.queryParameters['token'] ?? ''}',
+    builder: (_, state) => EmailVerifyPage(
+      token: state.uri.queryParameters['token'] ?? '',
     ),
   ),
-  // /invite/:token  ログイン状態で分岐はページ側で行う
   GoRoute(
     path: '/invite/:token',
-    builder: (_, state) => _P(
-      '招待受け取り\ntoken: ${state.pathParameters['token'] ?? ''}',
+    builder: (_, state) => InvitationPage(
+      token: state.pathParameters['token'] ?? '',
     ),
   ),
-  // /password/reset?token=<TOKEN>
   GoRoute(
     path: '/password/reset',
-    builder: (_, state) => _P(
-      'パスワード再設定\ntoken: ${state.uri.queryParameters['token'] ?? ''}',
+    builder: (_, state) => PasswordResetPage(
+      token: state.uri.queryParameters['token'] ?? '',
     ),
   ),
 
@@ -121,7 +156,7 @@ final _routes = <RouteBase>[
           path: '/settings',
           builder: (_, _) => const _P('設定'),
           routes: [
-            GoRoute(path: 'account',   builder: (_, _) => const _P('アカウント設定')),
+            GoRoute(path: 'account', builder: (_, _) => const _P('アカウント設定')),
             GoRoute(path: 'household', builder: (_, _) => const _P('世帯設定')),
             GoRoute(
               path: 'housework',
@@ -130,7 +165,8 @@ final _routes = <RouteBase>[
                 GoRoute(path: 'new', builder: (_, _) => const _P('家事新規作成')),
                 GoRoute(
                   path: ':id',
-                  builder: (_, s) => _P('家事編集 ${s.pathParameters['id']}'),
+                  builder: (_, s) =>
+                      _P('家事編集 ${s.pathParameters['id']}'),
                 ),
               ],
             ),
@@ -138,16 +174,19 @@ final _routes = <RouteBase>[
               path: 'inquiries',
               builder: (_, _) => const _P('問い合わせ一覧'),
               routes: [
-                GoRoute(path: 'new', builder: (_, _) => const _P('問い合わせ新規作成')),
+                GoRoute(
+                    path: 'new', builder: (_, _) => const _P('問い合わせ新規作成')),
                 GoRoute(
                   path: ':id',
-                  builder: (_, s) => _P('問い合わせ詳細 ${s.pathParameters['id']}'),
+                  builder: (_, s) =>
+                      _P('問い合わせ詳細 ${s.pathParameters['id']}'),
                 ),
               ],
             ),
             GoRoute(path: 'app-info', builder: (_, _) => const _P('アプリ情報')),
-            GoRoute(path: 'terms',    builder: (_, _) => const _P('利用規約')),
-            GoRoute(path: 'privacy',  builder: (_, _) => const _P('プライバシーポリシー')),
+            GoRoute(path: 'terms', builder: (_, _) => const _P('利用規約')),
+            GoRoute(
+                path: 'privacy', builder: (_, _) => const _P('プライバシーポリシー')),
           ],
         ),
       ]),
@@ -158,7 +197,7 @@ final _routes = <RouteBase>[
   GoRoute(path: '/notifications', builder: (_, _) => const _P('通知センター')),
 ];
 
-// Phase 3で実装するまでの仮画面
+// Phase 4以降で実装するまでの仮画面
 class _P extends StatelessWidget {
   const _P(this.name);
   final String name;
@@ -168,7 +207,9 @@ class _P extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(name.split('\n').first)),
       body: Center(
-        child: Text(name, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+        child: Text(name,
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center),
       ),
     );
   }

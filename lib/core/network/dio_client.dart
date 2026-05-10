@@ -68,11 +68,21 @@ class _ErrorInterceptor extends Interceptor {
     if (status == 401) return const UnauthorizedException();
 
     final data = response?.data;
-    final message = data is Map ? (data['message'] as String?) : null;
+    if (data is Map) {
+      final code = data['errorCode'] as String?;
+      final message = data['message'] as String?;
+      if (code != null) {
+        return ApiException(message ?? code, code: code);
+      }
+      return ServerException(
+        statusCode: status,
+        message: message ?? 'サーバーエラーが発生しました（$status）',
+      );
+    }
 
     return ServerException(
       statusCode: status,
-      message: message ?? 'サーバーエラーが発生しました（$status）',
+      message: 'サーバーエラーが発生しました（$status）',
     );
   }
 }
