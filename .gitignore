@@ -32,6 +32,10 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+**/GeneratedPluginRegistrant.*
+lib/l10n/app_localizations*.dart
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
 
 # Symbolication related
 app.*.symbols
