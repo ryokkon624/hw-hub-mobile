@@ -27,6 +27,12 @@ void main() {
     return container;
   }
 
+  group('AuthState', () {
+    test('AuthLoading はAuthStateのサブタイプ', () {
+      expect(const AuthLoading(), isA<AuthState>());
+    });
+  });
+
   group('AuthNotifier', () {
     test('build() トークンなし → Unauthenticated', () async {
       when(mockStorage.read(key: anyNamed('key')))
