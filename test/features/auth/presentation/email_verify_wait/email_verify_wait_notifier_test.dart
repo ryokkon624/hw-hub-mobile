@@ -79,6 +79,20 @@ void main() {
       expect(state.isSending, false);
     });
 
+    test('resend() isSending=trueのとき（canResend=false）は何もしない', () async {
+      final container = makeContainer('test@example.com');
+      container
+          .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
+          .state = const EmailVerifyWaitState(isSending: true);
+
+      await container
+          .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
+          .resend();
+
+      verifyNever(
+          mockRepo.resendVerification(email: anyNamed('email')));
+    });
+
     test('cooldownSeconds > 0のときはcanResendがfalse', () {
       final container = makeContainer('test@example.com');
       container

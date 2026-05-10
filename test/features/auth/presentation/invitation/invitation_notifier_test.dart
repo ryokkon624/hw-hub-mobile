@@ -89,6 +89,52 @@ void main() {
       expect(state.accepted, true);
     });
 
+    test('accept() エラーでerrorMessageがセットされisActingがfalse', () async {
+      when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
+          (_) async => const InvitationInfo(
+                householdName: '田中家',
+                inviterName: '田中 太郎',
+                invitedEmail: 'user@example.com',
+              ));
+      when(mockRepo.acceptInvitation(token: anyNamed('token')))
+          .thenThrow(const NetworkException());
+
+      final container = makeContainer('valid-token');
+      await container.read(invitationNotifierProvider('valid-token').future);
+      await container
+          .read(invitationNotifierProvider('valid-token').notifier)
+          .accept();
+
+      final state =
+          container.read(invitationNotifierProvider('valid-token')).value!;
+      expect(state.errorMessage, isNotNull);
+      expect(state.accepted, false);
+      expect(state.isActing, false);
+    });
+
+    test('decline() エラーでerrorMessageがセットされisActingがfalse', () async {
+      when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
+          (_) async => const InvitationInfo(
+                householdName: '田中家',
+                inviterName: '田中 太郎',
+                invitedEmail: 'user@example.com',
+              ));
+      when(mockRepo.declineInvitation(token: anyNamed('token')))
+          .thenThrow(const NetworkException());
+
+      final container = makeContainer('valid-token');
+      await container.read(invitationNotifierProvider('valid-token').future);
+      await container
+          .read(invitationNotifierProvider('valid-token').notifier)
+          .decline();
+
+      final state =
+          container.read(invitationNotifierProvider('valid-token')).value!;
+      expect(state.errorMessage, isNotNull);
+      expect(state.declined, false);
+      expect(state.isActing, false);
+    });
+
     test('decline() 成功でdeclinedがtrue', () async {
       when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
           (_) async => const InvitationInfo(

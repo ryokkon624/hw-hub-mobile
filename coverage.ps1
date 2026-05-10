@@ -25,6 +25,11 @@ Write-Host "`n=== Filtering lcov.info ===" -ForegroundColor Cyan
     'lib/core/theme/*' `
     'lib/core/di/*' `
     'lib/features/shell/*' `
+    'lib/core/network/dio_client.dart' `
+    'lib/core/network/app_exception.dart' `
+    'lib/core/network/auth_interceptor.dart' `
+    'lib/features/auth/auth_providers.dart' `
+    'lib/features/auth/data/models/*' `
     '*/*.g.dart' `
     '*/*.mocks.dart' `
     '*/presentation/*_page.dart' `

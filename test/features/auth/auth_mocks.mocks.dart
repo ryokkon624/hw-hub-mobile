@@ -5,6 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
 
+import 'package:hw_hub_mobile/features/auth/data/auth_api.dart' as _i7;
 import 'package:hw_hub_mobile/features/auth/data/auth_repository.dart' as _i5;
 import 'package:hw_hub_mobile/features/auth/data/models/invitation_info.dart'
     as _i4;
@@ -184,6 +185,118 @@ class MockAuthRepository extends _i1.Mock implements _i5.AuthRepository {
   _i6.Future<void> declineInvitation({required String? token}) =>
       (super.noSuchMethod(
             Invocation.method(#declineInvitation, [], {#token: token}),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+}
+
+/// A class which mocks [AuthApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthApi extends _i1.Mock implements _i7.AuthApi {
+  MockAuthApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<_i2.LoginResponse> login(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#login, [body]),
+            returnValue: _i6.Future<_i2.LoginResponse>.value(
+              _FakeLoginResponse_0(this, Invocation.method(#login, [body])),
+            ),
+          )
+          as _i6.Future<_i2.LoginResponse>);
+
+  @override
+  _i6.Future<_i2.LoginResponse> googleLoginMobile(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#googleLoginMobile, [body]),
+            returnValue: _i6.Future<_i2.LoginResponse>.value(
+              _FakeLoginResponse_0(
+                this,
+                Invocation.method(#googleLoginMobile, [body]),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.LoginResponse>);
+
+  @override
+  _i6.Future<_i3.RegisterResponse> register(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#register, [body]),
+            returnValue: _i6.Future<_i3.RegisterResponse>.value(
+              _FakeRegisterResponse_1(
+                this,
+                Invocation.method(#register, [body]),
+              ),
+            ),
+          )
+          as _i6.Future<_i3.RegisterResponse>);
+
+  @override
+  _i6.Future<void> resendVerification(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#resendVerification, [body]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> verifyEmail(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyEmail, [body]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> requestPasswordReset(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#requestPasswordReset, [body]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> confirmPasswordReset(Map<String, dynamic>? body) =>
+      (super.noSuchMethod(
+            Invocation.method(#confirmPasswordReset, [body]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i4.InvitationInfo> getInvitation(String? token) =>
+      (super.noSuchMethod(
+            Invocation.method(#getInvitation, [token]),
+            returnValue: _i6.Future<_i4.InvitationInfo>.value(
+              _FakeInvitationInfo_2(
+                this,
+                Invocation.method(#getInvitation, [token]),
+              ),
+            ),
+          )
+          as _i6.Future<_i4.InvitationInfo>);
+
+  @override
+  _i6.Future<void> acceptInvitation(String? token) =>
+      (super.noSuchMethod(
+            Invocation.method(#acceptInvitation, [token]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> declineInvitation(String? token) =>
+      (super.noSuchMethod(
+            Invocation.method(#declineInvitation, [token]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

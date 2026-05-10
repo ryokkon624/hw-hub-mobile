@@ -109,6 +109,37 @@ void main() {
       expect(state.successResult?.email, 'test@example.com');
     });
 
+    test('submit() 成功（メール認証不要・トークンあり）でsuccessResultがnull', () async {
+      when(mockRepo.register(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+        displayName: anyNamed('displayName'),
+        locale: anyNamed('locale'),
+        invitationToken: anyNamed('invitationToken'),
+      )).thenAnswer((_) async => RegisterResponse(
+            emailVerificationRequired: false,
+            accessToken: 'access-jwt',
+            refreshToken: 'refresh-jwt',
+            user: const AuthUser(
+                userId: 1, email: 'test@example.com', displayName: 'テスト'),
+          ));
+
+      final container = makeContainer();
+      await container.read(authNotifierProvider.future);
+
+      final n = container.read(signupNotifierProvider.notifier);
+      n.setEmail('test@example.com');
+      n.setDisplayName('テスト');
+      n.setPassword('password123');
+      n.setPasswordConfirm('password123');
+      await n.submit();
+
+      final state = container.read(signupNotifierProvider);
+      expect(state.isLoading, false);
+      expect(state.errorMessage, isNull);
+      expect(state.successResult, isNull);
+    });
+
     test('submit() 失敗時にerrorMessageがセットされる', () async {
       when(mockRepo.register(
         email: anyNamed('email'),
