@@ -38,7 +38,7 @@ dependencies:
 
   # Network
   dio: ^5.7.0
-  retrofit: ^4.4.0
+  retrofit: ^4.9.2
   freezed_annotation: ^2.4.1
   json_annotation: ^4.9.0
 
@@ -61,7 +61,7 @@ dev_dependencies:
   build_runner: ^2.4.13
   freezed: ^2.5.7
   json_serializable: ^6.9.0
-  # retrofit_generator は Phase 3 (API実装時) に追加予定
+  retrofit_generator: ^9.7.0
 
   # Testing
   mockito: ^5.4.4
