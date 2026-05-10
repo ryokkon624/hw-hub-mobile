@@ -86,7 +86,8 @@ void main() {
       when(mockRepo.login(
               email: anyNamed('email'), password: anyNamed('password')))
           .thenAnswer((_) async => const LoginResponse(
-                token: 'jwt-token',
+                accessToken: 'access-jwt',
+                refreshToken: 'refresh-jwt',
                 user: AuthUser(
                     userId: 1, email: 'test@example.com', displayName: 'Test'),
               ));

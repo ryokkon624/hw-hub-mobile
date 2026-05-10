@@ -3,13 +3,15 @@ import 'auth_user.dart';
 class RegisterResponse {
   const RegisterResponse({
     required this.emailVerificationRequired,
-    this.token,
+    this.accessToken,
+    this.refreshToken,
     required this.user,
     this.verificationExpiresAt,
   });
 
   final bool emailVerificationRequired;
-  final String? token;
+  final String? accessToken;
+  final String? refreshToken;
   final AuthUser user;
   final String? verificationExpiresAt;
 
@@ -17,7 +19,8 @@ class RegisterResponse {
       RegisterResponse(
         emailVerificationRequired:
             json['emailVerificationRequired'] as bool,
-        token: json['token'] as String?,
+        accessToken: json['accessToken'] as String?,
+        refreshToken: json['refreshToken'] as String?,
         user: AuthUser.fromJson(json['user'] as Map<String, dynamic>),
         verificationExpiresAt: json['verificationExpiresAt'] as String?,
       );

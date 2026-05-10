@@ -29,10 +29,12 @@ class SignupNotifier extends Notifier<SignupState> {
             locale: state.locale,
             invitationToken: invitationToken,
           );
-      if (!resp.emailVerificationRequired && resp.token != null) {
+      if (!resp.emailVerificationRequired &&
+          resp.accessToken != null &&
+          resp.refreshToken != null) {
         await ref.read(authNotifierProvider.notifier).saveTokens(
-              accessToken: resp.token!,
-              refreshToken: '',
+              accessToken: resp.accessToken!,
+              refreshToken: resp.refreshToken!,
             );
         state = state.copyWith(isLoading: false);
       } else {

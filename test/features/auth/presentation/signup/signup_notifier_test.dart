@@ -91,7 +91,6 @@ void main() {
         invitationToken: anyNamed('invitationToken'),
       )).thenAnswer((_) async => RegisterResponse(
             emailVerificationRequired: true,
-            token: null,
             user: const AuthUser(
                 userId: 1, email: 'test@example.com', displayName: 'テスト'),
           ));
