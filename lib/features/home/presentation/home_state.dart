@@ -1,5 +1,5 @@
-import '../data/models/household_member_dto.dart';
-import '../data/models/shopping_item_dto.dart';
+import 'models/household_member.dart';
+import 'models/shopping_item.dart';
 
 class HomeState {
   const HomeState({
@@ -15,9 +15,9 @@ class HomeState {
 
   final MyTasksSummary myTasksSummary;
   final UnassignedSummary unassignedSummary;
-  final List<ShoppingItemDto> shoppingItems;
+  final List<ShoppingItem> shoppingItems;
   final List<DailyOverview> householdOverview;
-  final List<HouseholdMemberDto> members;
+  final List<HouseholdMember> members;
   final bool hasHousehold;
   final bool isLoading;
   final String? errorMessage;
@@ -25,9 +25,9 @@ class HomeState {
   HomeState copyWith({
     MyTasksSummary? myTasksSummary,
     UnassignedSummary? unassignedSummary,
-    List<ShoppingItemDto>? shoppingItems,
+    List<ShoppingItem>? shoppingItems,
     List<DailyOverview>? householdOverview,
-    List<HouseholdMemberDto>? members,
+    List<HouseholdMember>? members,
     bool? hasHousehold,
     bool? isLoading,
     String? errorMessage,

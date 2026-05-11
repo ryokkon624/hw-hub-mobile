@@ -55,7 +55,6 @@ HomeRawData _makeRawData({
   List<ShoppingItemDto> shoppingItems = const [],
 }) => HomeRawData(
   members: const [_member1],
-  houseworks: const [],
   openTasks: openTasks,
   doneTasks: doneTasks,
   shoppingItems: shoppingItems,

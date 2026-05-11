@@ -190,6 +190,13 @@
   "authResultRetryPasswordReset": "パスワード再設定をやり直す",
   "authResultToSignup": "サインアップへ",
 
+  "homeAppBarNotification": "通知センターは今後実装予定です",
+  "homeAppBarAccount": "アカウント設定は設定画面からご利用ください",
+
+  "homeShoppingStoreSupermarket": "スーパー",
+  "homeShoppingStoreOnline": "ネット",
+  "homeShoppingStoreDrugStore": "ドラッグストア",
+
   "homeMyTasksTitle": "My Tasks",
   "homeMyTasksSubtitle": "あなたに割り当てられている家事",
   "homeMyTasksToday": "今日の家事",

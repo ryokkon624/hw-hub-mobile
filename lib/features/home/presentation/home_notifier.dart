@@ -3,6 +3,8 @@ import '../../../core/di/providers.dart';
 import '../data/models/housework_task_dto.dart';
 import '../home_providers.dart';
 import 'home_state.dart';
+import 'models/household_member.dart';
+import 'models/shopping_item.dart';
 
 final homeNotifierProvider =
     AsyncNotifierProvider.autoDispose<HomeNotifier, HomeState>(
@@ -47,12 +49,36 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
       todayDate,
     );
 
+    // DTOからプレゼンテーション用モデルに変換
+    final shoppingItems = raw.shoppingItems
+        .map(
+          (dto) => ShoppingItem(
+            shoppingItemId: dto.shoppingItemId,
+            name: dto.name,
+            storeType: dto.storeType,
+            status: dto.status,
+            createdAt: dto.createdAt,
+          ),
+        )
+        .toList();
+
+    final members = raw.members
+        .map(
+          (dto) => HouseholdMember(
+            userId: dto.userId,
+            displayName: dto.displayName,
+            iconUrl: dto.iconUrl,
+            nickname: dto.nickname,
+          ),
+        )
+        .toList();
+
     return HomeState(
       myTasksSummary: myTasksSummary,
       unassignedSummary: unassignedSummary,
-      shoppingItems: raw.shoppingItems,
+      shoppingItems: shoppingItems,
       householdOverview: householdOverview,
-      members: raw.members,
+      members: members,
       hasHousehold: true,
     );
   }

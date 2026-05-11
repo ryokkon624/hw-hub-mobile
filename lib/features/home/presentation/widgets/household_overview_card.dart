@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/models/household_member_dto.dart';
 import '../home_state.dart';
+import '../models/household_member.dart';
 
 /// メンバーカラーパレット（6色 + 未割当グレー）
 const _memberColors = [
@@ -25,7 +25,7 @@ class HouseholdOverviewCard extends StatelessWidget {
   });
 
   final List<DailyOverview> overview;
-  final List<HouseholdMemberDto> members;
+  final List<HouseholdMember> members;
 
   @override
   Widget build(BuildContext context) {

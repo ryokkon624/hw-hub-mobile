@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/models/shopping_item_dto.dart';
+import '../models/shopping_item.dart';
 
 class ShoppingCard extends StatelessWidget {
   const ShoppingCard({super.key, required this.items, required this.onOpen});
 
-  final List<ShoppingItemDto> items;
+  final List<ShoppingItem> items;
   final VoidCallback onOpen;
 
   @override
@@ -74,7 +74,7 @@ class ShoppingCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             if (storeCountMap.isEmpty)
               Text(
-                '0件',
+                l10n.homeShoppingCountFormat(0),
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
@@ -87,13 +87,13 @@ class ShoppingCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _storeLabel(e.key),
+                        _storeLabel(l10n, e.key),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: colors.textBody,
                         ),
                       ),
                       Text(
-                        '${e.value}件',
+                        l10n.homeShoppingCountFormat(e.value),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: colors.info,
                           fontWeight: FontWeight.w600,
@@ -105,7 +105,7 @@ class ShoppingCard extends StatelessWidget {
               ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              '${l10n.homeShoppingRecentlyAdded}: $recentCount件',
+              '${l10n.homeShoppingRecentlyAdded}: ${l10n.homeShoppingCountFormat(recentCount)}',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
@@ -128,14 +128,14 @@ class ShoppingCard extends StatelessWidget {
     );
   }
 
-  String _storeLabel(String storeType) {
+  String _storeLabel(AppLocalizations l10n, String storeType) {
     switch (storeType) {
       case 'supermarket':
-        return 'スーパー';
+        return l10n.homeShoppingStoreSupermarket;
       case 'online':
-        return 'ネット';
+        return l10n.homeShoppingStoreOnline;
       case 'drug_store':
-        return 'ドラッグストア';
+        return l10n.homeShoppingStoreDrugStore;
       default:
         return storeType;
     }

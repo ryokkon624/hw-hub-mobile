@@ -190,6 +190,13 @@
   "authResultRetryPasswordReset": "Try password reset again",
   "authResultToSignup": "Go to sign up",
 
+  "homeAppBarNotification": "Notification center is coming soon",
+  "homeAppBarAccount": "Account settings are available from the Settings screen",
+
+  "homeShoppingStoreSupermarket": "Supermarket",
+  "homeShoppingStoreOnline": "Online",
+  "homeShoppingStoreDrugStore": "Drug Store",
+
   "homeMyTasksTitle": "My Tasks",
   "homeMyTasksSubtitle": "Housework assigned to you",
   "homeMyTasksToday": "Today",

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
@@ -17,6 +19,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final homeAsync = ref.watch(homeNotifierProvider);
 
     return Scaffold(
@@ -24,12 +27,20 @@ class HomePage extends ConsumerWidget {
       body: homeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorBody(
-          message: error.toString(),
+          message: _errorMessage(l10n, error),
           onRetry: () => ref.invalidate(homeNotifierProvider),
         ),
         data: (state) => _HomeBody(state: state),
       ),
     );
+  }
+
+  String _errorMessage(AppLocalizations l10n, Object error) {
+    if (error is NetworkException) return l10n.errorNetwork;
+    if (error is UnauthorizedException) return l10n.errorUnauthorized;
+    if (error is ServerException) return l10n.errorServer;
+    if (error is AppException) return error.message;
+    return l10n.errorUnexpected;
   }
 }
 
@@ -50,23 +61,23 @@ class _HomeBody extends StatelessWidget {
           // 世帯未所属時のオンボーディングカード（AC6）
           if (!state.hasHousehold)
             OnboardingCard(
-              onGoHousehold: () => _navigateTo(context, '/settings/household'),
-              onGoHousework: () => _navigateTo(context, '/settings/housework'),
+              onGoHousehold: () => context.go('/settings/household'),
+              onGoHousework: () => context.go('/settings/housework'),
             ),
           // My Tasksカード（AC2）
           MyTasksCard(
             summary: state.myTasksSummary,
-            onOpen: () => _navigateTo(context, '/tasks'),
+            onOpen: () => context.go('/tasks'),
           ),
           // 家事未割り当てカード（AC3）
           UnassignedCard(
             summary: state.unassignedSummary,
-            onOpen: () => _navigateTo(context, '/housework'),
+            onOpen: () => context.go('/housework'),
           ),
           // 買い物リストカード（AC4）
           ShoppingCard(
             items: state.shoppingItems,
-            onOpen: () => _navigateTo(context, '/shopping'),
+            onOpen: () => context.go('/shopping'),
           ),
           // おうちの様子カード（AC5）
           HouseholdOverviewCard(
@@ -77,10 +88,6 @@ class _HomeBody extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _navigateTo(BuildContext context, String path) {
-    Navigator.of(context).pushNamed(path);
   }
 }
 

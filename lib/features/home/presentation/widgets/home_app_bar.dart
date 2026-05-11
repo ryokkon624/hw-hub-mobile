@@ -29,14 +29,14 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Icon(Icons.notifications_outlined, color: colors.textMuted),
           onPressed: () => ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('通知センターは今後実装予定です'))),
+          ).showSnackBar(SnackBar(content: Text(l10n.homeAppBarNotification))),
         ),
         // アカウントアイコン（#15で実装予定 - 現在はSnackBar表示）
         IconButton(
           icon: Icon(Icons.account_circle_outlined, color: colors.textMuted),
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('アカウント設定は設定画面からご利用ください')),
-          ),
+          onPressed: () => ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.homeAppBarAccount))),
         ),
       ],
     );

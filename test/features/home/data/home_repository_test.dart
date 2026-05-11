@@ -17,16 +17,6 @@ Map<String, dynamic> _memberJson(int userId, String name) => {
   'role': 'member',
 };
 
-/// テスト用家事JSON
-Map<String, dynamic> _houseworkJson(int id, String name) => {
-  'houseworkId': id,
-  'householdId': 1,
-  'name': name,
-  'description': null,
-  'category': null,
-  'defaultAssigneeUserId': null,
-};
-
 /// テスト用タスクJSON
 Map<String, dynamic> _taskJson(int id, String status, String targetDate) => {
   'houseworkTaskId': id,
@@ -81,18 +71,6 @@ void main() {
       );
       when(
         mockDio.get<dynamic>(
-          '/api/houseworks',
-          queryParameters: {'householdId': householdId},
-        ),
-      ).thenAnswer(
-        (_) async => Response(
-          requestOptions: _req('/api/houseworks'),
-          statusCode: 200,
-          data: [_houseworkJson(1, '掃除'), _houseworkJson(2, '洗濯')],
-        ),
-      );
-      when(
-        mockDio.get<dynamic>(
           '/api/housework-tasks',
           queryParameters: {'householdId': householdId, 'status': '0'},
         ),
@@ -135,7 +113,6 @@ void main() {
 
       expect(result.members, hasLength(2));
       expect(result.members.first.displayName, 'ママ');
-      expect(result.houseworks, hasLength(2));
       expect(result.openTasks, hasLength(1));
       expect(result.openTasks.first.status, '0');
       expect(result.doneTasks, hasLength(1));
