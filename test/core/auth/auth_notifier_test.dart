@@ -14,8 +14,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -35,8 +36,9 @@ void main() {
 
   group('AuthNotifier', () {
     test('build() トークンなし → Unauthenticated', () async {
-      when(mockStorage.read(key: anyNamed('key')))
-          .thenAnswer((_) async => null);
+      when(
+        mockStorage.read(key: anyNamed('key')),
+      ).thenAnswer((_) async => null);
 
       final container = makeContainer();
       final state = await container.read(authNotifierProvider.future);
@@ -45,8 +47,9 @@ void main() {
     });
 
     test('build() トークンあり → Authenticated', () async {
-      when(mockStorage.read(key: anyNamed('key')))
-          .thenAnswer((_) async => 'some-token');
+      when(
+        mockStorage.read(key: anyNamed('key')),
+      ).thenAnswer((_) async => 'some-token');
 
       final container = makeContainer();
       final state = await container.read(authNotifierProvider.future);
@@ -58,10 +61,9 @@ void main() {
       final container = makeContainer();
       await container.read(authNotifierProvider.future);
 
-      await container.read(authNotifierProvider.notifier).saveTokens(
-            accessToken: 'access-jwt',
-            refreshToken: 'refresh-jwt',
-          );
+      await container
+          .read(authNotifierProvider.notifier)
+          .saveTokens(accessToken: 'access-jwt', refreshToken: 'refresh-jwt');
 
       expect(
         container.read(authNotifierProvider).value,
@@ -70,8 +72,9 @@ void main() {
     });
 
     test('logout() → Unauthenticated状態になる', () async {
-      when(mockStorage.read(key: anyNamed('key')))
-          .thenAnswer((_) async => 'some-token');
+      when(
+        mockStorage.read(key: anyNamed('key')),
+      ).thenAnswer((_) async => 'some-token');
 
       final container = makeContainer();
       await container.read(authNotifierProvider.future);

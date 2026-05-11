@@ -19,15 +19,14 @@ class LoginState {
     String? password,
     bool? isLoading,
     Object? errorMessage = _sentinel,
-  }) =>
-      LoginState(
-        email: email ?? this.email,
-        password: password ?? this.password,
-        isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage == _sentinel
-            ? this.errorMessage
-            : errorMessage as String?,
-      );
+  }) => LoginState(
+    email: email ?? this.email,
+    password: password ?? this.password,
+    isLoading: isLoading ?? this.isLoading,
+    errorMessage: errorMessage == _sentinel
+        ? this.errorMessage
+        : errorMessage as String?,
+  );
 
   static const _sentinel = Object();
 }

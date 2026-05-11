@@ -53,8 +53,9 @@ void main() {
     });
 
     test('submit() 成功でsentEmailがセットされる', () async {
-      when(mockRepo.requestPasswordReset(email: anyNamed('email')))
-          .thenAnswer((_) async {});
+      when(
+        mockRepo.requestPasswordReset(email: anyNamed('email')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer();
       container
@@ -68,8 +69,9 @@ void main() {
     });
 
     test('submit() 失敗でerrorMessageがセットされる', () async {
-      when(mockRepo.requestPasswordReset(email: anyNamed('email')))
-          .thenThrow(const NetworkException());
+      when(
+        mockRepo.requestPasswordReset(email: anyNamed('email')),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer();
       container
@@ -77,7 +79,10 @@ void main() {
           .setEmail('test@example.com');
       await container.read(passwordForgotNotifierProvider.notifier).submit();
 
-      expect(container.read(passwordForgotNotifierProvider).errorMessage, isNotNull);
+      expect(
+        container.read(passwordForgotNotifierProvider).errorMessage,
+        isNotNull,
+      );
       expect(container.read(passwordForgotNotifierProvider).isLoading, false);
     });
   });

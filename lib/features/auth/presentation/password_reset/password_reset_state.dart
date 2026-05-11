@@ -30,18 +30,15 @@ class PasswordResetState {
     bool? isLoading,
     Object? errorMessage = _sentinel,
     Object? result = _sentinel,
-  }) =>
-      PasswordResetState(
-        password: password ?? this.password,
-        passwordConfirm: passwordConfirm ?? this.passwordConfirm,
-        isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage == _sentinel
-            ? this.errorMessage
-            : errorMessage as String?,
-        result: result == _sentinel
-            ? this.result
-            : result as PasswordResetResult?,
-      );
+  }) => PasswordResetState(
+    password: password ?? this.password,
+    passwordConfirm: passwordConfirm ?? this.passwordConfirm,
+    isLoading: isLoading ?? this.isLoading,
+    errorMessage: errorMessage == _sentinel
+        ? this.errorMessage
+        : errorMessage as String?,
+    result: result == _sentinel ? this.result : result as PasswordResetResult?,
+  );
 
   static const _sentinel = Object();
 }

@@ -19,8 +19,8 @@ Widget _wrap(Widget child, {required List<Override> overrides}) {
 }
 
 List<Override> _overrideWith(HouseholdState state) => [
-      householdNotifierProvider.overrideWith(() => _FakeHouseholdNotifier(state)),
-    ];
+  householdNotifierProvider.overrideWith(() => _FakeHouseholdNotifier(state)),
+];
 
 void main() {
   group('HouseholdIndicatorBar', () {
@@ -30,10 +30,9 @@ void main() {
         selectedHousehold: const Household(id: '1', name: '山田家'),
       );
 
-      await tester.pumpWidget(_wrap(
-        const HouseholdIndicatorBar(),
-        overrides: _overrideWith(state),
-      ));
+      await tester.pumpWidget(
+        _wrap(const HouseholdIndicatorBar(), overrides: _overrideWith(state)),
+      );
       await tester.pump();
 
       expect(find.text('山田家'), findsNothing);
@@ -48,10 +47,9 @@ void main() {
         selectedHousehold: const Household(id: '1', name: '山田家'),
       );
 
-      await tester.pumpWidget(_wrap(
-        const HouseholdIndicatorBar(),
-        overrides: _overrideWith(state),
-      ));
+      await tester.pumpWidget(
+        _wrap(const HouseholdIndicatorBar(), overrides: _overrideWith(state)),
+      );
       await tester.pump();
 
       expect(find.text('山田家'), findsOneWidget);
@@ -66,10 +64,9 @@ void main() {
         selectedHousehold: const Household(id: '1', name: '山田家'),
       );
 
-      await tester.pumpWidget(_wrap(
-        const HouseholdIndicatorBar(),
-        overrides: _overrideWith(state),
-      ));
+      await tester.pumpWidget(
+        _wrap(const HouseholdIndicatorBar(), overrides: _overrideWith(state)),
+      );
       await tester.pump();
 
       await tester.tap(find.text('山田家'));

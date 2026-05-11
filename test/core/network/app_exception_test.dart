@@ -19,7 +19,10 @@ void main() {
     });
 
     test('ServerException stores statusCode', () {
-      const e = ServerException(message: 'Internal Server Error', statusCode: 500);
+      const e = ServerException(
+        message: 'Internal Server Error',
+        statusCode: 500,
+      );
       expect(e.message, 'Internal Server Error');
       expect(e.statusCode, 500);
     });

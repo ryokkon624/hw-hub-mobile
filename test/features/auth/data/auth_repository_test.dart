@@ -11,9 +11,9 @@ import 'package:mockito/mockito.dart';
 import '../auth_mocks.mocks.dart';
 
 DioException _dioErr({Object? error}) => DioException(
-      requestOptions: RequestOptions(path: '/test'),
-      error: error,
-    );
+  requestOptions: RequestOptions(path: '/test'),
+  error: error,
+);
 
 void main() {
   late MockAuthApi mockApi;
@@ -48,7 +48,9 @@ void main() {
       });
 
       test('DioExceptionにAppException以外が含まれる場合はNetworkExceptionをthrow', () {
-        when(mockApi.login(any)).thenThrow(_dioErr(error: Exception('timeout')));
+        when(
+          mockApi.login(any),
+        ).thenThrow(_dioErr(error: Exception('timeout')));
 
         expect(
           () => sut.login(email: 'a@b.com', password: 'pass'),
@@ -67,7 +69,11 @@ void main() {
 
         expect(
           await sut.register(
-              email: 'a@b.com', password: 'pass', displayName: 'A', locale: 'ja'),
+            email: 'a@b.com',
+            password: 'pass',
+            displayName: 'A',
+            locale: 'ja',
+          ),
           resp,
         );
       });
@@ -77,7 +83,11 @@ void main() {
 
         expect(
           () => sut.register(
-              email: 'a@b.com', password: 'pass', displayName: 'A', locale: 'ja'),
+            email: 'a@b.com',
+            password: 'pass',
+            displayName: 'A',
+            locale: 'ja',
+          ),
           throwsA(isA<NetworkException>()),
         );
       });
@@ -184,7 +194,9 @@ void main() {
         when(mockApi.requestPasswordReset(any)).thenAnswer((_) async {});
 
         await expectLater(
-            sut.requestPasswordReset(email: 'a@b.com'), completes);
+          sut.requestPasswordReset(email: 'a@b.com'),
+          completes,
+        );
       });
 
       test('DioException → NetworkException', () {

@@ -6,7 +6,8 @@ import 'password_forgot_state.dart';
 
 final passwordForgotNotifierProvider =
     NotifierProvider<PasswordForgotNotifier, PasswordForgotState>(
-        PasswordForgotNotifier.new);
+      PasswordForgotNotifier.new,
+    );
 
 class PasswordForgotNotifier extends Notifier<PasswordForgotState> {
   @override

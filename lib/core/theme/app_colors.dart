@@ -219,14 +219,29 @@ class AppColors {
   // Status
   static const Color statusActiveBgDark = Color(0xFF1A2A1F);
   static const Color statusActiveTextDark = Color(0xFF6EE7B7);
-  static final Color statusActiveBorderDark = Color.fromRGBO(52, 211, 153, 0.45);
+  static final Color statusActiveBorderDark = Color.fromRGBO(
+    52,
+    211,
+    153,
+    0.45,
+  );
   static const Color statusPendingBgDark = Color(0xFF2A2418);
   static const Color statusPendingTextDark = Color(0xFFFBBF24);
-  static final Color statusPendingBorderDark = Color.fromRGBO(251, 191, 36, 0.45);
+  static final Color statusPendingBorderDark = Color.fromRGBO(
+    251,
+    191,
+    36,
+    0.45,
+  );
 
   // Palette - Emerald
   static const Color paletteEmeraldSoftDark = Color(0xFF1A2A1F);
-  static final Color paletteEmeraldBorderDark = Color.fromRGBO(52, 211, 153, 0.32);
+  static final Color paletteEmeraldBorderDark = Color.fromRGBO(
+    52,
+    211,
+    153,
+    0.32,
+  );
   static const Color paletteEmeraldTextDark = Color(0xFF6EE7B7);
 
   // Palette - Blue
@@ -236,16 +251,31 @@ class AppColors {
 
   // Palette - Amber
   static const Color paletteAmberSoftDark = Color(0xFF2A2418);
-  static final Color paletteAmberBorderDark = Color.fromRGBO(251, 191, 36, 0.32);
+  static final Color paletteAmberBorderDark = Color.fromRGBO(
+    251,
+    191,
+    36,
+    0.32,
+  );
   static const Color paletteAmberTextDark = Color(0xFFFBBF24);
 
   // Palette - Violet
   static const Color paletteVioletSoftDark = Color(0xFF221D33);
-  static final Color paletteVioletBorderDark = Color.fromRGBO(167, 139, 250, 0.32);
+  static final Color paletteVioletBorderDark = Color.fromRGBO(
+    167,
+    139,
+    250,
+    0.32,
+  );
   static const Color paletteVioletTextDark = Color(0xFFC4B5FD);
 
   // Palette - Rose
   static const Color paletteRoseSoftDark = Color(0xFF2E1A20);
-  static final Color paletteRoseBorderDark = Color.fromRGBO(251, 113, 133, 0.32);
+  static final Color paletteRoseBorderDark = Color.fromRGBO(
+    251,
+    113,
+    133,
+    0.32,
+  );
   static const Color paletteRoseTextDark = Color(0xFFFDA4AF);
 }

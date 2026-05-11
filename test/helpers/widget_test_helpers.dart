@@ -20,16 +20,12 @@ Widget buildTestPageWithRouter({
   required List<GoRoute> routes,
   List<Override> overrides = const [],
   String initialLocation = '/',
-}) =>
-    ProviderScope(
-      overrides: overrides,
-      child: MaterialApp.router(
-        locale: const Locale('ja'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: GoRouter(
-          initialLocation: initialLocation,
-          routes: routes,
-        ),
-      ),
-    );
+}) => ProviderScope(
+  overrides: overrides,
+  child: MaterialApp.router(
+    locale: const Locale('ja'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    routerConfig: GoRouter(initialLocation: initialLocation, routes: routes),
+  ),
+);

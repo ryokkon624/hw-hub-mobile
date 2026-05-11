@@ -7,7 +7,8 @@ import 'package:hw_hub_mobile/features/auth/presentation/password_reset_sent/pas
 
 import '../../../../helpers/widget_test_helpers.dart';
 
-class _ResentSuccessPasswordResetSentNotifier extends PasswordResetSentNotifier {
+class _ResentSuccessPasswordResetSentNotifier
+    extends PasswordResetSentNotifier {
   @override
   PasswordResetSentState build(String arg) {
     Future.microtask(() => state = state.copyWith(resentSuccess: true));
@@ -18,9 +19,9 @@ class _ResentSuccessPasswordResetSentNotifier extends PasswordResetSentNotifier 
 void main() {
   group('PasswordResetSentPage', () {
     testWidgets('タイトルとメールアドレスが表示される', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const PasswordResetSentPage(email: 'test@example.com'),
-      ));
+      await tester.pumpWidget(
+        buildTestPage(const PasswordResetSentPage(email: 'test@example.com')),
+      );
       await tester.pump();
 
       expect(find.text('メールを確認してください'), findsOneWidget);
@@ -28,9 +29,9 @@ void main() {
     });
 
     testWidgets('初期状態: 再送ボタンが有効', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const PasswordResetSentPage(email: 'test@example.com'),
-      ));
+      await tester.pumpWidget(
+        buildTestPage(const PasswordResetSentPage(email: 'test@example.com')),
+      );
       await tester.pump();
 
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
@@ -39,13 +40,16 @@ void main() {
     });
 
     testWidgets('resentSuccessがtrueになるとSnackBarが表示される', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const PasswordResetSentPage(email: 'test@example.com'),
-        overrides: [
-          passwordResetSentNotifierProvider
-              .overrideWith(() => _ResentSuccessPasswordResetSentNotifier()),
-        ],
-      ));
+      await tester.pumpWidget(
+        buildTestPage(
+          const PasswordResetSentPage(email: 'test@example.com'),
+          overrides: [
+            passwordResetSentNotifierProvider.overrideWith(
+              () => _ResentSuccessPasswordResetSentNotifier(),
+            ),
+          ],
+        ),
+      );
       await tester.pump();
       await tester.pump();
 
@@ -53,21 +57,23 @@ void main() {
     });
 
     testWidgets('AppBarの戻るボタンタップで/forgot-passwordに遷移する', (tester) async {
-      await tester.pumpWidget(buildTestPageWithRouter(
-        routes: [
-          GoRoute(
-            path: '/forgot-password/sent',
-            builder: (_, _) =>
-                const PasswordResetSentPage(email: 'test@example.com'),
-          ),
-          GoRoute(
-            path: '/forgot-password',
-            builder: (_, _) =>
-                const Scaffold(body: Text('forgot-password-page')),
-          ),
-        ],
-        initialLocation: '/forgot-password/sent',
-      ));
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/forgot-password/sent',
+              builder: (_, _) =>
+                  const PasswordResetSentPage(email: 'test@example.com'),
+            ),
+            GoRoute(
+              path: '/forgot-password',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('forgot-password-page')),
+            ),
+          ],
+          initialLocation: '/forgot-password/sent',
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(BackButton));
@@ -77,21 +83,23 @@ void main() {
     });
 
     testWidgets('別のメールアドレスを使うボタンタップで/forgot-passwordに遷移する', (tester) async {
-      await tester.pumpWidget(buildTestPageWithRouter(
-        routes: [
-          GoRoute(
-            path: '/forgot-password/sent',
-            builder: (_, _) =>
-                const PasswordResetSentPage(email: 'test@example.com'),
-          ),
-          GoRoute(
-            path: '/forgot-password',
-            builder: (_, _) =>
-                const Scaffold(body: Text('forgot-password-page')),
-          ),
-        ],
-        initialLocation: '/forgot-password/sent',
-      ));
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/forgot-password/sent',
+              builder: (_, _) =>
+                  const PasswordResetSentPage(email: 'test@example.com'),
+            ),
+            GoRoute(
+              path: '/forgot-password',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('forgot-password-page')),
+            ),
+          ],
+          initialLocation: '/forgot-password/sent',
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('別のメールアドレスを使う'));
@@ -101,20 +109,22 @@ void main() {
     });
 
     testWidgets('ログインへ戻るボタンタップで/loginに遷移する', (tester) async {
-      await tester.pumpWidget(buildTestPageWithRouter(
-        routes: [
-          GoRoute(
-            path: '/forgot-password/sent',
-            builder: (_, _) =>
-                const PasswordResetSentPage(email: 'test@example.com'),
-          ),
-          GoRoute(
-            path: '/login',
-            builder: (_, _) => const Scaffold(body: Text('login-page')),
-          ),
-        ],
-        initialLocation: '/forgot-password/sent',
-      ));
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/forgot-password/sent',
+              builder: (_, _) =>
+                  const PasswordResetSentPage(email: 'test@example.com'),
+            ),
+            GoRoute(
+              path: '/login',
+              builder: (_, _) => const Scaffold(body: Text('login-page')),
+            ),
+          ],
+          initialLocation: '/forgot-password/sent',
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('ログインへ戻る'));

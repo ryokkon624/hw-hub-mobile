@@ -19,7 +19,8 @@ final class UnauthorizedException extends AppException {
 
 /// 4xx / 5xx のサーバーエラー
 final class ServerException extends AppException {
-  const ServerException({required String message, this.statusCode}) : super(message);
+  const ServerException({required String message, this.statusCode})
+    : super(message);
 
   final int? statusCode;
 }

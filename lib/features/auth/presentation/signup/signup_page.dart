@@ -37,16 +37,18 @@ class SignupPage extends ConsumerWidget {
               Text(
                 l10n.appName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(l10n.signupTitle,
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    l10n.signupTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   TextButton(
                     onPressed: () => context.go('/login'),
                     child: Text(l10n.signupGoLogin),
@@ -109,11 +111,17 @@ class SignupPage extends ConsumerWidget {
                 initialValue: state.locale,
                 items: [
                   DropdownMenuItem(
-                      value: 'ja', child: Text(l10n.commonLocaleJa)),
+                    value: 'ja',
+                    child: Text(l10n.commonLocaleJa),
+                  ),
                   DropdownMenuItem(
-                      value: 'en', child: Text(l10n.commonLocaleEn)),
+                    value: 'en',
+                    child: Text(l10n.commonLocaleEn),
+                  ),
                   DropdownMenuItem(
-                      value: 'es', child: Text(l10n.commonLocaleEs)),
+                    value: 'es',
+                    child: Text(l10n.commonLocaleEs),
+                  ),
                 ],
                 onChanged: (v) {
                   if (v != null) notifier.setLocale(v);
@@ -124,8 +132,9 @@ class SignupPage extends ConsumerWidget {
                 Text(
                   state.errorMessage!,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 13),
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 13,
+                  ),
                 ),
               ],
               const SizedBox(height: 20),

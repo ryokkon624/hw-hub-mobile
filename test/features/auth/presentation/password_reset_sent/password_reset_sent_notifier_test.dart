@@ -39,30 +39,34 @@ void main() {
   group('PasswordResetSentNotifier', () {
     test('初期状態はisSendingがfalse', () {
       final container = makeContainer('test@example.com');
-      final state = container
-          .read(passwordResetSentNotifierProvider('test@example.com'));
+      final state = container.read(
+        passwordResetSentNotifierProvider('test@example.com'),
+      );
       expect(state.isSending, false);
       expect(state.errorMessage, isNull);
     });
 
     test('resend() 成功でresentSuccessがtrue', () async {
-      when(mockRepo.requestPasswordReset(email: anyNamed('email')))
-          .thenAnswer((_) async {});
+      when(
+        mockRepo.requestPasswordReset(email: anyNamed('email')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('test@example.com');
       await container
           .read(passwordResetSentNotifierProvider('test@example.com').notifier)
           .resend();
 
-      final state = container
-          .read(passwordResetSentNotifierProvider('test@example.com'));
+      final state = container.read(
+        passwordResetSentNotifierProvider('test@example.com'),
+      );
       expect(state.isSending, false);
       expect(state.resentSuccess, true);
     });
 
     test('resend() 失敗でerrorMessageがセットされる', () async {
-      when(mockRepo.requestPasswordReset(email: anyNamed('email')))
-          .thenThrow(const NetworkException());
+      when(
+        mockRepo.requestPasswordReset(email: anyNamed('email')),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer('test@example.com');
       await container

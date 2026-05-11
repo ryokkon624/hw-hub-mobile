@@ -18,15 +18,14 @@ class EmailVerifyWaitState {
     int? cooldownSeconds,
     Object? errorMessage = _sentinel,
     bool? resentSuccess,
-  }) =>
-      EmailVerifyWaitState(
-        isSending: isSending ?? this.isSending,
-        cooldownSeconds: cooldownSeconds ?? this.cooldownSeconds,
-        errorMessage: errorMessage == _sentinel
-            ? this.errorMessage
-            : errorMessage as String?,
-        resentSuccess: resentSuccess ?? this.resentSuccess,
-      );
+  }) => EmailVerifyWaitState(
+    isSending: isSending ?? this.isSending,
+    cooldownSeconds: cooldownSeconds ?? this.cooldownSeconds,
+    errorMessage: errorMessage == _sentinel
+        ? this.errorMessage
+        : errorMessage as String?,
+    resentSuccess: resentSuccess ?? this.resentSuccess,
+  );
 
   static const _sentinel = Object();
 }

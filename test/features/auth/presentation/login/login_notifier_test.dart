@@ -23,8 +23,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -52,13 +53,17 @@ void main() {
 
     test('メールのみ入力はcanSubmitがfalse', () {
       final container = makeContainer();
-      container.read(loginNotifierProvider.notifier).setEmail('test@example.com');
+      container
+          .read(loginNotifierProvider.notifier)
+          .setEmail('test@example.com');
       expect(container.read(loginNotifierProvider).canSubmit, false);
     });
 
     test('メールとパスワード両方入力でcanSubmitがtrue', () {
       final container = makeContainer();
-      container.read(loginNotifierProvider.notifier).setEmail('test@example.com');
+      container
+          .read(loginNotifierProvider.notifier)
+          .setEmail('test@example.com');
       container.read(loginNotifierProvider.notifier).setPassword('password123');
       expect(container.read(loginNotifierProvider).canSubmit, true);
     });
@@ -69,46 +74,68 @@ void main() {
         ..setEmail('test@example.com')
         ..setPassword('pass');
       // 事前にエラー状態にセット
-      container.read(loginNotifierProvider.notifier).state =
-          const LoginState(errorMessage: 'エラー');
-      container.read(loginNotifierProvider.notifier).setEmail('new@example.com');
+      container.read(loginNotifierProvider.notifier).state = const LoginState(
+        errorMessage: 'エラー',
+      );
+      container
+          .read(loginNotifierProvider.notifier)
+          .setEmail('new@example.com');
       expect(container.read(loginNotifierProvider).errorMessage, isNull);
     });
 
     test('submit() キャンセル：canSubmitがfalseのときは何もしない', () async {
       final container = makeContainer();
       await container.read(loginNotifierProvider.notifier).submit();
-      verifyNever(mockRepo.login(
-          email: anyNamed('email'), password: anyNamed('password')));
+      verifyNever(
+        mockRepo.login(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      );
     });
 
-    test('submit() 成功時にerrorMessageはnullのまま・authNotifierがAuthenticated', () async {
-      when(mockRepo.login(
-              email: anyNamed('email'), password: anyNamed('password')))
-          .thenAnswer((_) async => const LoginResponse(
-                accessToken: 'access-jwt',
-                refreshToken: 'refresh-jwt',
-                user: AuthUser(
-                    userId: 1, email: 'test@example.com', displayName: 'Test'),
-              ));
-      when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-          .thenAnswer((_) async {});
+    test(
+      'submit() 成功時にerrorMessageはnullのまま・authNotifierがAuthenticated',
+      () async {
+        when(
+          mockRepo.login(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+          ),
+        ).thenAnswer(
+          (_) async => const LoginResponse(
+            accessToken: 'access-jwt',
+            refreshToken: 'refresh-jwt',
+            user: AuthUser(
+              userId: 1,
+              email: 'test@example.com',
+              displayName: 'Test',
+            ),
+          ),
+        );
+        when(
+          mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+        ).thenAnswer((_) async {});
 
-      final container = makeContainer();
-      await container.read(authNotifierProvider.future);
+        final container = makeContainer();
+        await container.read(authNotifierProvider.future);
 
-      container.read(loginNotifierProvider.notifier)
-        ..setEmail('test@example.com')
-        ..setPassword('password123');
-      await container.read(loginNotifierProvider.notifier).submit();
+        container.read(loginNotifierProvider.notifier)
+          ..setEmail('test@example.com')
+          ..setPassword('password123');
+        await container.read(loginNotifierProvider.notifier).submit();
 
-      expect(container.read(loginNotifierProvider).errorMessage, isNull);
-    });
+        expect(container.read(loginNotifierProvider).errorMessage, isNull);
+      },
+    );
 
     test('submit() 失敗時にerrorMessageがセットされisLoadingがfalse', () async {
-      when(mockRepo.login(
-              email: anyNamed('email'), password: anyNamed('password')))
-          .thenThrow(const ApiException('認証に失敗しました', code: 'INVALID_CREDENTIALS'));
+      when(
+        mockRepo.login(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      ).thenThrow(const ApiException('認証に失敗しました', code: 'INVALID_CREDENTIALS'));
 
       final container = makeContainer();
       await container.read(authNotifierProvider.future);
@@ -124,9 +151,12 @@ void main() {
     });
 
     test('submit() ネットワークエラー時もerrorMessageがセットされる', () async {
-      when(mockRepo.login(
-              email: anyNamed('email'), password: anyNamed('password')))
-          .thenThrow(const NetworkException());
+      when(
+        mockRepo.login(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer();
       await container.read(authNotifierProvider.future);

@@ -14,8 +14,9 @@ class PasswordResetSentPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(passwordResetSentNotifierProvider(email));
-    final notifier =
-        ref.read(passwordResetSentNotifierProvider(email).notifier);
+    final notifier = ref.read(
+      passwordResetSentNotifierProvider(email).notifier,
+    );
 
     ref.listen(passwordResetSentNotifierProvider(email), (_, next) {
       if (next.resentSuccess) {
@@ -24,16 +25,15 @@ class PasswordResetSentPage extends ConsumerWidget {
         );
       }
       if (next.errorMessage != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
       }
     });
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () => context.go('/forgot-password'),
-        ),
+        leading: BackButton(onPressed: () => context.go('/forgot-password')),
       ),
       body: SafeArea(
         child: Padding(
@@ -41,14 +41,15 @@ class PasswordResetSentPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.passwordResetSentTitle,
-                  style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                l10n.passwordResetSentTitle,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 12),
               Text(l10n.passwordResetSentDescription),
               if (email.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text('($email)',
-                    style: Theme.of(context).textTheme.bodySmall),
+                Text('($email)', style: Theme.of(context).textTheme.bodySmall),
               ],
               const SizedBox(height: 20),
               Card(
@@ -57,8 +58,10 @@ class PasswordResetSentPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.passwordResetSentCheckSpam,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        l10n.passwordResetSentCheckSpam,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
                       Text('• ${l10n.passwordResetSentSpamFolder}'),
                       Text('• ${l10n.passwordResetSentCheckSettings}'),

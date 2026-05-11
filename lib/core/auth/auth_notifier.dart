@@ -19,10 +19,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     required String accessToken,
     required String refreshToken,
   }) async {
-    await ref.read(tokenStorageProvider).saveTokens(
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        );
+    await ref
+        .read(tokenStorageProvider)
+        .saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     state = const AsyncData(AuthAuthenticated());
   }
 

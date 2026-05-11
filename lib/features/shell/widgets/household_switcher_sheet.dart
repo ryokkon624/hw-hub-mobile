@@ -33,10 +33,9 @@ class HouseholdSwitcherSheet extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Text(
               '世帯を選択',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(color: colors.textHeading),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: colors.textHeading),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -54,10 +53,7 @@ class HouseholdSwitcherSheet extends ConsumerWidget {
           const Divider(height: 1),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'キャンセル',
-              style: TextStyle(color: colors.textMuted),
-            ),
+            child: Text('キャンセル', style: TextStyle(color: colors.textMuted)),
           ),
           const SizedBox(height: AppSpacing.md),
         ],
@@ -84,21 +80,17 @@ class _HouseholdTile extends StatelessWidget {
     return ListTile(
       title: Text(
         household.name,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(
-              color: colors.textBody,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: colors.textBody,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        ),
       ),
       subtitle: household.description != null
           ? Text(
               household.description!,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: colors.textMuted),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
             )
           : null,
       trailing: isSelected

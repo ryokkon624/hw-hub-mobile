@@ -1,5 +1,8 @@
 class SignupSuccessResult {
-  const SignupSuccessResult({required this.email, required this.requiresEmailVerify});
+  const SignupSuccessResult({
+    required this.email,
+    required this.requiresEmailVerify,
+  });
 
   final String email;
   final bool requiresEmailVerify;
@@ -42,21 +45,20 @@ class SignupState {
     bool? isLoading,
     Object? errorMessage = _sentinel,
     Object? successResult = _sentinel,
-  }) =>
-      SignupState(
-        email: email ?? this.email,
-        displayName: displayName ?? this.displayName,
-        password: password ?? this.password,
-        passwordConfirm: passwordConfirm ?? this.passwordConfirm,
-        locale: locale ?? this.locale,
-        isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage == _sentinel
-            ? this.errorMessage
-            : errorMessage as String?,
-        successResult: successResult == _sentinel
-            ? this.successResult
-            : successResult as SignupSuccessResult?,
-      );
+  }) => SignupState(
+    email: email ?? this.email,
+    displayName: displayName ?? this.displayName,
+    password: password ?? this.password,
+    passwordConfirm: passwordConfirm ?? this.passwordConfirm,
+    locale: locale ?? this.locale,
+    isLoading: isLoading ?? this.isLoading,
+    errorMessage: errorMessage == _sentinel
+        ? this.errorMessage
+        : errorMessage as String?,
+    successResult: successResult == _sentinel
+        ? this.successResult
+        : successResult as SignupSuccessResult?,
+  );
 
   static const _sentinel = Object();
 }
