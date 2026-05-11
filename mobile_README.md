@@ -208,19 +208,33 @@ choco install lcov strawberryperl
 ### 7.2 GitHub Pages（CI）
 
 - `main` へ push / 手動実行でレポートを GitHub Pages に公開（workflow: `coverage-mobile`）
+- 公開URL: https://ryokkon624.github.io/hw-hub-mobile/
+
+> **注意**: 新規リポジトリは GitHub Pages がデフォルト無効。初回は GitHub API で手動有効化が必要（Settings → Pages、または `POST /repos/{owner}/{repo}/pages` API）。
 
 ---
 
-## 8. ディープリンク
+## 8. CI ワークフロー
 
-### 8.1 スキーム
+| workflow | トリガー | 内容 |
+|---|---|---|
+| `coverage-mobile` | push main / 手動 | テスト実行・カバレッジ計測・GitHub Pages へ公開 |
+| `format-check-mobile` | push main / PR | `dart format --set-exit-if-changed .` でフォーマット違反を検出 |
+
+> `dart format .` をコミット前に実行しないと `format-check-mobile` で CI がブロックされる。
+
+---
+
+## 9. ディープリンク
+
+### 9.1 スキーム
 
 | 環境 | スキーム | 備考 |
 |---|---|---|
 | 本番 / STG | `https://hwhub.familyapp-hwhub.com/...` | App Links（Android）|
 | 開発・テスト | `hwhub:///...` | カスタムスキーム |
 
-### 8.2 対応パス
+### 9.2 対応パス
 
 | パス | 用途 |
 |---|---|
@@ -228,7 +242,7 @@ choco install lcov strawberryperl
 | `/invite/TOKEN` | 世帯招待 |
 | `/password/reset?token=TOKEN` | パスワードリセット |
 
-### 8.3 adb を使ったローカルテスト
+### 9.3 adb を使ったローカルテスト
 
 メールリンクのトークンを Mailhog（`http://localhost:8025`）から取得し、以下を実行します。
 
@@ -250,13 +264,13 @@ adb shell am start -a android.intent.action.VIEW \
 
 ---
 
-## 9. i18n（多言語対応）
+## 10. i18n（多言語対応）
 
-### 9.1 対応言語
+### 10.1 対応言語
 
 `ja`（日本語）/ `en`（英語）/ `es`（スペイン語）
 
-### 9.2 翻訳文字列の追加手順
+### 10.2 翻訳文字列の追加手順
 
 1. `lib/l10n/app_ja.arb` / `app_en.arb` にキーと文字列を追加
 2. `flutter gen-l10n` を実行して Dart ファイルを再生成
@@ -266,7 +280,7 @@ adb shell am start -a android.intent.action.VIEW \
 
 ---
 
-## 10. よくあるトラブルシュート
+## 11. よくあるトラブルシュート
 
 | 症状 | 確認ポイント |
 |---|---|
