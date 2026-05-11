@@ -39,6 +39,10 @@ class HomePage extends ConsumerWidget {
     if (error is NetworkException) return l10n.errorNetwork;
     if (error is UnauthorizedException) return l10n.errorUnauthorized;
     if (error is ServerException) return l10n.errorServer;
+    // AppException のサブクラスのうち上記3つ以外で到達するのは ApiException のみ。
+    // ApiException.message は _ErrorInterceptor がバックエンドのレスポンスボディ
+    // ("message" フィールド) から取得したユーザー向けメッセージであり、
+    // スタックトレースや内部情報は含まれない（core/network/dio_client.dart 参照）。
     if (error is AppException) return error.message;
     return l10n.errorUnexpected;
   }

@@ -111,6 +111,7 @@ class _OverviewChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
     final groups = <BarChartGroupData>[];
     for (var i = 0; i < overview.length; i++) {
       final day = overview[i];
@@ -201,9 +202,7 @@ class _OverviewChart extends StatelessWidget {
                     '${date.month}/${date.day}',
                     style: TextStyle(
                       fontSize: 10,
-                      color: isToday
-                          ? const Color(0xFF059669)
-                          : const Color(0xFF64748B),
+                      color: isToday ? colors.primary : colors.textMuted,
                       fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
                     ),
                   ),

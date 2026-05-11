@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/providers.dart';
-import '../data/models/housework_task_dto.dart';
+import '../data/models/home_raw_data.dart';
 import '../home_providers.dart';
 import 'home_state.dart';
 import 'models/household_member.dart';
@@ -31,23 +31,9 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
-    // My Tasks 集計（現在のユーザー = メンバー一覧に含まれる自分のユーザーID）
-    // AuthNotifier から取得できないため、ここでは全タスクを集計する
-    // NOTE: Phase 4 でユーザーID取得を実装する際にここを修正する
-    // 今はすべてのタスクから集計（世帯全体のオープンタスク）
-    // ただし assigneeUserId が null でないものは「自分のタスク」として扱うため
-    // AC の意図に合わせて assigneeUserId が有効な（any） タスクを対象にする
-    final myTasks = raw.openTasks
-        .where((t) => t.assigneeUserId != null)
-        .toList();
-
-    final myTasksSummary = _calcMyTasksSummary(myTasks, todayDate);
-    final unassignedSummary = _calcUnassignedSummary(raw.openTasks, todayDate);
-    final allTasksForOverview = [...raw.openTasks, ...raw.doneTasks];
-    final householdOverview = _calcDailyOverview(
-      allTasksForOverview,
-      todayDate,
-    );
+    final myTasksSummary = _calcMyTasksSummary(raw, todayDate);
+    final unassignedSummary = _calcUnassignedSummary(raw, todayDate);
+    final householdOverview = _calcDailyOverview(raw, todayDate);
 
     // DTOからプレゼンテーション用モデルに変換
     final shoppingItems = raw.shoppingItems
@@ -93,10 +79,13 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
   }
 }
 
-MyTasksSummary _calcMyTasksSummary(
-  List<HouseworkTaskDto> myTasks,
-  DateTime todayDate,
-) {
+/// My Tasks 集計。
+/// assigneeUserId が null でないタスク（割り当て済み）を対象に today/week/overdue を計算する。
+/// NOTE: Phase 4 でユーザーID取得を実装する際に、自分のタスクのみに絞り込みを追加する。
+MyTasksSummary _calcMyTasksSummary(HomeRawData raw, DateTime todayDate) {
+  // assigneeUserId が有効（null でない）タスクを「自分のタスク」として扱う（Phase 4 で絞り込み予定）
+  final myTasks = raw.openTasks.where((t) => t.assigneeUserId != null).toList();
+
   int todayCount = 0;
   int weekCount = 0;
   int overdueCount = 0;
@@ -124,15 +113,13 @@ MyTasksSummary _calcMyTasksSummary(
   );
 }
 
-UnassignedSummary _calcUnassignedSummary(
-  List<HouseworkTaskDto> openTasks,
-  DateTime todayDate,
-) {
+/// 未割り当てタスク集計。openTasks から assigneeUserId == null のタスクを集計する。
+UnassignedSummary _calcUnassignedSummary(HomeRawData raw, DateTime todayDate) {
   final urgentEnd = todayDate.add(const Duration(days: 3));
   int totalCount = 0;
   int urgentCount = 0;
 
-  for (final task in openTasks) {
+  for (final task in raw.openTasks) {
     if (task.assigneeUserId != null) continue;
     totalCount++;
     final taskDate = _parseDate(task.targetDate);
@@ -145,10 +132,9 @@ UnassignedSummary _calcUnassignedSummary(
   return UnassignedSummary(totalCount: totalCount, urgentCount: urgentCount);
 }
 
-List<DailyOverview> _calcDailyOverview(
-  List<HouseworkTaskDto> allTasks,
-  DateTime todayDate,
-) {
+/// おうちの様子（13日分の日別タスク数）を集計する。open + done 両方が対象。
+List<DailyOverview> _calcDailyOverview(HomeRawData raw, DateTime todayDate) {
+  final allTasks = [...raw.openTasks, ...raw.doneTasks];
   final days = List.generate(13, (i) => todayDate.add(Duration(days: i - 6)));
 
   return days.map((day) {
