@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -106,6 +107,72 @@ void main() {
             .canResend,
         false,
       );
+    });
+
+    test('resend()成功後1秒経過でcooldownSecondsが59になる', () {
+      fakeAsync((fake) {
+        when(mockRepo.resendVerification(email: anyNamed('email')))
+            .thenAnswer((_) async {});
+
+        final container = makeContainer('test@example.com');
+        // AutoDispose を防ぐためにサブスクリプションを保持
+        final sub = container.listen(
+          emailVerifyWaitNotifierProvider('test@example.com'),
+          (_, __) {},
+        );
+
+        container
+            .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
+            .resend();
+        fake.flushMicrotasks();
+
+        expect(
+          container
+              .read(emailVerifyWaitNotifierProvider('test@example.com'))
+              .cooldownSeconds,
+          60,
+        );
+
+        fake.elapse(const Duration(seconds: 1));
+
+        expect(
+          container
+              .read(emailVerifyWaitNotifierProvider('test@example.com'))
+              .cooldownSeconds,
+          59,
+        );
+
+        sub.close();
+      });
+    });
+
+    test('resend()成功後60秒経過でcooldownSecondsが0になる', () {
+      fakeAsync((fake) {
+        when(mockRepo.resendVerification(email: anyNamed('email')))
+            .thenAnswer((_) async {});
+
+        final container = makeContainer('test@example.com');
+        final sub = container.listen(
+          emailVerifyWaitNotifierProvider('test@example.com'),
+          (_, __) {},
+        );
+
+        container
+            .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
+            .resend();
+        fake.flushMicrotasks();
+
+        fake.elapse(const Duration(seconds: 60));
+
+        expect(
+          container
+              .read(emailVerifyWaitNotifierProvider('test@example.com'))
+              .cooldownSeconds,
+          0,
+        );
+
+        sub.close();
+      });
     });
   });
 }
