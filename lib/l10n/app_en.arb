@@ -14,6 +14,9 @@
   "commonLocaleEn": "English",
   "commonLocaleEs": "Spanish",
 
+  "appName": "Housework Hub",
+  "appTagline": "Manage chores together with your family",
+
   "navHome": "Home",
   "navAssign": "Board",
   "navMyTasks": "My Tasks",
@@ -124,6 +127,9 @@
   "inviteErrorInvalid": "This invitation is invalid or has expired.",
   "inviteErrorAcceptFailed": "Failed to join the household. Please try again later.",
   "inviteErrorDeclineFailed": "Failed to decline the invitation.",
+  "invitePageLabel": "Invitation",
+  "inviteInviterLabel": "Inviter",
+  "inviteInvitedEmailLabel": "Invited email",
   "inviteHouseholdTitle": "Invited household",
   "inviteLoginNeededMessage": "You need to sign in or create an account to join.",
   "inviteLoginAndJoin": "Sign in and join",
@@ -151,6 +157,7 @@
   "passwordResetSentCheckSettings": "Check your receive settings",
   "passwordResetSentWaitAndRetry": "Wait a moment and try resending",
   "passwordResetSentResend": "Resend email",
+  "passwordResetSentResendSuccess": "Email resent successfully",
   "passwordResetSentSending": "Sending...",
   "passwordResetSentUseDifferentEmail": "Use a different email",
   "passwordResetSentBackToLogin": "Back to sign in",

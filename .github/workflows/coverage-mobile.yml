@@ -1,0 +1,86 @@
+name: coverage-mobile
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-mobile
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.x"
+
+jobs:
+  build-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+
+      - name: Filter lcov.info
+        run: |
+          PATTERNS=$(grep -v '^\s*#' lcov_exclude.txt | grep -v '^\s*$' | tr '\n' ' ')
+          lcov --remove coverage/lcov.info $PATTERNS --output-file coverage/lcov_filtered.info
+
+      - name: Generate HTML report
+        run: |
+          genhtml coverage/lcov_filtered.info \
+            --output-directory coverage/html \
+            --title 'HwHub Mobile Coverage'
+
+      - name: Verify report exists
+        run: |
+          ls -la coverage/html
+          test -f coverage/html/index.html
+
+      - name: Upload coverage report to Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: coverage/html
+
+      - name: Upload coverage report (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-coverage-report
+          path: coverage/html
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-coverage
+    if: ${{ success() }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

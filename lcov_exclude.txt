@@ -1,0 +1,33 @@
+# lcov_exclude.txt - exclusion patterns for coverage filtering
+# Referenced by coverage.ps1 and GitHub Actions
+# Lines starting with # are comments; blank lines are ignored
+
+# Entry points / routing (no logic)
+lib/main.dart
+lib/app_router.dart
+
+# Generated files
+lib/l10n/*
+*/*.g.dart
+*/*.mocks.dart
+
+# Config / constants only
+lib/core/config/*
+lib/core/storage/*
+lib/core/theme/*
+lib/core/di/*
+lib/core/models/*
+
+# Network infrastructure (framework config / interceptors)
+lib/core/network/dio_client.dart
+lib/core/network/app_exception.dart
+lib/core/network/auth_interceptor.dart
+
+# DI wiring
+lib/features/auth/auth_providers.dart
+
+# Data models (fromJson only)
+lib/features/auth/data/models/*
+
+# UI widgets (navigation shell)
+lib/features/shell/*

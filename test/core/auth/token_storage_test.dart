@@ -14,6 +14,27 @@ void main() {
     sut = TokenStorage(mockStorage);
   });
 
+  group('TokenStorage.getRefreshToken', () {
+    test('reads refresh_token key', () async {
+      when(mockStorage.read(key: StorageKeys.refreshToken))
+          .thenAnswer((_) async => 'refresh_abc');
+
+      final result = await sut.getRefreshToken();
+
+      expect(result, 'refresh_abc');
+      verify(mockStorage.read(key: StorageKeys.refreshToken)).called(1);
+    });
+
+    test('returns null when not stored', () async {
+      when(mockStorage.read(key: StorageKeys.refreshToken))
+          .thenAnswer((_) async => null);
+
+      final result = await sut.getRefreshToken();
+
+      expect(result, isNull);
+    });
+  });
+
   group('TokenStorage.getAccessToken', () {
     test('reads access_token key', () async {
       when(mockStorage.read(key: StorageKeys.accessToken))
