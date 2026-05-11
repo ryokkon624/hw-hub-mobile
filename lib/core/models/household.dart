@@ -1,7 +1,14 @@
 class Household {
-  const Household({required this.id, required this.name, this.description});
+  const Household({required this.id, required this.name});
 
-  final String id;
+  final int id;
   final String name;
-  final String? description;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Household && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

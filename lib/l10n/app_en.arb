@@ -188,5 +188,46 @@
   "authResultPasswordResetInvalidMessage": "The link is incorrect or has already been used.",
   "authResultToLogin": "Go to sign in",
   "authResultRetryPasswordReset": "Try password reset again",
-  "authResultToSignup": "Go to sign up"
+  "authResultToSignup": "Go to sign up",
+
+  "homeMyTasksTitle": "My Tasks",
+  "homeMyTasksSubtitle": "Housework assigned to you",
+  "homeMyTasksToday": "Today",
+  "homeMyTasksWeek": "Next 7 days",
+  "homeMyTasksOverdue": "Overdue",
+  "homeMyTasksOpenButton": "Open My Tasks",
+
+  "homeUnassignedTitle": "Unassigned Housework",
+  "homeUnassignedSubtitle": "Housework with no assignee",
+  "homeUnassignedTotal": "All time",
+  "homeUnassignedUrgent": "Due in 3 days",
+  "homeUnassignedOpenButton": "Open assignment",
+
+  "homeShoppingTitle": "Shopping List",
+  "homeShoppingSubtitle": "Unpurchased items by store",
+  "homeShoppingRecentlyAdded": "Added in last 2 days",
+  "homeShoppingOpenButton": "Open shopping list",
+  "homeShoppingCountFormat": "{count}",
+  "@homeShoppingCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeOverviewTitle": "Household Overview",
+  "homeOverviewSubtitle": "Task completion status",
+  "homeOverviewUnassigned": "Unassigned",
+
+  "homeOnboardingTitle": "Welcome!",
+  "homeOnboardingMessage": "Start by setting up your household and adding housework tasks.",
+  "homeOnboardingGoHousehold": "Set up household",
+  "homeOnboardingGoHousework": "Add housework",
+
+  "homeErrorRetry": "Retry",
+  "homeItemCount": "{count}",
+  "@homeItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

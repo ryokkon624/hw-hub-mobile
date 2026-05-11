@@ -188,5 +188,46 @@
   "authResultPasswordResetInvalidMessage": "リンクが正しくないか、すでに使用されています。",
   "authResultToLogin": "ログインへ",
   "authResultRetryPasswordReset": "パスワード再設定をやり直す",
-  "authResultToSignup": "サインアップへ"
+  "authResultToSignup": "サインアップへ",
+
+  "homeMyTasksTitle": "My Tasks",
+  "homeMyTasksSubtitle": "あなたに割り当てられている家事",
+  "homeMyTasksToday": "今日の家事",
+  "homeMyTasksWeek": "直近1週間",
+  "homeMyTasksOverdue": "期限超過",
+  "homeMyTasksOpenButton": "My Tasksを開く",
+
+  "homeUnassignedTitle": "家事の未割り当て",
+  "homeUnassignedSubtitle": "担当者が設定されていない家事",
+  "homeUnassignedTotal": "全期間",
+  "homeUnassignedUrgent": "今日〜3日以内",
+  "homeUnassignedOpenButton": "家事割り当てを開く",
+
+  "homeShoppingTitle": "買い物リスト",
+  "homeShoppingSubtitle": "購入場所別の未購入アイテム",
+  "homeShoppingRecentlyAdded": "直近2日以内の追加",
+  "homeShoppingOpenButton": "買い物リストを開く",
+  "homeShoppingCountFormat": "{count}件",
+  "@homeShoppingCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeOverviewTitle": "おうちの様子",
+  "homeOverviewSubtitle": "家事の実施状況",
+  "homeOverviewUnassigned": "未割り当て",
+
+  "homeOnboardingTitle": "ようこそ！",
+  "homeOnboardingMessage": "まずはおうちを設定して、家事を登録してみましょう。",
+  "homeOnboardingGoHousehold": "おうちを設定する",
+  "homeOnboardingGoHousework": "家事を登録する",
+
+  "homeErrorRetry": "再読み込み",
+  "homeItemCount": "{count}件",
+  "@homeItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

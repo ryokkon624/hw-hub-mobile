@@ -85,14 +85,6 @@ class _HouseholdTile extends StatelessWidget {
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
         ),
       ),
-      subtitle: household.description != null
-          ? Text(
-              household.description!,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-            )
-          : null,
       trailing: isSelected
           ? Icon(Icons.check_circle, color: colors.primary)
           : null,
