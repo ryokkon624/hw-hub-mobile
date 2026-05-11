@@ -5,8 +5,9 @@ import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
 import 'login_state.dart';
 
-final loginNotifierProvider =
-    NotifierProvider<LoginNotifier, LoginState>(LoginNotifier.new);
+final loginNotifierProvider = NotifierProvider<LoginNotifier, LoginState>(
+  LoginNotifier.new,
+);
 
 class LoginNotifier extends Notifier<LoginState> {
   @override
@@ -22,11 +23,12 @@ class LoginNotifier extends Notifier<LoginState> {
     if (!state.canSubmit) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final resp = await ref.read(authRepositoryProvider).login(
-            email: state.email,
-            password: state.password,
-          );
-      await ref.read(authNotifierProvider.notifier).saveTokens(
+      final resp = await ref
+          .read(authRepositoryProvider)
+          .login(email: state.email, password: state.password);
+      await ref
+          .read(authNotifierProvider.notifier)
+          .saveTokens(
             accessToken: resp.accessToken,
             refreshToken: resp.refreshToken,
           );

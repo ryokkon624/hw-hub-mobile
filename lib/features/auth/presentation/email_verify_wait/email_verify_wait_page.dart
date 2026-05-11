@@ -15,14 +15,14 @@ class EmailVerifyWaitPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     if (email.isEmpty) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => context.go('/signup'));
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.go('/signup'),
+      );
       return const SizedBox.shrink();
     }
 
     final state = ref.watch(emailVerifyWaitNotifierProvider(email));
-    final notifier =
-        ref.read(emailVerifyWaitNotifierProvider(email).notifier);
+    final notifier = ref.read(emailVerifyWaitNotifierProvider(email).notifier);
 
     ref.listen(emailVerifyWaitNotifierProvider(email), (_, next) {
       if (next.resentSuccess) {
@@ -31,9 +31,9 @@ class EmailVerifyWaitPage extends ConsumerWidget {
         );
       }
       if (next.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.errorMessage!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
       }
     });
 
@@ -65,15 +65,20 @@ class EmailVerifyWaitPage extends ConsumerWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : state.cooldownSeconds > 0
-                        ? Text(l10n.emailVerifyWaitResendCooldown(
-                            state.cooldownSeconds))
-                        : Text(l10n.emailVerifyWaitResendButton),
+                    ? Text(
+                        l10n.emailVerifyWaitResendCooldown(
+                          state.cooldownSeconds,
+                        ),
+                      )
+                    : Text(l10n.emailVerifyWaitResendButton),
               ),
               const SizedBox(height: 24),
               const Divider(),
               const SizedBox(height: 12),
-              Text(l10n.emailVerifyWaitSpamNote,
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                l10n.emailVerifyWaitSpamNote,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),

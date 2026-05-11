@@ -45,8 +45,10 @@ class PasswordResetPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.passwordResetTitle,
-                  style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                l10n.passwordResetTitle,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 12),
               Text(l10n.passwordResetDescription),
               const SizedBox(height: 24),
@@ -84,8 +86,9 @@ class PasswordResetPage extends ConsumerWidget {
                 Text(
                   state.errorMessage!,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 13),
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 13,
+                  ),
                 ),
               ],
               const SizedBox(height: 20),

@@ -62,9 +62,8 @@ final _routes = <RouteBase>[
   // ─── 未認証ルート ────────────────────────────────────────
   GoRoute(
     path: '/login',
-    builder: (_, state) => LoginPage(
-      notice: state.uri.queryParameters['notice'],
-    ),
+    builder: (_, state) =>
+        LoginPage(notice: state.uri.queryParameters['notice']),
   ),
   GoRoute(
     path: '/signup',
@@ -74,15 +73,13 @@ final _routes = <RouteBase>[
   ),
   GoRoute(
     path: '/email-waiting',
-    builder: (_, state) => EmailVerifyWaitPage(
-      email: state.uri.queryParameters['email'] ?? '',
-    ),
+    builder: (_, state) =>
+        EmailVerifyWaitPage(email: state.uri.queryParameters['email'] ?? ''),
   ),
   GoRoute(
     path: '/forgot-password',
-    builder: (_, state) => PasswordForgotPage(
-      initialEmail: state.uri.queryParameters['email'],
-    ),
+    builder: (_, state) =>
+        PasswordForgotPage(initialEmail: state.uri.queryParameters['email']),
     routes: [
       GoRoute(
         path: 'sent',
@@ -103,21 +100,18 @@ final _routes = <RouteBase>[
   // ─── ディープリンク（認証状態問わず受け取る）──────────────
   GoRoute(
     path: '/email-verify',
-    builder: (_, state) => EmailVerifyPage(
-      token: state.uri.queryParameters['token'] ?? '',
-    ),
+    builder: (_, state) =>
+        EmailVerifyPage(token: state.uri.queryParameters['token'] ?? ''),
   ),
   GoRoute(
     path: '/invite/:token',
-    builder: (_, state) => InvitationPage(
-      token: state.pathParameters['token'] ?? '',
-    ),
+    builder: (_, state) =>
+        InvitationPage(token: state.pathParameters['token'] ?? ''),
   ),
   GoRoute(
     path: '/password/reset',
-    builder: (_, state) => PasswordResetPage(
-      token: state.uri.queryParameters['token'] ?? '',
-    ),
+    builder: (_, state) =>
+        PasswordResetPage(token: state.uri.queryParameters['token'] ?? ''),
   ),
 
   // ─── 認証済みシェル（ボトムナビ）────────────────────────
@@ -125,71 +119,81 @@ final _routes = <RouteBase>[
     builder: (_, _, shell) => MainShell(navigationShell: shell),
     branches: [
       // ホーム
-      StatefulShellBranch(routes: [
-        GoRoute(path: '/', builder: (_, _) => const _P('ホーム')),
-      ]),
+      StatefulShellBranch(
+        routes: [GoRoute(path: '/', builder: (_, _) => const _P('ホーム'))],
+      ),
       // 家事分担
-      StatefulShellBranch(routes: [
-        GoRoute(path: '/housework', builder: (_, _) => const _P('家事分担')),
-      ]),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(path: '/housework', builder: (_, _) => const _P('家事分担')),
+        ],
+      ),
       // My Tasks
-      StatefulShellBranch(routes: [
-        GoRoute(path: '/tasks', builder: (_, _) => const _P('My Tasks')),
-      ]),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(path: '/tasks', builder: (_, _) => const _P('My Tasks')),
+        ],
+      ),
       // 買い物
-      StatefulShellBranch(routes: [
-        GoRoute(
-          path: '/shopping',
-          builder: (_, _) => const _P('買い物リスト'),
-          routes: [
-            GoRoute(path: 'new', builder: (_, _) => const _P('買い物アイテム作成')),
-            GoRoute(
-              path: ':id',
-              builder: (_, s) => _P('買い物アイテム詳細 ${s.pathParameters['id']}'),
-            ),
-          ],
-        ),
-      ]),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: '/shopping',
+            builder: (_, _) => const _P('買い物リスト'),
+            routes: [
+              GoRoute(path: 'new', builder: (_, _) => const _P('買い物アイテム作成')),
+              GoRoute(
+                path: ':id',
+                builder: (_, s) => _P('買い物アイテム詳細 ${s.pathParameters['id']}'),
+              ),
+            ],
+          ),
+        ],
+      ),
       // 設定
-      StatefulShellBranch(routes: [
-        GoRoute(
-          path: '/settings',
-          builder: (_, _) => const _P('設定'),
-          routes: [
-            GoRoute(path: 'account', builder: (_, _) => const _P('アカウント設定')),
-            GoRoute(path: 'household', builder: (_, _) => const _P('世帯設定')),
-            GoRoute(
-              path: 'housework',
-              builder: (_, _) => const _P('家事設定一覧'),
-              routes: [
-                GoRoute(path: 'new', builder: (_, _) => const _P('家事新規作成')),
-                GoRoute(
-                  path: ':id',
-                  builder: (_, s) =>
-                      _P('家事編集 ${s.pathParameters['id']}'),
-                ),
-              ],
-            ),
-            GoRoute(
-              path: 'inquiries',
-              builder: (_, _) => const _P('問い合わせ一覧'),
-              routes: [
-                GoRoute(
-                    path: 'new', builder: (_, _) => const _P('問い合わせ新規作成')),
-                GoRoute(
-                  path: ':id',
-                  builder: (_, s) =>
-                      _P('問い合わせ詳細 ${s.pathParameters['id']}'),
-                ),
-              ],
-            ),
-            GoRoute(path: 'app-info', builder: (_, _) => const _P('アプリ情報')),
-            GoRoute(path: 'terms', builder: (_, _) => const _P('利用規約')),
-            GoRoute(
-                path: 'privacy', builder: (_, _) => const _P('プライバシーポリシー')),
-          ],
-        ),
-      ]),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: '/settings',
+            builder: (_, _) => const _P('設定'),
+            routes: [
+              GoRoute(path: 'account', builder: (_, _) => const _P('アカウント設定')),
+              GoRoute(path: 'household', builder: (_, _) => const _P('世帯設定')),
+              GoRoute(
+                path: 'housework',
+                builder: (_, _) => const _P('家事設定一覧'),
+                routes: [
+                  GoRoute(path: 'new', builder: (_, _) => const _P('家事新規作成')),
+                  GoRoute(
+                    path: ':id',
+                    builder: (_, s) => _P('家事編集 ${s.pathParameters['id']}'),
+                  ),
+                ],
+              ),
+              GoRoute(
+                path: 'inquiries',
+                builder: (_, _) => const _P('問い合わせ一覧'),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    builder: (_, _) => const _P('問い合わせ新規作成'),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    builder: (_, s) => _P('問い合わせ詳細 ${s.pathParameters['id']}'),
+                  ),
+                ],
+              ),
+              GoRoute(path: 'app-info', builder: (_, _) => const _P('アプリ情報')),
+              GoRoute(path: 'terms', builder: (_, _) => const _P('利用規約')),
+              GoRoute(
+                path: 'privacy',
+                builder: (_, _) => const _P('プライバシーポリシー'),
+              ),
+            ],
+          ),
+        ],
+      ),
     ],
   ),
 
@@ -207,9 +211,11 @@ class _P extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(name.split('\n').first)),
       body: Center(
-        child: Text(name,
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center),
+        child: Text(
+          name,
+          style: Theme.of(context).textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

@@ -23,8 +23,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -83,17 +84,24 @@ void main() {
     });
 
     test('submit() 成功（メール認証必要）でSignupSuccessResultがEmailVerify', () async {
-      when(mockRepo.register(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        displayName: anyNamed('displayName'),
-        locale: anyNamed('locale'),
-        invitationToken: anyNamed('invitationToken'),
-      )).thenAnswer((_) async => RegisterResponse(
-            emailVerificationRequired: true,
-            user: const AuthUser(
-                userId: 1, email: 'test@example.com', displayName: 'テスト'),
-          ));
+      when(
+        mockRepo.register(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+          displayName: anyNamed('displayName'),
+          locale: anyNamed('locale'),
+          invitationToken: anyNamed('invitationToken'),
+        ),
+      ).thenAnswer(
+        (_) async => RegisterResponse(
+          emailVerificationRequired: true,
+          user: const AuthUser(
+            userId: 1,
+            email: 'test@example.com',
+            displayName: 'テスト',
+          ),
+        ),
+      );
 
       final container = makeContainer();
       final n = container.read(signupNotifierProvider.notifier);
@@ -110,19 +118,26 @@ void main() {
     });
 
     test('submit() 成功（メール認証不要・トークンあり）でsuccessResultがnull', () async {
-      when(mockRepo.register(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        displayName: anyNamed('displayName'),
-        locale: anyNamed('locale'),
-        invitationToken: anyNamed('invitationToken'),
-      )).thenAnswer((_) async => RegisterResponse(
-            emailVerificationRequired: false,
-            accessToken: 'access-jwt',
-            refreshToken: 'refresh-jwt',
-            user: const AuthUser(
-                userId: 1, email: 'test@example.com', displayName: 'テスト'),
-          ));
+      when(
+        mockRepo.register(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+          displayName: anyNamed('displayName'),
+          locale: anyNamed('locale'),
+          invitationToken: anyNamed('invitationToken'),
+        ),
+      ).thenAnswer(
+        (_) async => RegisterResponse(
+          emailVerificationRequired: false,
+          accessToken: 'access-jwt',
+          refreshToken: 'refresh-jwt',
+          user: const AuthUser(
+            userId: 1,
+            email: 'test@example.com',
+            displayName: 'テスト',
+          ),
+        ),
+      );
 
       final container = makeContainer();
       await container.read(authNotifierProvider.future);
@@ -141,13 +156,15 @@ void main() {
     });
 
     test('submit() 失敗時にerrorMessageがセットされる', () async {
-      when(mockRepo.register(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        displayName: anyNamed('displayName'),
-        locale: anyNamed('locale'),
-        invitationToken: anyNamed('invitationToken'),
-      )).thenThrow(const ServerException(statusCode: 409, message: 'Conflict'));
+      when(
+        mockRepo.register(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+          displayName: anyNamed('displayName'),
+          locale: anyNamed('locale'),
+          invitationToken: anyNamed('invitationToken'),
+        ),
+      ).thenThrow(const ServerException(statusCode: 409, message: 'Conflict'));
 
       final container = makeContainer();
       final n = container.read(signupNotifierProvider.notifier);

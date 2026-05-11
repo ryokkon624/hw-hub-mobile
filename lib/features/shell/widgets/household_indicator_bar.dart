@@ -60,10 +60,9 @@ class _Bar extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               Text(
                 state.selectedHousehold?.name ?? '',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: colors.textBody),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.textBody),
               ),
               const SizedBox(width: AppSpacing.xs),
               Icon(Icons.arrow_drop_down, size: 16, color: colors.textMuted),

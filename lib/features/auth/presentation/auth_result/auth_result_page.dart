@@ -16,43 +16,43 @@ class AuthResultPage extends StatelessWidget {
 
     final (title, message, buttonLabel, onTap) = switch ((type, status)) {
       ('emailVerify', 'success') => (
-          l10n.authResultEmailVerifySuccessTitle,
-          l10n.authResultEmailVerifySuccessMessage,
-          l10n.authResultToLogin,
-          () => context.go('/login?notice=emailVerified'),
-        ),
+        l10n.authResultEmailVerifySuccessTitle,
+        l10n.authResultEmailVerifySuccessMessage,
+        l10n.authResultToLogin,
+        () => context.go('/login?notice=emailVerified'),
+      ),
       ('emailVerify', _) => (
-          status == 'expired'
-              ? l10n.authResultEmailVerifyExpiredTitle
-              : l10n.authResultEmailVerifyInvalidTitle,
-          status == 'expired'
-              ? l10n.authResultEmailVerifyExpiredMessage
-              : l10n.authResultEmailVerifyInvalidMessage,
-          l10n.authResultToSignup,
-          () => context.go('/signup'),
-        ),
+        status == 'expired'
+            ? l10n.authResultEmailVerifyExpiredTitle
+            : l10n.authResultEmailVerifyInvalidTitle,
+        status == 'expired'
+            ? l10n.authResultEmailVerifyExpiredMessage
+            : l10n.authResultEmailVerifyInvalidMessage,
+        l10n.authResultToSignup,
+        () => context.go('/signup'),
+      ),
       ('passwordReset', 'success') => (
-          l10n.authResultPasswordResetSuccessTitle,
-          l10n.authResultPasswordResetSuccessMessage,
-          l10n.authResultToLogin,
-          () => context.go('/login?notice=passwordResetSuccess'),
-        ),
+        l10n.authResultPasswordResetSuccessTitle,
+        l10n.authResultPasswordResetSuccessMessage,
+        l10n.authResultToLogin,
+        () => context.go('/login?notice=passwordResetSuccess'),
+      ),
       ('passwordReset', _) => (
-          status == 'expired'
-              ? l10n.authResultPasswordResetExpiredTitle
-              : l10n.authResultPasswordResetInvalidTitle,
-          status == 'expired'
-              ? l10n.authResultPasswordResetExpiredMessage
-              : l10n.authResultPasswordResetInvalidMessage,
-          l10n.authResultRetryPasswordReset,
-          () => context.go('/forgot-password'),
-        ),
+        status == 'expired'
+            ? l10n.authResultPasswordResetExpiredTitle
+            : l10n.authResultPasswordResetInvalidTitle,
+        status == 'expired'
+            ? l10n.authResultPasswordResetExpiredMessage
+            : l10n.authResultPasswordResetInvalidMessage,
+        l10n.authResultRetryPasswordReset,
+        () => context.go('/forgot-password'),
+      ),
       _ => (
-          l10n.errorUnexpected,
-          '',
-          l10n.authResultToLogin,
-          () => context.go('/login'),
-        ),
+        l10n.errorUnexpected,
+        '',
+        l10n.authResultToLogin,
+        () => context.go('/login'),
+      ),
     };
 
     return Scaffold(
@@ -81,10 +81,7 @@ class AuthResultPage extends StatelessWidget {
                 Text(message, textAlign: TextAlign.center),
               ],
               const SizedBox(height: 32),
-              FilledButton(
-                onPressed: onTap,
-                child: Text(buttonLabel),
-              ),
+              FilledButton(onPressed: onTap, child: Text(buttonLabel)),
             ],
           ),
         ),

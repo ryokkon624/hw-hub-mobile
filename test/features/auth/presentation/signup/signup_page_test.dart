@@ -9,29 +9,32 @@ import '../../../../helpers/widget_test_helpers.dart';
 
 class _ErrorSignupNotifier extends SignupNotifier {
   @override
-  SignupState build() => const SignupState(errorMessage: 'アカウントの作成に失敗しました。時間をおいて再度お試しください。');
+  SignupState build() =>
+      const SignupState(errorMessage: 'アカウントの作成に失敗しました。時間をおいて再度お試しください。');
 }
 
 class _LoadingSignupNotifier extends SignupNotifier {
   @override
   SignupState build() => const SignupState(
-        email: 'test@example.com',
-        displayName: 'Test User',
-        password: 'password123',
-        passwordConfirm: 'password123',
-        isLoading: true,
-      );
+    email: 'test@example.com',
+    displayName: 'Test User',
+    password: 'password123',
+    passwordConfirm: 'password123',
+    isLoading: true,
+  );
 }
 
 class _SuccessRequiresVerifySignupNotifier extends SignupNotifier {
   @override
   SignupState build() {
-    Future.microtask(() => state = state.copyWith(
-          successResult: const SignupSuccessResult(
-            email: 'test@example.com',
-            requiresEmailVerify: true,
-          ),
-        ));
+    Future.microtask(
+      () => state = state.copyWith(
+        successResult: const SignupSuccessResult(
+          email: 'test@example.com',
+          requiresEmailVerify: true,
+        ),
+      ),
+    );
     return const SignupState();
   }
 }
@@ -62,24 +65,28 @@ void main() {
     });
 
     testWidgets('errorMessageが設定されているとエラー文言が表示される', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const SignupPage(),
-        overrides: [
-          signupNotifierProvider.overrideWith(() => _ErrorSignupNotifier()),
-        ],
-      ));
+      await tester.pumpWidget(
+        buildTestPage(
+          const SignupPage(),
+          overrides: [
+            signupNotifierProvider.overrideWith(() => _ErrorSignupNotifier()),
+          ],
+        ),
+      );
       await tester.pump();
 
       expect(find.text('アカウントの作成に失敗しました。時間をおいて再度お試しください。'), findsOneWidget);
     });
 
     testWidgets('送信中: ボタンが無効でローディングインジケーターが表示される', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const SignupPage(),
-        overrides: [
-          signupNotifierProvider.overrideWith(() => _LoadingSignupNotifier()),
-        ],
-      ));
+      await tester.pumpWidget(
+        buildTestPage(
+          const SignupPage(),
+          overrides: [
+            signupNotifierProvider.overrideWith(() => _LoadingSignupNotifier()),
+          ],
+        ),
+      );
       await tester.pump();
 
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
@@ -88,9 +95,9 @@ void main() {
     });
 
     testWidgets('invitationTokenを持つSignupPage: タイトルが表示される', (tester) async {
-      await tester.pumpWidget(buildTestPage(
-        const SignupPage(invitationToken: 'invite-abc'),
-      ));
+      await tester.pumpWidget(
+        buildTestPage(const SignupPage(invitationToken: 'invite-abc')),
+      );
       await tester.pump();
 
       expect(find.text('アカウント作成'), findsOneWidget);
@@ -110,42 +117,42 @@ void main() {
     });
 
     testWidgets('サインアップ成功(メール確認必要): /email-waitingに遷移する', (tester) async {
-      await tester.pumpWidget(buildTestPageWithRouter(
-        routes: [
-          GoRoute(
-            path: '/signup',
-            builder: (_, __) => const SignupPage(),
-          ),
-          GoRoute(
-            path: '/email-waiting',
-            builder: (_, __) => const Scaffold(body: Text('email-waiting-page')),
-          ),
-        ],
-        overrides: [
-          signupNotifierProvider
-              .overrideWith(() => _SuccessRequiresVerifySignupNotifier()),
-        ],
-        initialLocation: '/signup',
-      ));
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(path: '/signup', builder: (_, _) => const SignupPage()),
+            GoRoute(
+              path: '/email-waiting',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('email-waiting-page')),
+            ),
+          ],
+          overrides: [
+            signupNotifierProvider.overrideWith(
+              () => _SuccessRequiresVerifySignupNotifier(),
+            ),
+          ],
+          initialLocation: '/signup',
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('email-waiting-page'), findsOneWidget);
     });
 
     testWidgets('ログイン画面へボタンタップで/loginに遷移する', (tester) async {
-      await tester.pumpWidget(buildTestPageWithRouter(
-        routes: [
-          GoRoute(
-            path: '/signup',
-            builder: (_, __) => const SignupPage(),
-          ),
-          GoRoute(
-            path: '/login',
-            builder: (_, __) => const Scaffold(body: Text('login-page')),
-          ),
-        ],
-        initialLocation: '/signup',
-      ));
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(path: '/signup', builder: (_, _) => const SignupPage()),
+            GoRoute(
+              path: '/login',
+              builder: (_, _) => const Scaffold(body: Text('login-page')),
+            ),
+          ],
+          initialLocation: '/signup',
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('ログイン画面へ'));

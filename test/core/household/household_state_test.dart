@@ -25,14 +25,20 @@ void main() {
 
   group('HouseholdState.copyWith', () {
     test('updates selectedHousehold', () {
-      final state = HouseholdState(households: const [h1, h2], selectedHousehold: h1);
+      final state = HouseholdState(
+        households: const [h1, h2],
+        selectedHousehold: h1,
+      );
       final updated = state.copyWith(selectedHousehold: h2);
       expect(updated.selectedHousehold, h2);
       expect(updated.households, const [h1, h2]);
     });
 
     test('keeps original values when not specified', () {
-      final state = HouseholdState(households: const [h1], selectedHousehold: h1);
+      final state = HouseholdState(
+        households: const [h1],
+        selectedHousehold: h1,
+      );
       final copied = state.copyWith();
       expect(copied.households, const [h1]);
       expect(copied.selectedHousehold, h1);

@@ -6,7 +6,8 @@ import 'invitation_state.dart';
 
 final invitationNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<InvitationNotifier, InvitationState, String>(
-        InvitationNotifier.new);
+      InvitationNotifier.new,
+    );
 
 class InvitationNotifier
     extends AutoDisposeFamilyAsyncNotifier<InvitationState, String> {
@@ -15,8 +16,9 @@ class InvitationNotifier
     if (token.isEmpty) {
       return const InvitationState(errorMessage: 'invalid');
     }
-    final info =
-        await ref.read(authRepositoryProvider).getInvitation(token: token);
+    final info = await ref
+        .read(authRepositoryProvider)
+        .getInvitation(token: token);
     return InvitationState(invitationInfo: info);
   }
 
@@ -28,8 +30,9 @@ class InvitationNotifier
       await ref.read(authRepositoryProvider).acceptInvitation(token: arg);
       state = AsyncData(current.copyWith(isActing: false, accepted: true));
     } on AppException catch (e) {
-      state = AsyncData(current.copyWith(
-          isActing: false, errorMessage: e.message));
+      state = AsyncData(
+        current.copyWith(isActing: false, errorMessage: e.message),
+      );
     }
   }
 
@@ -41,8 +44,9 @@ class InvitationNotifier
       await ref.read(authRepositoryProvider).declineInvitation(token: arg);
       state = AsyncData(current.copyWith(isActing: false, declined: true));
     } on AppException catch (e) {
-      state = AsyncData(current.copyWith(
-          isActing: false, errorMessage: e.message));
+      state = AsyncData(
+        current.copyWith(isActing: false, errorMessage: e.message),
+      );
     }
   }
 }

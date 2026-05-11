@@ -11,9 +11,9 @@ class AuthInterceptor extends Interceptor {
     required FlutterSecureStorage storage,
     required Ref ref,
     required Dio unauthDio,
-  })  : _storage = storage,
-        _ref = ref,
-        _unauthDio = unauthDio;
+  }) : _storage = storage,
+       _ref = ref,
+       _unauthDio = unauthDio;
 
   final FlutterSecureStorage _storage;
   final Ref _ref;

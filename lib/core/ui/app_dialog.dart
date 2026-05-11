@@ -37,11 +37,8 @@ class AppDialog {
   }) {
     return showDialog<void>(
       context: context,
-      builder: (ctx) => _AppAlertDialog(
-        title: title,
-        message: message,
-        okLabel: okLabel,
-      ),
+      builder: (ctx) =>
+          _AppAlertDialog(title: title, message: message, okLabel: okLabel),
     );
   }
 }
@@ -71,17 +68,15 @@ class _AppConfirmDialog extends StatelessWidget {
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.cardRadius),
       title: Text(
         title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: colors.textHeading),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(color: colors.textHeading),
       ),
       content: Text(
         message,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(color: colors.textBody),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: colors.textBody),
       ),
       contentPadding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -92,19 +87,13 @@ class _AppConfirmDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
-            cancelLabel,
-            style: TextStyle(color: colors.textMuted),
-          ),
+          child: Text(cancelLabel, style: TextStyle(color: colors.textMuted)),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(
             confirmLabel,
-            style: TextStyle(
-              color: confirmColor,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: confirmColor, fontWeight: FontWeight.w600),
           ),
         ),
       ],
@@ -132,17 +121,15 @@ class _AppAlertDialog extends StatelessWidget {
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.cardRadius),
       title: Text(
         title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: colors.textHeading),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(color: colors.textHeading),
       ),
       content: Text(
         message,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(color: colors.textBody),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: colors.textBody),
       ),
       contentPadding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,

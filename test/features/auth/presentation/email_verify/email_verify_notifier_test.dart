@@ -20,8 +20,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -44,32 +45,38 @@ void main() {
     });
 
     test('API成功でsuccessResultを返す', () async {
-      when(mockRepo.verifyEmail(token: anyNamed('token')))
-          .thenAnswer((_) async {});
+      when(
+        mockRepo.verifyEmail(token: anyNamed('token')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('valid-token');
-      final result =
-          await container.read(emailVerifyResultProvider('valid-token').future);
+      final result = await container.read(
+        emailVerifyResultProvider('valid-token').future,
+      );
       expect(result, EmailVerifyResult.success);
     });
 
     test('EMAIL_VERIFY_EXPIREDエラーでexpiredResultを返す', () async {
-      when(mockRepo.verifyEmail(token: anyNamed('token')))
-          .thenThrow(const ApiException('expired', code: 'EMAIL_VERIFY_EXPIRED'));
+      when(
+        mockRepo.verifyEmail(token: anyNamed('token')),
+      ).thenThrow(const ApiException('expired', code: 'EMAIL_VERIFY_EXPIRED'));
 
       final container = makeContainer('expired-token');
-      final result = await container
-          .read(emailVerifyResultProvider('expired-token').future);
+      final result = await container.read(
+        emailVerifyResultProvider('expired-token').future,
+      );
       expect(result, EmailVerifyResult.expired);
     });
 
     test('その他エラーでinvalidResultを返す', () async {
-      when(mockRepo.verifyEmail(token: anyNamed('token')))
-          .thenThrow(const ApiException('invalid', code: 'EMAIL_VERIFY_INVALID'));
+      when(
+        mockRepo.verifyEmail(token: anyNamed('token')),
+      ).thenThrow(const ApiException('invalid', code: 'EMAIL_VERIFY_INVALID'));
 
       final container = makeContainer('bad-token');
-      final result =
-          await container.read(emailVerifyResultProvider('bad-token').future);
+      final result = await container.read(
+        emailVerifyResultProvider('bad-token').future,
+      );
       expect(result, EmailVerifyResult.invalid);
     });
   });

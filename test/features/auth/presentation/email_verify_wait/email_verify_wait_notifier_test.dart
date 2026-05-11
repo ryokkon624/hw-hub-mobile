@@ -22,8 +22,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -42,40 +43,45 @@ void main() {
   group('EmailVerifyWaitNotifier', () {
     test('初期状態はisSendingがfalse・cooldownが0', () {
       final container = makeContainer('test@example.com');
-      final state =
-          container.read(emailVerifyWaitNotifierProvider('test@example.com'));
+      final state = container.read(
+        emailVerifyWaitNotifierProvider('test@example.com'),
+      );
       expect(state.isSending, false);
       expect(state.cooldownSeconds, 0);
       expect(state.errorMessage, isNull);
     });
 
     test('resend() 成功でcooldownが60から始まる', () async {
-      when(mockRepo.resendVerification(email: anyNamed('email')))
-          .thenAnswer((_) async {});
+      when(
+        mockRepo.resendVerification(email: anyNamed('email')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('test@example.com');
       await container
           .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
           .resend();
 
-      final state =
-          container.read(emailVerifyWaitNotifierProvider('test@example.com'));
+      final state = container.read(
+        emailVerifyWaitNotifierProvider('test@example.com'),
+      );
       expect(state.isSending, false);
       expect(state.cooldownSeconds, 60);
       expect(state.resentSuccess, true);
     });
 
     test('resend() 失敗でerrorMessageがセットされる', () async {
-      when(mockRepo.resendVerification(email: anyNamed('email')))
-          .thenThrow(const NetworkException());
+      when(
+        mockRepo.resendVerification(email: anyNamed('email')),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer('test@example.com');
       await container
           .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
           .resend();
 
-      final state =
-          container.read(emailVerifyWaitNotifierProvider('test@example.com'));
+      final state = container.read(
+        emailVerifyWaitNotifierProvider('test@example.com'),
+      );
       expect(state.errorMessage, isNotNull);
       expect(state.isSending, false);
     });
@@ -84,23 +90,24 @@ void main() {
       final container = makeContainer('test@example.com');
       container
           .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
-          .state = const EmailVerifyWaitState(isSending: true);
+          .state = const EmailVerifyWaitState(
+        isSending: true,
+      );
 
       await container
           .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
           .resend();
 
-      verifyNever(
-          mockRepo.resendVerification(email: anyNamed('email')));
+      verifyNever(mockRepo.resendVerification(email: anyNamed('email')));
     });
 
     test('cooldownSeconds > 0のときはcanResendがfalse', () {
       final container = makeContainer('test@example.com');
       container
-              .read(
-                  emailVerifyWaitNotifierProvider('test@example.com').notifier)
-              .state =
-          const EmailVerifyWaitState(cooldownSeconds: 30);
+          .read(emailVerifyWaitNotifierProvider('test@example.com').notifier)
+          .state = const EmailVerifyWaitState(
+        cooldownSeconds: 30,
+      );
       expect(
         container
             .read(emailVerifyWaitNotifierProvider('test@example.com'))
@@ -111,14 +118,15 @@ void main() {
 
     test('resend()成功後1秒経過でcooldownSecondsが59になる', () {
       fakeAsync((fake) {
-        when(mockRepo.resendVerification(email: anyNamed('email')))
-            .thenAnswer((_) async {});
+        when(
+          mockRepo.resendVerification(email: anyNamed('email')),
+        ).thenAnswer((_) async {});
 
         final container = makeContainer('test@example.com');
         // AutoDispose を防ぐためにサブスクリプションを保持
         final sub = container.listen(
           emailVerifyWaitNotifierProvider('test@example.com'),
-          (_, __) {},
+          (_, _) {},
         );
 
         container
@@ -148,13 +156,14 @@ void main() {
 
     test('resend()成功後60秒経過でcooldownSecondsが0になる', () {
       fakeAsync((fake) {
-        when(mockRepo.resendVerification(email: anyNamed('email')))
-            .thenAnswer((_) async {});
+        when(
+          mockRepo.resendVerification(email: anyNamed('email')),
+        ).thenAnswer((_) async {});
 
         final container = makeContainer('test@example.com');
         final sub = container.listen(
           emailVerifyWaitNotifierProvider('test@example.com'),
-          (_, __) {},
+          (_, _) {},
         );
 
         container

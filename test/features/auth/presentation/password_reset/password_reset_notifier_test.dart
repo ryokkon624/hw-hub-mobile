@@ -53,8 +53,9 @@ void main() {
           .read(passwordResetNotifierProvider.notifier)
           .setPasswordConfirm('newpass123');
       expect(
-          container.read(passwordResetNotifierProvider).canSubmit('valid-token'),
-          true);
+        container.read(passwordResetNotifierProvider).canSubmit('valid-token'),
+        true,
+      );
     });
 
     test('パスワード不一致ではcanSubmitがfalse', () {
@@ -66,8 +67,9 @@ void main() {
           .read(passwordResetNotifierProvider.notifier)
           .setPasswordConfirm('different');
       expect(
-          container.read(passwordResetNotifierProvider).canSubmit('valid-token'),
-          false);
+        container.read(passwordResetNotifierProvider).canSubmit('valid-token'),
+        false,
+      );
     });
 
     test('tokenが空ではcanSubmitがfalse', () {
@@ -78,13 +80,19 @@ void main() {
       container
           .read(passwordResetNotifierProvider.notifier)
           .setPasswordConfirm('newpass123');
-      expect(container.read(passwordResetNotifierProvider).canSubmit(''), false);
+      expect(
+        container.read(passwordResetNotifierProvider).canSubmit(''),
+        false,
+      );
     });
 
     test('submit() 成功でPasswordResetResult.successが返る', () async {
-      when(mockRepo.confirmPasswordReset(
-              token: anyNamed('token'), newPassword: anyNamed('newPassword')))
-          .thenAnswer((_) async {});
+      when(
+        mockRepo.confirmPasswordReset(
+          token: anyNamed('token'),
+          newPassword: anyNamed('newPassword'),
+        ),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('valid-token');
       container
@@ -97,15 +105,21 @@ void main() {
           .read(passwordResetNotifierProvider.notifier)
           .submit(token: 'valid-token');
 
-      expect(container.read(passwordResetNotifierProvider).result,
-          PasswordResetResult.success);
+      expect(
+        container.read(passwordResetNotifierProvider).result,
+        PasswordResetResult.success,
+      );
     });
 
     test('submit() EXPIREDエラーでPasswordResetResult.expiredが返る', () async {
-      when(mockRepo.confirmPasswordReset(
-              token: anyNamed('token'), newPassword: anyNamed('newPassword')))
-          .thenThrow(
-              const ApiException('expired', code: 'PASSWORD_RESET_EXPIRED'));
+      when(
+        mockRepo.confirmPasswordReset(
+          token: anyNamed('token'),
+          newPassword: anyNamed('newPassword'),
+        ),
+      ).thenThrow(
+        const ApiException('expired', code: 'PASSWORD_RESET_EXPIRED'),
+      );
 
       final container = makeContainer('expired-token');
       container
@@ -118,8 +132,10 @@ void main() {
           .read(passwordResetNotifierProvider.notifier)
           .submit(token: 'expired-token');
 
-      expect(container.read(passwordResetNotifierProvider).result,
-          PasswordResetResult.expired);
+      expect(
+        container.read(passwordResetNotifierProvider).result,
+        PasswordResetResult.expired,
+      );
     });
   });
 }

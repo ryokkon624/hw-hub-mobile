@@ -45,8 +45,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   final AuthApi _api;
 
-  AppException _convert(DioException e) =>
-      e.error is AppException ? e.error as AppException : const NetworkException();
+  AppException _convert(DioException e) => e.error is AppException
+      ? e.error as AppException
+      : const NetworkException();
 
   @override
   Future<LoginResponse> login({
@@ -123,7 +124,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required String newPassword,
   }) async {
     try {
-      await _api.confirmPasswordReset({'token': token, 'newPassword': newPassword});
+      await _api.confirmPasswordReset({
+        'token': token,
+        'newPassword': newPassword,
+      });
     } on DioException catch (e) {
       throw _convert(e);
     }

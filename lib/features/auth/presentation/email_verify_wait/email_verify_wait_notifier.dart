@@ -8,7 +8,8 @@ import 'email_verify_wait_state.dart';
 
 final emailVerifyWaitNotifierProvider = NotifierProvider.autoDispose
     .family<EmailVerifyWaitNotifier, EmailVerifyWaitState, String>(
-        EmailVerifyWaitNotifier.new);
+      EmailVerifyWaitNotifier.new,
+    );
 
 class EmailVerifyWaitNotifier
     extends AutoDisposeFamilyNotifier<EmailVerifyWaitState, String> {
@@ -22,7 +23,11 @@ class EmailVerifyWaitNotifier
 
   Future<void> resend() async {
     if (!state.canResend) return;
-    state = state.copyWith(isSending: true, errorMessage: null, resentSuccess: false);
+    state = state.copyWith(
+      isSending: true,
+      errorMessage: null,
+      resentSuccess: false,
+    );
     try {
       await ref.read(authRepositoryProvider).resendVerification(email: arg);
       state = state.copyWith(

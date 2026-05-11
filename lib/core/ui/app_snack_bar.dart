@@ -9,32 +9,32 @@ class AppSnackBar {
   static final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static void showSuccess(String message) => _show(
-        message: message,
-        icon: Icons.check_circle_outline,
-        backgroundColor: const Color(0xFF059669),
-        foregroundColor: Colors.white,
-      );
+    message: message,
+    icon: Icons.check_circle_outline,
+    backgroundColor: const Color(0xFF059669),
+    foregroundColor: Colors.white,
+  );
 
   static void showError(String message) => _show(
-        message: message,
-        icon: Icons.error_outline,
-        backgroundColor: const Color(0xFFE11D48),
-        foregroundColor: Colors.white,
-      );
+    message: message,
+    icon: Icons.error_outline,
+    backgroundColor: const Color(0xFFE11D48),
+    foregroundColor: Colors.white,
+  );
 
   static void showWarning(String message) => _show(
-        message: message,
-        icon: Icons.warning_amber_outlined,
-        backgroundColor: const Color(0xFFF59E0B),
-        foregroundColor: const Color(0xFF1E293B),
-      );
+    message: message,
+    icon: Icons.warning_amber_outlined,
+    backgroundColor: const Color(0xFFF59E0B),
+    foregroundColor: const Color(0xFF1E293B),
+  );
 
   static void showInfo(String message) => _show(
-        message: message,
-        icon: Icons.info_outline,
-        backgroundColor: const Color(0xFF1D4ED8),
-        foregroundColor: Colors.white,
-      );
+    message: message,
+    icon: Icons.info_outline,
+    backgroundColor: const Color(0xFF1D4ED8),
+    foregroundColor: Colors.white,
+  );
 
   static void _show({
     required String message,
@@ -61,7 +61,9 @@ class AppSnackBar {
           backgroundColor: backgroundColor,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(AppSpacing.md),
-          shape: const RoundedRectangleBorder(borderRadius: AppRadius.cardRadius),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.cardRadius,
+          ),
           duration: const Duration(seconds: 3),
         ),
       );

@@ -10,8 +10,8 @@ class InvitationInfo {
   final String invitedEmail;
 
   factory InvitationInfo.fromJson(Map<String, dynamic> json) => InvitationInfo(
-        householdName: json['householdName'] as String,
-        inviterName: json['inviterName'] as String,
-        invitedEmail: json['invitedEmail'] as String,
-      );
+    householdName: json['householdName'] as String,
+    inviterName: json['inviterName'] as String,
+    invitedEmail: json['invitedEmail'] as String,
+  );
 }

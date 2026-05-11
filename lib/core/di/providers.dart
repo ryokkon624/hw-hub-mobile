@@ -16,16 +16,15 @@ final tokenStorageProvider = Provider<TokenStorage>((ref) {
   return TokenStorage(ref.watch(secureStorageProvider));
 });
 
-final authNotifierProvider =
-    AsyncNotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authNotifierProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);
 
 final dioProvider = Provider<Dio>((ref) {
-  return DioClient.create(
-    storage: ref.watch(secureStorageProvider),
-    ref: ref,
-  );
+  return DioClient.create(storage: ref.watch(secureStorageProvider), ref: ref);
 });
 
 final householdNotifierProvider =
     AsyncNotifierProvider<HouseholdNotifier, HouseholdState>(
-        HouseholdNotifier.new);
+      HouseholdNotifier.new,
+    );

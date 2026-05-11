@@ -12,8 +12,8 @@ class LoginResponse {
   final AuthUser user;
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-        accessToken: json['accessToken'] as String,
-        refreshToken: json['refreshToken'] as String,
-        user: AuthUser.fromJson(json['user'] as Map<String, dynamic>),
-      );
+    accessToken: json['accessToken'] as String,
+    refreshToken: json['refreshToken'] as String,
+    user: AuthUser.fromJson(json['user'] as Map<String, dynamic>),
+  );
 }

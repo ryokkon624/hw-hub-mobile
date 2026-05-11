@@ -17,8 +17,7 @@ class RegisterResponse {
 
   factory RegisterResponse.fromJson(Map<String, dynamic> json) =>
       RegisterResponse(
-        emailVerificationRequired:
-            json['emailVerificationRequired'] as bool,
+        emailVerificationRequired: json['emailVerificationRequired'] as bool,
         accessToken: json['accessToken'] as String?,
         refreshToken: json['refreshToken'] as String?,
         user: AuthUser.fromJson(json['user'] as Map<String, dynamic>),

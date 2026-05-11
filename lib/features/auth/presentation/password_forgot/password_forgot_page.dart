@@ -11,8 +11,7 @@ class PasswordForgotPage extends ConsumerStatefulWidget {
   final String? initialEmail;
 
   @override
-  ConsumerState<PasswordForgotPage> createState() =>
-      _PasswordForgotPageState();
+  ConsumerState<PasswordForgotPage> createState() => _PasswordForgotPageState();
 }
 
 class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
@@ -21,8 +20,7 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
   @override
   void initState() {
     super.initState();
-    _emailController =
-        TextEditingController(text: widget.initialEmail ?? '');
+    _emailController = TextEditingController(text: widget.initialEmail ?? '');
     if (widget.initialEmail != null && widget.initialEmail!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref
@@ -47,7 +45,8 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
     ref.listen(passwordForgotNotifierProvider, (_, next) {
       if (next.sentEmail != null) {
         context.go(
-            '/forgot-password/sent?email=${Uri.encodeComponent(next.sentEmail!)}');
+          '/forgot-password/sent?email=${Uri.encodeComponent(next.sentEmail!)}',
+        );
       }
     });
 
@@ -61,8 +60,10 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.passwordForgotTitle,
-                  style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                l10n.passwordForgotTitle,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 12),
               Text(l10n.passwordForgotDescription),
               const SizedBox(height: 24),
@@ -85,8 +86,9 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
                 Text(
                   state.errorMessage!,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 13),
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 13,
+                  ),
                 ),
               ],
               const SizedBox(height: 20),

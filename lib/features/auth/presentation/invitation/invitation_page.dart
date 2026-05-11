@@ -25,9 +25,9 @@ class InvitationPage extends ConsumerWidget {
         if (state.accepted) context.go('/');
         if (state.declined) context.go('/login');
         if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
       });
     });
@@ -35,12 +35,10 @@ class InvitationPage extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: invAsync.when(
-          loading: () =>
-              const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => _ErrorBody(
             l10n: l10n,
-            onRetry: () =>
-                ref.invalidate(invitationNotifierProvider(token)),
+            onRetry: () => ref.invalidate(invitationNotifierProvider(token)),
           ),
           data: (state) {
             final info = state.invitationInfo;
@@ -52,28 +50,39 @@ class InvitationPage extends ConsumerWidget {
               );
             }
 
-            final isAuth =
-                authAsync.valueOrNull is AuthAuthenticated;
+            final isAuth = authAsync.valueOrNull is AuthAuthenticated;
 
             return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.invitePageLabel,
-                      style: Theme.of(context).textTheme.labelLarge),
+                  Text(
+                    l10n.invitePageLabel,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
                   const SizedBox(height: 8),
-                  Text(l10n.inviteHeading,
-                      style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    l10n.inviteHeading,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 4),
                   Text(l10n.inviteDescription),
                   const Divider(height: 32),
-                  _InfoRow(label: l10n.inviteHouseholdTitle, value: info.householdName),
+                  _InfoRow(
+                    label: l10n.inviteHouseholdTitle,
+                    value: info.householdName,
+                  ),
                   const SizedBox(height: 8),
-                  _InfoRow(label: l10n.inviteInviterLabel, value: info.inviterName),
+                  _InfoRow(
+                    label: l10n.inviteInviterLabel,
+                    value: info.inviterName,
+                  ),
                   const SizedBox(height: 8),
-                  _InfoRow(label: l10n.inviteInvitedEmailLabel, value: info.invitedEmail),
+                  _InfoRow(
+                    label: l10n.inviteInvitedEmailLabel,
+                    value: info.invitedEmail,
+                  ),
                   const SizedBox(height: 24),
                   if (isAuth) ...[
                     Text(l10n.inviteConfirmMessage(info.householdName)),
@@ -84,7 +93,8 @@ class InvitationPage extends ConsumerWidget {
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2))
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : Text(l10n.inviteAccept),
                     ),
                     const SizedBox(height: 12),
@@ -99,7 +109,9 @@ class InvitationPage extends ConsumerWidget {
                       onPressed: () async {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setString(
-                            'redirect_after_login', '/invite/$token');
+                          'redirect_after_login',
+                          '/invite/$token',
+                        );
                         if (context.mounted) context.go('/login');
                       },
                       child: Text(l10n.inviteLoginAndJoin),
@@ -109,10 +121,11 @@ class InvitationPage extends ConsumerWidget {
                       onPressed: () async {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setString(
-                            'redirect_after_login', '/invite/$token');
+                          'redirect_after_login',
+                          '/invite/$token',
+                        );
                         if (context.mounted) {
-                          context
-                              .go('/signup?invitationToken=$token');
+                          context.go('/signup?invitationToken=$token');
                         }
                       },
                       child: Text(l10n.inviteSignupAndJoin),

@@ -13,14 +13,13 @@ class PasswordResetSentState {
     bool? isSending,
     Object? errorMessage = _sentinel,
     bool? resentSuccess,
-  }) =>
-      PasswordResetSentState(
-        isSending: isSending ?? this.isSending,
-        errorMessage: errorMessage == _sentinel
-            ? this.errorMessage
-            : errorMessage as String?,
-        resentSuccess: resentSuccess ?? this.resentSuccess,
-      );
+  }) => PasswordResetSentState(
+    isSending: isSending ?? this.isSending,
+    errorMessage: errorMessage == _sentinel
+        ? this.errorMessage
+        : errorMessage as String?,
+    resentSuccess: resentSuccess ?? this.resentSuccess,
+  );
 
   static const _sentinel = Object();
 }

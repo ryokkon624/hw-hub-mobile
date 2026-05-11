@@ -16,8 +16,9 @@ void main() {
 
   group('TokenStorage.getRefreshToken', () {
     test('reads refresh_token key', () async {
-      when(mockStorage.read(key: StorageKeys.refreshToken))
-          .thenAnswer((_) async => 'refresh_abc');
+      when(
+        mockStorage.read(key: StorageKeys.refreshToken),
+      ).thenAnswer((_) async => 'refresh_abc');
 
       final result = await sut.getRefreshToken();
 
@@ -26,8 +27,9 @@ void main() {
     });
 
     test('returns null when not stored', () async {
-      when(mockStorage.read(key: StorageKeys.refreshToken))
-          .thenAnswer((_) async => null);
+      when(
+        mockStorage.read(key: StorageKeys.refreshToken),
+      ).thenAnswer((_) async => null);
 
       final result = await sut.getRefreshToken();
 
@@ -37,8 +39,9 @@ void main() {
 
   group('TokenStorage.getAccessToken', () {
     test('reads access_token key', () async {
-      when(mockStorage.read(key: StorageKeys.accessToken))
-          .thenAnswer((_) async => 'token_abc');
+      when(
+        mockStorage.read(key: StorageKeys.accessToken),
+      ).thenAnswer((_) async => 'token_abc');
 
       final result = await sut.getAccessToken();
 
@@ -47,8 +50,9 @@ void main() {
     });
 
     test('returns null when not stored', () async {
-      when(mockStorage.read(key: StorageKeys.accessToken))
-          .thenAnswer((_) async => null);
+      when(
+        mockStorage.read(key: StorageKeys.accessToken),
+      ).thenAnswer((_) async => null);
 
       final result = await sut.getAccessToken();
 
@@ -58,30 +62,32 @@ void main() {
 
   group('TokenStorage.saveTokens', () {
     test('writes both access and refresh tokens', () async {
-      when(mockStorage.write(
-              key: StorageKeys.accessToken, value: 'access'))
-          .thenAnswer((_) async {});
-      when(mockStorage.write(
-              key: StorageKeys.refreshToken, value: 'refresh'))
-          .thenAnswer((_) async {});
+      when(
+        mockStorage.write(key: StorageKeys.accessToken, value: 'access'),
+      ).thenAnswer((_) async {});
+      when(
+        mockStorage.write(key: StorageKeys.refreshToken, value: 'refresh'),
+      ).thenAnswer((_) async {});
 
       await sut.saveTokens(accessToken: 'access', refreshToken: 'refresh');
 
-      verify(mockStorage.write(
-              key: StorageKeys.accessToken, value: 'access'))
-          .called(1);
-      verify(mockStorage.write(
-              key: StorageKeys.refreshToken, value: 'refresh'))
-          .called(1);
+      verify(
+        mockStorage.write(key: StorageKeys.accessToken, value: 'access'),
+      ).called(1);
+      verify(
+        mockStorage.write(key: StorageKeys.refreshToken, value: 'refresh'),
+      ).called(1);
     });
   });
 
   group('TokenStorage.clearTokens', () {
     test('deletes both access and refresh tokens', () async {
-      when(mockStorage.delete(key: StorageKeys.accessToken))
-          .thenAnswer((_) async {});
-      when(mockStorage.delete(key: StorageKeys.refreshToken))
-          .thenAnswer((_) async {});
+      when(
+        mockStorage.delete(key: StorageKeys.accessToken),
+      ).thenAnswer((_) async {});
+      when(
+        mockStorage.delete(key: StorageKeys.refreshToken),
+      ).thenAnswer((_) async {});
 
       await sut.clearTokens();
 

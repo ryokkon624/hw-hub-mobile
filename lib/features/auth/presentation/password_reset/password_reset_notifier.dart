@@ -6,7 +6,8 @@ import 'password_reset_state.dart';
 
 final passwordResetNotifierProvider =
     NotifierProvider<PasswordResetNotifier, PasswordResetState>(
-        PasswordResetNotifier.new);
+      PasswordResetNotifier.new,
+    );
 
 class PasswordResetNotifier extends Notifier<PasswordResetState> {
   @override
@@ -20,12 +21,13 @@ class PasswordResetNotifier extends Notifier<PasswordResetState> {
     if (!state.canSubmit(token)) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      await ref.read(authRepositoryProvider).confirmPasswordReset(
-            token: token,
-            newPassword: state.password,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .confirmPasswordReset(token: token, newPassword: state.password);
       state = state.copyWith(
-          isLoading: false, result: PasswordResetResult.success);
+        isLoading: false,
+        result: PasswordResetResult.success,
+      );
     } on ApiException catch (e) {
       final r = e.code == 'PASSWORD_RESET_EXPIRED'
           ? PasswordResetResult.expired

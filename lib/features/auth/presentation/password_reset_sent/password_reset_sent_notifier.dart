@@ -6,18 +6,21 @@ import 'password_reset_sent_state.dart';
 
 final passwordResetSentNotifierProvider = NotifierProvider.autoDispose
     .family<PasswordResetSentNotifier, PasswordResetSentState, String>(
-        PasswordResetSentNotifier.new);
+      PasswordResetSentNotifier.new,
+    );
 
 class PasswordResetSentNotifier
     extends AutoDisposeFamilyNotifier<PasswordResetSentState, String> {
   @override
-  PasswordResetSentState build(String email) =>
-      const PasswordResetSentState();
+  PasswordResetSentState build(String email) => const PasswordResetSentState();
 
   Future<void> resend() async {
     if (state.isSending) return;
     state = state.copyWith(
-        isSending: true, errorMessage: null, resentSuccess: false);
+      isSending: true,
+      errorMessage: null,
+      resentSuccess: false,
+    );
     try {
       await ref.read(authRepositoryProvider).requestPasswordReset(email: arg);
       state = state.copyWith(isSending: false, resentSuccess: true);

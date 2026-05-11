@@ -25,11 +25,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         final msg = widget.notice == 'emailVerified'
             ? l10n.emailVerifySuccess
             : widget.notice == 'passwordResetSuccess'
-                ? l10n.authResultPasswordResetSuccessMessage
-                : null;
+            ? l10n.authResultPasswordResetSuccessMessage
+            : null;
         if (msg != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(msg)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(msg)));
         }
       });
     }
@@ -52,8 +53,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               Text(
                 l10n.appName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -63,11 +64,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-              Text(l10n.loginTitle,
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                l10n.loginTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 4),
-              Text(l10n.loginSubtitle,
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                l10n.loginSubtitle,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               const SizedBox(height: 24),
               OutlinedButton.icon(
                 onPressed: null, // Google login: Phase 3-8
@@ -75,15 +80,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 label: Text(l10n.loginWithGoogle),
               ),
               const SizedBox(height: 16),
-              Row(children: [
-                const Expanded(child: Divider()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Text(l10n.loginDivider,
-                      style: Theme.of(context).textTheme.bodySmall),
-                ),
-                const Expanded(child: Divider()),
-              ]),
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      l10n.loginDivider,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
               const SizedBox(height: 16),
               TextField(
                 decoration: InputDecoration(
@@ -127,8 +136,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 Text(
                   state.errorMessage!,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 13),
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 13,
+                  ),
                 ),
               ],
               const SizedBox(height: 16),

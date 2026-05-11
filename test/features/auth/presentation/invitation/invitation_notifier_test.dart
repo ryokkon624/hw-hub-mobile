@@ -22,8 +22,9 @@ void main() {
     mockStorage = MockFlutterSecureStorage();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
-    when(mockStorage.write(key: anyNamed('key'), value: anyNamed('value')))
-        .thenAnswer((_) async {});
+    when(
+      mockStorage.write(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
     when(mockStorage.delete(key: anyNamed('key'))).thenAnswer((_) async {});
   });
 
@@ -41,22 +42,25 @@ void main() {
   group('InvitationNotifier', () {
     test('build() 成功で招待情報がロードされる', () async {
       when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
-          (_) async => const InvitationInfo(
-                householdName: '田中家',
-                inviterName: '田中 太郎',
-                invitedEmail: 'user@example.com',
-              ));
+        (_) async => const InvitationInfo(
+          householdName: '田中家',
+          inviterName: '田中 太郎',
+          invitedEmail: 'user@example.com',
+        ),
+      );
 
       final container = makeContainer('valid-token');
-      final state = await container
-          .read(invitationNotifierProvider('valid-token').future);
+      final state = await container.read(
+        invitationNotifierProvider('valid-token').future,
+      );
       expect(state.invitationInfo?.householdName, '田中家');
       expect(state.isLoading, false);
     });
 
     test('build() エラーでerror状態になる', () async {
-      when(mockRepo.getInvitation(token: anyNamed('token')))
-          .thenThrow(const NetworkException());
+      when(
+        mockRepo.getInvitation(token: anyNamed('token')),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer('bad-token');
       try {
@@ -64,40 +68,23 @@ void main() {
       } catch (_) {
         // build()がthrowした場合
       }
-      expect(container.read(invitationNotifierProvider('bad-token')).hasError,
-          true);
+      expect(
+        container.read(invitationNotifierProvider('bad-token')).hasError,
+        true,
+      );
     });
 
     test('accept() 成功でacceptedがtrue', () async {
       when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
-          (_) async => const InvitationInfo(
-                householdName: '田中家',
-                inviterName: '田中 太郎',
-                invitedEmail: 'user@example.com',
-              ));
-      when(mockRepo.acceptInvitation(token: anyNamed('token')))
-          .thenAnswer((_) async {});
-
-      final container = makeContainer('valid-token');
-      await container
-          .read(invitationNotifierProvider('valid-token').future);
-      await container
-          .read(invitationNotifierProvider('valid-token').notifier)
-          .accept();
-
-      final state = container.read(invitationNotifierProvider('valid-token')).value!;
-      expect(state.accepted, true);
-    });
-
-    test('accept() エラーでerrorMessageがセットされisActingがfalse', () async {
-      when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
-          (_) async => const InvitationInfo(
-                householdName: '田中家',
-                inviterName: '田中 太郎',
-                invitedEmail: 'user@example.com',
-              ));
-      when(mockRepo.acceptInvitation(token: anyNamed('token')))
-          .thenThrow(const NetworkException());
+        (_) async => const InvitationInfo(
+          householdName: '田中家',
+          inviterName: '田中 太郎',
+          invitedEmail: 'user@example.com',
+        ),
+      );
+      when(
+        mockRepo.acceptInvitation(token: anyNamed('token')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('valid-token');
       await container.read(invitationNotifierProvider('valid-token').future);
@@ -105,8 +92,33 @@ void main() {
           .read(invitationNotifierProvider('valid-token').notifier)
           .accept();
 
-      final state =
-          container.read(invitationNotifierProvider('valid-token')).value!;
+      final state = container
+          .read(invitationNotifierProvider('valid-token'))
+          .value!;
+      expect(state.accepted, true);
+    });
+
+    test('accept() エラーでerrorMessageがセットされisActingがfalse', () async {
+      when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
+        (_) async => const InvitationInfo(
+          householdName: '田中家',
+          inviterName: '田中 太郎',
+          invitedEmail: 'user@example.com',
+        ),
+      );
+      when(
+        mockRepo.acceptInvitation(token: anyNamed('token')),
+      ).thenThrow(const NetworkException());
+
+      final container = makeContainer('valid-token');
+      await container.read(invitationNotifierProvider('valid-token').future);
+      await container
+          .read(invitationNotifierProvider('valid-token').notifier)
+          .accept();
+
+      final state = container
+          .read(invitationNotifierProvider('valid-token'))
+          .value!;
       expect(state.errorMessage, isNotNull);
       expect(state.accepted, false);
       expect(state.isActing, false);
@@ -114,13 +126,15 @@ void main() {
 
     test('decline() エラーでerrorMessageがセットされisActingがfalse', () async {
       when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
-          (_) async => const InvitationInfo(
-                householdName: '田中家',
-                inviterName: '田中 太郎',
-                invitedEmail: 'user@example.com',
-              ));
-      when(mockRepo.declineInvitation(token: anyNamed('token')))
-          .thenThrow(const NetworkException());
+        (_) async => const InvitationInfo(
+          householdName: '田中家',
+          inviterName: '田中 太郎',
+          invitedEmail: 'user@example.com',
+        ),
+      );
+      when(
+        mockRepo.declineInvitation(token: anyNamed('token')),
+      ).thenThrow(const NetworkException());
 
       final container = makeContainer('valid-token');
       await container.read(invitationNotifierProvider('valid-token').future);
@@ -128,8 +142,9 @@ void main() {
           .read(invitationNotifierProvider('valid-token').notifier)
           .decline();
 
-      final state =
-          container.read(invitationNotifierProvider('valid-token')).value!;
+      final state = container
+          .read(invitationNotifierProvider('valid-token'))
+          .value!;
       expect(state.errorMessage, isNotNull);
       expect(state.declined, false);
       expect(state.isActing, false);
@@ -137,22 +152,25 @@ void main() {
 
     test('decline() 成功でdeclinedがtrue', () async {
       when(mockRepo.getInvitation(token: anyNamed('token'))).thenAnswer(
-          (_) async => const InvitationInfo(
-                householdName: '田中家',
-                inviterName: '田中 太郎',
-                invitedEmail: 'user@example.com',
-              ));
-      when(mockRepo.declineInvitation(token: anyNamed('token')))
-          .thenAnswer((_) async {});
+        (_) async => const InvitationInfo(
+          householdName: '田中家',
+          inviterName: '田中 太郎',
+          invitedEmail: 'user@example.com',
+        ),
+      );
+      when(
+        mockRepo.declineInvitation(token: anyNamed('token')),
+      ).thenAnswer((_) async {});
 
       final container = makeContainer('valid-token');
-      await container
-          .read(invitationNotifierProvider('valid-token').future);
+      await container.read(invitationNotifierProvider('valid-token').future);
       await container
           .read(invitationNotifierProvider('valid-token').notifier)
           .decline();
 
-      final state = container.read(invitationNotifierProvider('valid-token')).value!;
+      final state = container
+          .read(invitationNotifierProvider('valid-token'))
+          .value!;
       expect(state.declined, true);
     });
   });

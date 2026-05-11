@@ -9,10 +9,7 @@ import 'auth_interceptor.dart';
 class DioClient {
   DioClient._();
 
-  static Dio create({
-    required FlutterSecureStorage storage,
-    required Ref ref,
-  }) {
+  static Dio create({required FlutterSecureStorage storage, required Ref ref}) {
     final unauthDio = Dio(
       BaseOptions(
         baseUrl: AppConfig.baseUrl,
@@ -52,12 +49,12 @@ class _ErrorInterceptor extends Interceptor {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||
       DioExceptionType.receiveTimeout ||
-      DioExceptionType.connectionError =>
-        const NetworkException(),
+      DioExceptionType.connectionError => const NetworkException(),
       DioExceptionType.badResponse => _fromResponse(err.response),
-      _ => err.error is AppException
-          ? err.error as AppException
-          : NetworkException(err.message ?? 'エラーが発生しました'),
+      _ =>
+        err.error is AppException
+            ? err.error as AppException
+            : NetworkException(err.message ?? 'エラーが発生しました'),
     };
 
     handler.reject(err.copyWith(error: appException));
