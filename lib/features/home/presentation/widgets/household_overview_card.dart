@@ -6,16 +6,15 @@ import '../../../../l10n/app_localizations.dart';
 import '../home_state.dart';
 import '../models/household_member.dart';
 
-/// メンバーカラーパレット（6色 + 未割当グレー）
-const _memberColors = [
-  Color(0xFF059669), // emerald-600
-  Color(0xFF2563EB), // blue-600
-  Color(0xFFD97706), // amber-600
-  Color(0xFF7C3AED), // violet-600
-  Color(0xFFDB2777), // pink-600
-  Color(0xFF0891B2), // cyan-600
+/// メンバーカラーパレット（AppColorScheme のトークンから生成）
+List<Color> _buildMemberColors(AppColorScheme colors) => [
+  colors.paletteEmeraldText,
+  colors.paletteBlueText,
+  colors.paletteAmberText,
+  colors.paletteVioletText,
+  colors.paletteRoseText,
+  colors.info, // 6人目以降のフォールバック
 ];
-const _unassignedColor = Color(0xFF94A3B8); // slate-400
 
 class HouseholdOverviewCard extends StatelessWidget {
   const HouseholdOverviewCard({
@@ -32,11 +31,14 @@ class HouseholdOverviewCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
+    final memberPalette = _buildMemberColors(colors);
+    final unassignedColor = colors.textMuted;
+
     // メンバーIDとカラーのマッピング
     final memberColorMap = <int, Color>{};
     for (var i = 0; i < members.length; i++) {
       memberColorMap[members[i].userId] =
-          _memberColors[i % _memberColors.length];
+          memberPalette[i % memberPalette.length];
     }
 
     return Card(
@@ -76,6 +78,7 @@ class HouseholdOverviewCard extends StatelessWidget {
               child: _OverviewChart(
                 overview: overview,
                 memberColorMap: memberColorMap,
+                unassignedColor: unassignedColor,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -86,12 +89,12 @@ class HouseholdOverviewCard extends StatelessWidget {
               children: [
                 ...members.map(
                   (m) => _LegendDot(
-                    color: memberColorMap[m.userId] ?? _unassignedColor,
+                    color: memberColorMap[m.userId] ?? unassignedColor,
                     label: m.nickname ?? m.displayName,
                   ),
                 ),
                 _LegendDot(
-                  color: _unassignedColor,
+                  color: unassignedColor,
                   label: l10n.homeOverviewUnassigned,
                 ),
               ],
@@ -104,10 +107,15 @@ class HouseholdOverviewCard extends StatelessWidget {
 }
 
 class _OverviewChart extends StatelessWidget {
-  const _OverviewChart({required this.overview, required this.memberColorMap});
+  const _OverviewChart({
+    required this.overview,
+    required this.memberColorMap,
+    required this.unassignedColor,
+  });
 
   final List<DailyOverview> overview;
   final Map<int, Color> memberColorMap;
+  final Color unassignedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -122,11 +130,7 @@ class _OverviewChart extends StatelessWidget {
       final unassignedCount = (day.countsByAssignee[null] ?? 0).toDouble();
       if (unassignedCount > 0) {
         rodStackItems.add(
-          BarChartRodStackItem(
-            fromY,
-            fromY + unassignedCount,
-            _unassignedColor,
-          ),
+          BarChartRodStackItem(fromY, fromY + unassignedCount, unassignedColor),
         );
         fromY += unassignedCount;
       }
@@ -134,7 +138,7 @@ class _OverviewChart extends StatelessWidget {
       // メンバーごと
       day.countsByAssignee.forEach((userId, count) {
         if (userId == null) return;
-        final color = memberColorMap[userId] ?? _unassignedColor;
+        final color = memberColorMap[userId] ?? unassignedColor;
         final c = count.toDouble();
         if (c > 0) {
           rodStackItems.add(BarChartRodStackItem(fromY, fromY + c, color));
@@ -154,7 +158,7 @@ class _OverviewChart extends StatelessWidget {
                       BarChartRodStackItem(
                         0,
                         0.001,
-                        _unassignedColor.withValues(alpha: 0.2),
+                        unassignedColor.withValues(alpha: 0.2),
                       ),
                     ],
               width: 14,

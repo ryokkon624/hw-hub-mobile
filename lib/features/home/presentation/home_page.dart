@@ -48,16 +48,16 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-class _HomeBody extends StatelessWidget {
+class _HomeBody extends ConsumerWidget {
   const _HomeBody({required this.state});
 
   final HomeState state;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return RefreshIndicator(
       onRefresh: () async {
-        // Notifier の refresh を呼ぶ（ProviderScopeからは直接取れないため invalidate で代用）
+        ref.invalidate(homeNotifierProvider);
       },
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
