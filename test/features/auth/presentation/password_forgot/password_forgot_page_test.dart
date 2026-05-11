@@ -98,11 +98,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) => const PasswordForgotPage(),
+            builder: (_, _) => const PasswordForgotPage(),
           ),
           GoRoute(
             path: '/forgot-password/sent',
-            builder: (_, __) => const Scaffold(body: Text('sent-page')),
+            builder: (_, _) => const Scaffold(body: Text('sent-page')),
           ),
         ],
         overrides: [
@@ -121,11 +121,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) => const PasswordForgotPage(),
+            builder: (_, _) => const PasswordForgotPage(),
           ),
           GoRoute(
             path: '/login',
-            builder: (_, __) => const Scaffold(body: Text('login-page')),
+            builder: (_, _) => const Scaffold(body: Text('login-page')),
           ),
         ],
         initialLocation: '/forgot-password',

@@ -89,7 +89,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const AuthResultPage(type: 'emailVerify', status: 'success'),
           ),
           GoRoute(
@@ -114,12 +114,12 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const AuthResultPage(type: 'emailVerify', status: 'expired'),
           ),
           GoRoute(
             path: '/signup',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const Scaffold(body: Text('to-signup')),
           ),
         ],
@@ -138,7 +138,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const AuthResultPage(
+            builder: (_, _) => const AuthResultPage(
                 type: 'passwordReset', status: 'success'),
           ),
           GoRoute(
@@ -164,12 +164,12 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const AuthResultPage(
+            builder: (_, _) => const AuthResultPage(
                 type: 'passwordReset', status: 'expired'),
           ),
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const Scaffold(body: Text('to-forgot-password')),
           ),
         ],
@@ -187,7 +187,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const AuthResultPage(type: 'unknown', status: 'any'),
           ),
           GoRoute(

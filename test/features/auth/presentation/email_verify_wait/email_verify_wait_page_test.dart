@@ -96,11 +96,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/email-waiting',
-            builder: (_, __) => const EmailVerifyWaitPage(email: ''),
+            builder: (_, _) => const EmailVerifyWaitPage(email: ''),
           ),
           GoRoute(
             path: '/signup',
-            builder: (_, __) => const Scaffold(body: Text('signup-page')),
+            builder: (_, _) => const Scaffold(body: Text('signup-page')),
           ),
         ],
       ));

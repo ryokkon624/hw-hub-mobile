@@ -11,7 +11,7 @@ import '../../../../helpers/widget_test_helpers.dart';
 List<GoRoute> _buildRoutes() => [
       GoRoute(
         path: '/email-verify',
-        builder: (_, __) => const EmailVerifyPage(token: 'test-token'),
+        builder: (_, _) => const EmailVerifyPage(token: 'test-token'),
       ),
       GoRoute(
         path: '/auth-result',

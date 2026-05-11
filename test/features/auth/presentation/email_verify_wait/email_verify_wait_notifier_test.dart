@@ -118,7 +118,7 @@ void main() {
         // AutoDispose を防ぐためにサブスクリプションを保持
         final sub = container.listen(
           emailVerifyWaitNotifierProvider('test@example.com'),
-          (_, __) {},
+          (_, _) {},
         );
 
         container
@@ -154,7 +154,7 @@ void main() {
         final container = makeContainer('test@example.com');
         final sub = container.listen(
           emailVerifyWaitNotifierProvider('test@example.com'),
-          (_, __) {},
+          (_, _) {},
         );
 
         container

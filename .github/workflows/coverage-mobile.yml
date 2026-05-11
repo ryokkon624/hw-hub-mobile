@@ -47,7 +47,7 @@ jobs:
       - name: Filter lcov.info
         run: |
           PATTERNS=$(grep -v '^\s*#' lcov_exclude.txt | grep -v '^\s*$' | tr '\n' ' ')
-          lcov --remove coverage/lcov.info $PATTERNS --output-file coverage/lcov_filtered.info
+          lcov --remove coverage/lcov.info $PATTERNS --ignore-errors unused --output-file coverage/lcov_filtered.info
 
       - name: Generate HTML report
         run: |

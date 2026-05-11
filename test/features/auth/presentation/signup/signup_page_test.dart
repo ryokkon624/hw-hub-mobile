@@ -114,11 +114,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/signup',
-            builder: (_, __) => const SignupPage(),
+            builder: (_, _) => const SignupPage(),
           ),
           GoRoute(
             path: '/email-waiting',
-            builder: (_, __) => const Scaffold(body: Text('email-waiting-page')),
+            builder: (_, _) => const Scaffold(body: Text('email-waiting-page')),
           ),
         ],
         overrides: [
@@ -137,11 +137,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/signup',
-            builder: (_, __) => const SignupPage(),
+            builder: (_, _) => const SignupPage(),
           ),
           GoRoute(
             path: '/login',
-            builder: (_, __) => const Scaffold(body: Text('login-page')),
+            builder: (_, _) => const Scaffold(body: Text('login-page')),
           ),
         ],
         initialLocation: '/signup',

@@ -117,11 +117,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/login',
-            builder: (_, __) => const LoginPage(),
+            builder: (_, _) => const LoginPage(),
           ),
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) => const Scaffold(body: Text('forgot-page')),
+            builder: (_, _) => const Scaffold(body: Text('forgot-page')),
           ),
         ],
         initialLocation: '/login',
@@ -139,11 +139,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/login',
-            builder: (_, __) => const LoginPage(),
+            builder: (_, _) => const LoginPage(),
           ),
           GoRoute(
             path: '/signup',
-            builder: (_, __) => const Scaffold(body: Text('signup-page')),
+            builder: (_, _) => const Scaffold(body: Text('signup-page')),
           ),
         ],
         initialLocation: '/login',

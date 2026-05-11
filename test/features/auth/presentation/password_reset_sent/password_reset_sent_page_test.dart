@@ -57,12 +57,12 @@ void main() {
         routes: [
           GoRoute(
             path: '/forgot-password/sent',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const PasswordResetSentPage(email: 'test@example.com'),
           ),
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const Scaffold(body: Text('forgot-password-page')),
           ),
         ],
@@ -81,12 +81,12 @@ void main() {
         routes: [
           GoRoute(
             path: '/forgot-password/sent',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const PasswordResetSentPage(email: 'test@example.com'),
           ),
           GoRoute(
             path: '/forgot-password',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const Scaffold(body: Text('forgot-password-page')),
           ),
         ],
@@ -105,12 +105,12 @@ void main() {
         routes: [
           GoRoute(
             path: '/forgot-password/sent',
-            builder: (_, __) =>
+            builder: (_, _) =>
                 const PasswordResetSentPage(email: 'test@example.com'),
           ),
           GoRoute(
             path: '/login',
-            builder: (_, __) => const Scaffold(body: Text('login-page')),
+            builder: (_, _) => const Scaffold(body: Text('login-page')),
           ),
         ],
         initialLocation: '/forgot-password/sent',
