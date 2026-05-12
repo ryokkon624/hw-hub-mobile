@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -23,9 +24,15 @@ class ShoppingCard extends StatelessWidget {
 
     for (final item in items) {
       if (item.status == '0') {
-        if (item.storeType == '1') superCount++;
-        if (item.storeType == '3') drugCount++;
-        if (item.storeType == '2') onlineCount++;
+        if (item.storeType == PurchaseLocationType.supermarket.code) {
+          superCount++;
+        }
+        if (item.storeType == PurchaseLocationType.drugstore.code) {
+          drugCount++;
+        }
+        if (item.storeType == PurchaseLocationType.online.code) {
+          onlineCount++;
+        }
       }
       try {
         final created = DateTime.parse(item.createdAt);
