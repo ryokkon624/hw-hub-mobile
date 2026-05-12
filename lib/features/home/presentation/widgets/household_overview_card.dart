@@ -126,16 +126,7 @@ class _OverviewChart extends StatelessWidget {
       final rodStackItems = <BarChartRodStackItem>[];
       double fromY = 0;
 
-      // 未割当
-      final unassignedCount = (day.countsByAssignee[null] ?? 0).toDouble();
-      if (unassignedCount > 0) {
-        rodStackItems.add(
-          BarChartRodStackItem(fromY, fromY + unassignedCount, unassignedColor),
-        );
-        fromY += unassignedCount;
-      }
-
-      // メンバーごと
+      // メンバーごと（未割当より先に積む）
       day.countsByAssignee.forEach((userId, count) {
         if (userId == null) return;
         final color = memberColorMap[userId] ?? unassignedColor;
@@ -145,6 +136,15 @@ class _OverviewChart extends StatelessWidget {
           fromY += c;
         }
       });
+
+      // 未割当（最後に積んで最上部に表示）
+      final unassignedCount = (day.countsByAssignee[null] ?? 0).toDouble();
+      if (unassignedCount > 0) {
+        rodStackItems.add(
+          BarChartRodStackItem(fromY, fromY + unassignedCount, unassignedColor),
+        );
+        fromY += unassignedCount;
+      }
 
       groups.add(
         BarChartGroupData(
@@ -183,8 +183,20 @@ class _OverviewChart extends StatelessWidget {
           rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                if (value != value.roundToDouble()) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(fontSize: 10, color: colors.textMuted),
+                );
+              },
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(

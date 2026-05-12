@@ -27,104 +27,174 @@ class MyTasksCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.task_alt, color: colors.primary, size: 20),
-                const SizedBox(width: AppSpacing.xs),
-                Text(
-                  l10n.homeMyTasksTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: colors.textHeading,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.task_alt, color: colors.primary, size: 20),
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            l10n.homeMyTasksTitle,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: colors.textHeading,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.homeMyTasksSubtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      l10n.homeMyTasksToday,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.primary50,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        l10n.homeMyTasksCountFormat(summary.todayCount),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l10n.homeMyTasksSubtitle,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-            ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 Expanded(
-                  child: _StatItem(
-                    label: l10n.homeMyTasksToday,
-                    count: summary.todayCount,
-                    color: colors.primary,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceSubtle,
+                      border: Border.all(color: colors.borderSubtle),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.homeMyTasksWeek,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.textMuted),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.homeMyTasksCountFormat(summary.weekCount),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: colors.textHeading,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: _StatItem(
-                    label: l10n.homeMyTasksWeek,
-                    count: summary.weekCount,
-                    color: colors.textBody,
-                  ),
-                ),
-                Expanded(
-                  child: _StatItem(
-                    label: l10n.homeMyTasksOverdue,
-                    count: summary.overdueCount,
-                    color: summary.overdueCount > 0
-                        ? colors.danger
-                        : colors.textMuted,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.dangerSoft,
+                      border: Border.all(color: colors.dangerBorder),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.homeMyTasksOverdue,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.textBody),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.homeMyTasksCountFormat(summary.overdueCount),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: colors.danger,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onOpen,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.primary,
-                  side: BorderSide(color: colors.primaryBorder),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.homeMyTasksNote,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colors.textMuted,
+                    fontSize: 11,
+                  ),
                 ),
-                child: Text(l10n.homeMyTasksOpenButton),
-              ),
+                FilledButton(
+                  onPressed: onOpen,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text(l10n.homeMyTasksOpenButton),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  const _StatItem({
-    required this.label,
-    required this.count,
-    required this.color,
-  });
-
-  final String label;
-  final int count;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorScheme>()!;
-    return Column(
-      children: [
-        Text(
-          '$count',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: color,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 }

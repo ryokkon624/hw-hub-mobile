@@ -203,11 +203,21 @@
   "homeMyTasksWeek": "Next 7 days",
   "homeMyTasksOverdue": "Overdue",
   "homeMyTasksOpenButton": "Open My Tasks",
+  "homeMyTasksNote": "Assigned to you",
+  "homeMyTasksCountFormat": "{count}",
+  "@homeMyTasksCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
 
   "homeUnassignedTitle": "Unassigned Housework",
   "homeUnassignedSubtitle": "Housework with no assignee",
-  "homeUnassignedTotal": "All time",
-  "homeUnassignedUrgent": "Due in 3 days",
+  "homeUnassignedTotal": "Total",
+  "homeUnassignedTotalPeriod": "All open tasks",
+  "homeUnassignedUrgent": "Due soon",
+  "homeUnassignedUrgentDescription": "Within 3 days",
+  "homeUnassignedNote": "Assign tasks to members",
   "homeUnassignedOpenButton": "Open assignment",
 
   "homeShoppingTitle": "Shopping List",

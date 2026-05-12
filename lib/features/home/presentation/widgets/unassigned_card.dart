@@ -20,7 +20,7 @@ class UnassignedCard extends StatelessWidget {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
     return Card(
-      color: colors.accentSoft,
+      color: colors.surfaceCard,
       margin: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
@@ -47,45 +47,67 @@ class UnassignedCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: 4),
             Text(
               l10n.homeUnassignedSubtitle,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 Expanded(
-                  child: _UnassignedStatItem(
+                  child: _UnassignedStatCard(
                     label: l10n.homeUnassignedTotal,
                     count: summary.totalCount,
-                    color: colors.textBody,
+                    subLabel: l10n.homeUnassignedTotalPeriod,
+                    colors: colors,
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: _UnassignedStatItem(
+                  child: _UnassignedStatCard(
                     label: l10n.homeUnassignedUrgent,
                     count: summary.urgentCount,
-                    color: summary.urgentCount > 0
-                        ? colors.warning
-                        : colors.textMuted,
+                    subLabel: l10n.homeUnassignedUrgentDescription,
+                    colors: colors,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onOpen,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.warning,
-                  side: BorderSide(color: colors.accentBorder),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.homeUnassignedNote,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colors.textMuted,
+                    fontSize: 11,
+                  ),
                 ),
-                child: Text(l10n.homeUnassignedOpenButton),
-              ),
+                FilledButton(
+                  onPressed: onOpen,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text(l10n.homeUnassignedOpenButton),
+                ),
+              ],
             ),
           ],
         ),
@@ -94,38 +116,56 @@ class UnassignedCard extends StatelessWidget {
   }
 }
 
-class _UnassignedStatItem extends StatelessWidget {
-  const _UnassignedStatItem({
+class _UnassignedStatCard extends StatelessWidget {
+  const _UnassignedStatCard({
     required this.label,
     required this.count,
-    required this.color,
+    required this.subLabel,
+    required this.colors,
   });
 
   final String label;
   final int count;
-  final Color color;
+  final String subLabel;
+  final AppColorScheme colors;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorScheme>()!;
-    return Column(
-      children: [
-        Text(
-          '$count',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: color,
-            fontWeight: FontWeight.w700,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: colors.accentSoft,
+        border: Border.all(color: colors.accentBorder),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colors.textMuted,
+              fontSize: 11,
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-          textAlign: TextAlign.center,
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            '$count',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: colors.textHeading,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subLabel,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colors.textMuted,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

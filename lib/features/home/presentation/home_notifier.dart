@@ -26,12 +26,21 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
 
   Future<HomeState> _load(int householdId) async {
     final repo = ref.read(homeRepositoryProvider);
-    final raw = await repo.loadAll(householdId);
+    final dio = ref.read(dioProvider);
+
+    final results = await Future.wait([
+      repo.loadAll(householdId),
+      dio.get<dynamic>('/api/users/me/profile'),
+    ]);
+
+    final raw = results[0] as HomeRawData;
+    final profileData = (results[1] as dynamic).data as Map<String, dynamic>;
+    final currentUserId = profileData['userId'] as int;
 
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
-    final myTasksSummary = _calcMyTasksSummary(raw, todayDate);
+    final myTasksSummary = _calcMyTasksSummary(raw, todayDate, currentUserId);
     final unassignedSummary = _calcUnassignedSummary(raw, todayDate);
     final householdOverview = _calcDailyOverview(raw, todayDate);
 
@@ -79,12 +88,14 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
   }
 }
 
-/// My Tasks 集計。
-/// assigneeUserId が null でないタスク（割り当て済み）を対象に today/week/overdue を計算する。
-/// NOTE: Phase 4 でユーザーID取得を実装する際に、自分のタスクのみに絞り込みを追加する。
-MyTasksSummary _calcMyTasksSummary(HomeRawData raw, DateTime todayDate) {
-  // assigneeUserId が有効（null でない）タスクを「自分のタスク」として扱う（Phase 4 で絞り込み予定）
-  final myTasks = raw.openTasks.where((t) => t.assigneeUserId != null).toList();
+MyTasksSummary _calcMyTasksSummary(
+  HomeRawData raw,
+  DateTime todayDate,
+  int currentUserId,
+) {
+  final myTasks = raw.openTasks
+      .where((t) => t.assigneeUserId == currentUserId)
+      .toList();
 
   int todayCount = 0;
   int weekCount = 0;

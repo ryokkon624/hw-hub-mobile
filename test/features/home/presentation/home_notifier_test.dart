@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
@@ -14,6 +15,12 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home_mocks.mocks.dart';
+
+Response<dynamic> _profileResponse(int userId) => Response<dynamic>(
+  data: {'userId': userId, 'displayName': 'テストユーザー'},
+  requestOptions: RequestOptions(path: '/api/users/me/profile'),
+  statusCode: 200,
+);
 
 /// 今日の日付文字列 (yyyy-MM-dd)
 String _today() {
@@ -63,12 +70,26 @@ HomeRawData _makeRawData({
 ProviderContainer _makeContainer({
   required MockHomeRepository mockRepo,
   Household? selectedHousehold,
+  MockDio? mockDio,
 }) {
   SharedPreferences.setMockInitialValues({});
+
+  final dio = mockDio ?? MockDio();
+  when(
+    dio.get<dynamic>(
+      '/api/users/me/profile',
+      data: anyNamed('data'),
+      queryParameters: anyNamed('queryParameters'),
+      options: anyNamed('options'),
+      cancelToken: anyNamed('cancelToken'),
+      onReceiveProgress: anyNamed('onReceiveProgress'),
+    ),
+  ).thenAnswer((_) async => _profileResponse(10));
 
   final container = ProviderContainer(
     overrides: [
       homeRepositoryProvider.overrideWithValue(mockRepo),
+      dioProvider.overrideWithValue(dio),
       householdNotifierProvider.overrideWith(
         () => _FakeHouseholdNotifier(
           HouseholdState(
@@ -199,6 +220,27 @@ void main() {
       final state = await container.read(homeNotifierProvider.future);
 
       expect(state.myTasksSummary.overdueCount, 2);
+    });
+
+    test('他ユーザーに割り当てられたタスクはMyTasksに含まれない', () async {
+      const h = Household(id: 1, name: '山田家');
+      final tasks = [
+        _openTask(id: 1, targetDate: _today(), assigneeUserId: 10), // 自分
+        _openTask(id: 2, targetDate: _today(), assigneeUserId: 99), // 他ユーザー
+        _openTask(id: 3, targetDate: _today(), assigneeUserId: null), // 未割当
+      ];
+      when(
+        mockRepo.loadAll(1),
+      ).thenAnswer((_) async => _makeRawData(openTasks: tasks));
+
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: h,
+      );
+      final state = await container.read(homeNotifierProvider.future);
+
+      // ログインユーザーID=10のタスクのみカウント（99と未割当は除外）
+      expect(state.myTasksSummary.todayCount, 1);
     });
   });
 

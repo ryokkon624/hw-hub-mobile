@@ -203,11 +203,21 @@
   "homeMyTasksWeek": "直近1週間",
   "homeMyTasksOverdue": "期限超過",
   "homeMyTasksOpenButton": "My Tasksを開く",
+  "homeMyTasksNote": "あなたの担当",
+  "homeMyTasksCountFormat": "{count}件",
+  "@homeMyTasksCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
 
   "homeUnassignedTitle": "家事の未割り当て",
   "homeUnassignedSubtitle": "担当者が設定されていない家事",
-  "homeUnassignedTotal": "全期間",
-  "homeUnassignedUrgent": "今日〜3日以内",
+  "homeUnassignedTotal": "合計",
+  "homeUnassignedTotalPeriod": "全オープンタスク",
+  "homeUnassignedUrgent": "直近3日以内",
+  "homeUnassignedUrgentDescription": "今日〜3日以内",
+  "homeUnassignedNote": "メンバーに担当を割り当てよう",
   "homeUnassignedOpenButton": "家事割り当てを開く",
 
   "homeShoppingTitle": "買い物リスト",

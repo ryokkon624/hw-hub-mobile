@@ -15,17 +15,12 @@ class ShoppingCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
-    // 未購入アイテムのみ
     final openItems = items.where((i) => i.status == '0').toList();
 
-    // 購入場所別件数
-    final Map<String, int> storeCountMap = {};
-    for (final item in openItems) {
-      final store = item.storeType ?? 'other';
-      storeCountMap[store] = (storeCountMap[store] ?? 0) + 1;
-    }
+    final superCount = openItems.where((i) => i.storeType == '1').length;
+    final drugCount = openItems.where((i) => i.storeType == '3').length;
+    final onlineCount = openItems.where((i) => i.storeType == '2').length;
 
-    // 直近2日以内追加件数
     final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
     final recentCount = items.where((i) {
       try {
@@ -37,7 +32,7 @@ class ShoppingCard extends StatelessWidget {
     }).length;
 
     return Card(
-      color: colors.infoSoft,
+      color: colors.surfaceCard,
       margin: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
@@ -64,7 +59,7 @@ class ShoppingCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: 4),
             Text(
               l10n.homeShoppingSubtitle,
               style: Theme.of(
@@ -72,52 +67,85 @@ class ShoppingCard extends StatelessWidget {
               ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
             ),
             const SizedBox(height: AppSpacing.sm),
-            if (storeCountMap.isEmpty)
-              Text(
-                l10n.homeShoppingCountFormat(0),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
-              )
-            else
-              ...storeCountMap.entries.map(
-                (e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _storeLabel(l10n, e.key),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.textBody,
-                        ),
-                      ),
-                      Text(
-                        l10n.homeShoppingCountFormat(e.value),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.info,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+            Row(
+              children: [
+                Expanded(
+                  child: _StoreCountItem(
+                    label: l10n.homeShoppingStoreSupermarket,
+                    count: superCount,
+                    bgColor: colors.storeSuperSoft,
+                    borderColor: colors.storeSuperBorder,
+                    textColor: colors.storeSuperText,
                   ),
                 ),
-              ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: _StoreCountItem(
+                    label: l10n.homeShoppingStoreDrugStore,
+                    count: drugCount,
+                    bgColor: colors.storeDrugSoft,
+                    borderColor: colors.storeDrugBorder,
+                    textColor: colors.storeDrugText,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: _StoreCountItem(
+                    label: l10n.homeShoppingStoreOnline,
+                    count: onlineCount,
+                    bgColor: colors.storeOnlineSoft,
+                    borderColor: colors.storeOnlineBorder,
+                    textColor: colors.storeOnlineText,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${l10n.homeShoppingRecentlyAdded}: ${l10n.homeShoppingCountFormat(recentCount)}',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: colors.primary50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.homeShoppingRecentlyAdded,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: colors.primary),
+                  ),
+                  Text(
+                    l10n.homeShoppingCountFormat(recentCount),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton(
                 onPressed: onOpen,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.info,
-                  side: BorderSide(color: colors.info.withValues(alpha: 0.5)),
+                style: FilledButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  textStyle: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 child: Text(l10n.homeShoppingOpenButton),
               ),
@@ -127,17 +155,53 @@ class ShoppingCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _storeLabel(AppLocalizations l10n, String storeType) {
-    switch (storeType) {
-      case 'supermarket':
-        return l10n.homeShoppingStoreSupermarket;
-      case 'online':
-        return l10n.homeShoppingStoreOnline;
-      case 'drug_store':
-        return l10n.homeShoppingStoreDrugStore;
-      default:
-        return storeType;
-    }
+class _StoreCountItem extends StatelessWidget {
+  const _StoreCountItem({
+    required this.label,
+    required this.count,
+    required this.bgColor,
+    required this.borderColor,
+    required this.textColor,
+  });
+
+  final String label;
+  final int count;
+  final Color bgColor;
+  final Color borderColor;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$count',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
