@@ -105,9 +105,12 @@ Web版SP版と同等の機能をベースに、モバイルではスワイプ操
 
 | メソッド | エンドポイント | 用途 |
 |---|---|---|
-| GET | `/api/housework-tasks` | タスク全件取得。自分のタスクのみ・フィルタはフロント側で実施 |
+| GET | `/api/users/me/profile` | ログイン中のユーザーID取得。担当者フィルタに使用 |
+| GET | `/api/housework-tasks` | 世帯のタスク全件取得（バックエンドは世帯全員分を返す）。フロント側で `assigneeUserId == currentUserId` フィルタを実施（未割当タスクは含める） |
 | PATCH | `/api/housework-tasks/{taskId}/status` | タスクステータス更新（完了 / スキップ） |
 | PATCH | `/api/housework-tasks/bulk-status` | 過去タスクの一括完了 |
+
+**担当者フィルタの注意点**: バックエンドの `/api/housework-tasks` は世帯全員分のタスクを返す。`/api/users/me/profile` と並行して取得し、`assigneeUserId == currentUserId` で絞り込む。`assigneeUserId` が null（未割当）のタスクは自分のリストに含める。
 
 ---
 

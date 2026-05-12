@@ -138,6 +138,47 @@ void main() {
     });
   });
 
+  group('MyTasksRepository.loadCurrentUserId()', () {
+    test('成功時: ユーザーIDを返す', () async {
+      when(mockDio.get<dynamic>('/api/users/me/profile')).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/users/me/profile'),
+          statusCode: 200,
+          data: {'userId': 42},
+        ),
+      );
+
+      final result = await repo.loadCurrentUserId();
+      expect(result, 42);
+    });
+
+    test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
+      when(mockDio.get<dynamic>('/api/users/me/profile')).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/profile'),
+          type: DioExceptionType.connectionError,
+          message: 'Connection refused',
+        ),
+      );
+
+      expect(() => repo.loadCurrentUserId(), throwsA(isA<NetworkException>()));
+    });
+
+    test('DioExceptionのerrorがAppExceptionの場合: そのままrethrowする', () async {
+      when(mockDio.get<dynamic>('/api/users/me/profile')).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/profile'),
+          error: const UnauthorizedException('認証失敗'),
+        ),
+      );
+
+      expect(
+        () => repo.loadCurrentUserId(),
+        throwsA(isA<UnauthorizedException>()),
+      );
+    });
+  });
+
   group('MyTasksRepository.bulkUpdateStatus()', () {
     test('成功時: 例外なく完了する', () async {
       when(

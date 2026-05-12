@@ -44,6 +44,14 @@ class MockMyTasksRepository extends _i1.Mock implements _i2.MyTasksRepository {
           as _i3.Future<List<_i2.HouseworkTaskDto>>);
 
   @override
+  _i3.Future<int> loadCurrentUserId() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentUserId, []),
+            returnValue: _i3.Future<int>.value(0),
+          )
+          as _i3.Future<int>);
+
+  @override
   _i3.Future<void> updateTaskStatus({
     required int? taskId,
     required String? status,

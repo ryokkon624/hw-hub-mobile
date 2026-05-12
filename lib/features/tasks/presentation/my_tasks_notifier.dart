@@ -25,7 +25,12 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
 
   Future<MyTasksState> _load(int householdId) async {
     final repo = ref.read(myTasksRepositoryProvider);
-    final tasks = await repo.fetchOpenTasks(householdId: householdId);
+    final results = await Future.wait([
+      repo.fetchOpenTasks(householdId: householdId),
+      repo.loadCurrentUserId(),
+    ]);
+    final tasks = results[0] as List<HouseworkTaskDto>;
+    final currentUserId = results[1] as int;
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -34,6 +39,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     final futureTasks = <HouseworkTaskDto>[];
 
     for (final task in tasks) {
+      // 自分以外の担当者のタスクはスキップ（未割当タスクは含める）
+      if (task.assigneeUserId != null && task.assigneeUserId != currentUserId) {
+        continue;
+      }
       final date = DateTime.tryParse(task.targetDate);
       if (date == null) continue;
       final taskDate = DateTime(date.year, date.month, date.day);
