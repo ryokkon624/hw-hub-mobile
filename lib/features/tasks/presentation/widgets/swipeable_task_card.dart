@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../data/my_tasks_repository.dart';
+import '../../data/models/housework_task_dto.dart';
 
 class SwipeableTaskCard extends StatelessWidget {
   const SwipeableTaskCard({

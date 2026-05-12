@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/models/task_status.dart';
+import '../data/models/housework_task_dto.dart';
 import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
 import 'my_tasks_state.dart';

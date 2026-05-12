@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ui/app_snack_bar.dart';
-import '../../data/my_tasks_repository.dart';
+import '../../data/models/housework_task_dto.dart';
 import '../my_tasks_notifier.dart';
 import 'bulk_complete_dialog.dart';
 import 'swipeable_task_card.dart';
