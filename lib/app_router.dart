@@ -202,6 +202,41 @@ final _routes = <RouteBase>[
   GoRoute(path: '/notifications', builder: (_, _) => const _P('通知センター')),
 ];
 
+abstract final class AppRoutes {
+  static const login = '/login';
+  static const signup = '/signup';
+  static const emailWaiting = '/email-waiting';
+  static const forgotPassword = '/forgot-password';
+  static const forgotPasswordSent = '/forgot-password/sent';
+  static const authResult = '/auth-result';
+  static const emailVerify = '/email-verify';
+  static const inviteToken = '/invite/:token';
+  static const passwordReset = '/password/reset';
+
+  static const home = '/';
+  static const housework = '/housework';
+  static const tasks = '/tasks';
+  static const shopping = '/shopping';
+  static const shoppingNew = '/shopping/new';
+  static String shoppingDetail(String id) => '/shopping/$id';
+  static const settings = '/settings';
+  static const settingsAccount = '/settings/account';
+  static const settingsHousehold = '/settings/household';
+  static const settingsHousework = '/settings/housework';
+  static const settingsHouseworkNew = '/settings/housework/new';
+  static String settingsHouseworkDetail(String id) => '/settings/housework/$id';
+  static const settingsInquiries = '/settings/inquiries';
+  static const settingsInquiriesNew = '/settings/inquiries/new';
+  static String settingsInquiryDetail(String id) => '/settings/inquiries/$id';
+  static const settingsAppInfo = '/settings/app-info';
+  static const settingsTerms = '/settings/terms';
+  static const settingsPrivacy = '/settings/privacy';
+
+  static const notifications = '/notifications';
+
+  static String invite(String token) => '/invite/$token';
+}
+
 // Phase 4以降で実装するまでの仮画面
 class _P extends StatelessWidget {
   const _P(this.name);

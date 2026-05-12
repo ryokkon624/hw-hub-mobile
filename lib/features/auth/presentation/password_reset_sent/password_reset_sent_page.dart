@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'password_reset_sent_notifier.dart';
 
@@ -33,7 +34,9 @@ class PasswordResetSentPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.go('/forgot-password')),
+        leading: BackButton(
+          onPressed: () => context.go(AppRoutes.forgotPassword),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -83,13 +86,13 @@ class PasswordResetSentPage extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               OutlinedButton(
-                onPressed: () => context.go('/forgot-password'),
+                onPressed: () => context.go(AppRoutes.forgotPassword),
                 child: Text(l10n.passwordResetSentUseDifferentEmail),
               ),
               const SizedBox(height: 16),
               const Divider(),
               TextButton(
-                onPressed: () => context.go('/login'),
+                onPressed: () => context.go(AppRoutes.login),
                 child: Text(l10n.passwordResetSentBackToLogin),
               ),
             ],

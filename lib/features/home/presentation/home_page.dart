@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app_router.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -65,23 +66,23 @@ class _HomeBody extends ConsumerWidget {
           // 世帯未所属時のオンボーディングカード（AC6）
           if (!state.hasHousehold)
             OnboardingCard(
-              onGoHousehold: () => context.go('/settings/household'),
-              onGoHousework: () => context.go('/settings/housework'),
+              onGoHousehold: () => context.go(AppRoutes.settingsHousehold),
+              onGoHousework: () => context.go(AppRoutes.settingsHousework),
             ),
           // My Tasksカード（AC2）
           MyTasksCard(
             summary: state.myTasksSummary,
-            onOpen: () => context.go('/tasks'),
+            onOpen: () => context.go(AppRoutes.tasks),
           ),
           // 家事未割り当てカード（AC3）
           UnassignedCard(
             summary: state.unassignedSummary,
-            onOpen: () => context.go('/housework'),
+            onOpen: () => context.go(AppRoutes.housework),
           ),
           // 買い物リストカード（AC4）
           ShoppingCard(
             items: state.shoppingItems,
-            onOpen: () => context.go('/shopping'),
+            onOpen: () => context.go(AppRoutes.shopping),
           ),
           // おうちの様子カード（AC5）
           HouseholdOverviewCard(
