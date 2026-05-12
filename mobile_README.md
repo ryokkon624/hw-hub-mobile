@@ -169,7 +169,24 @@ flutter test
 flutter analyze
 ```
 
-### 6.3 コード生成
+### 6.3 区分値（enum）の更新
+
+区分値ファイル `lib/core/models/*.dart` は **hw-hub-database** の `generateEnums` タスクで自動生成されます。  
+m_code を変更したときは以下の手順で更新してください。
+
+```bash
+# hw-hub-database で実行
+./gradlew generateEnums
+
+# 生成ファイルをコピー（PowerShell 例）
+Copy-Item build\generated\mobile\*.dart ..\hw-hub-mobile\lib\core\models\ -Force
+```
+
+> コピー後、参照箇所を `flutter analyze` で確認してください。
+
+---
+
+### 6.4 その他コード生成
 
 ```bash
 # Retrofit (.g.dart) および Mockito (.mocks.dart) の再生成
@@ -181,7 +198,7 @@ flutter gen-l10n
 
 > `.g.dart` / `.mocks.dart` / `l10n/app_localizations*.dart` は自動生成ファイルです。**直接編集しないこと。**
 
-### 6.4 フォーマット
+### 6.5 フォーマット
 
 ```bash
 dart format .
