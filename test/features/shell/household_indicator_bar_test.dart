@@ -26,8 +26,8 @@ void main() {
   group('HouseholdIndicatorBar', () {
     testWidgets('世帯が1件以下のとき何も表示しない', (tester) async {
       final state = HouseholdState(
-        households: const [Household(id: '1', name: '山田家')],
-        selectedHousehold: const Household(id: '1', name: '山田家'),
+        households: const [Household(id: 1, name: '山田家')],
+        selectedHousehold: const Household(id: 1, name: '山田家'),
       );
 
       await tester.pumpWidget(
@@ -41,10 +41,10 @@ void main() {
     testWidgets('世帯が2件以上のとき選択世帯名を表示する', (tester) async {
       final state = HouseholdState(
         households: const [
-          Household(id: '1', name: '山田家'),
-          Household(id: '2', name: '田中家'),
+          Household(id: 1, name: '山田家'),
+          Household(id: 2, name: '田中家'),
         ],
-        selectedHousehold: const Household(id: '1', name: '山田家'),
+        selectedHousehold: const Household(id: 1, name: '山田家'),
       );
 
       await tester.pumpWidget(
@@ -58,10 +58,10 @@ void main() {
     testWidgets('バーをタップするとBottomSheetが開く', (tester) async {
       final state = HouseholdState(
         households: const [
-          Household(id: '1', name: '山田家'),
-          Household(id: '2', name: '田中家'),
+          Household(id: 1, name: '山田家'),
+          Household(id: 2, name: '田中家'),
         ],
-        selectedHousehold: const Household(id: '1', name: '山田家'),
+        selectedHousehold: const Household(id: 1, name: '山田家'),
       );
 
       await tester.pumpWidget(

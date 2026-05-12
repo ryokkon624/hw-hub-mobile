@@ -3,8 +3,8 @@ import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 
 void main() {
-  const h1 = Household(id: '1', name: '山田家');
-  const h2 = Household(id: '2', name: '田中家');
+  const h1 = Household(id: 1, name: '山田家');
+  const h2 = Household(id: 2, name: '田中家');
 
   group('HouseholdState.isMultiple', () {
     test('returns false when households is empty', () {

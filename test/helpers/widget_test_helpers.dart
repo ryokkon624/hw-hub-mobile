@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hw_hub_mobile/core/theme/app_theme.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 Widget buildTestPage(Widget page, {List<Override> overrides = const []}) =>
@@ -10,6 +11,7 @@ Widget buildTestPage(Widget page, {List<Override> overrides = const []}) =>
         locale: const Locale('ja'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.light,
         home: page,
       ),
     );
@@ -26,6 +28,7 @@ Widget buildTestPageWithRouter({
     locale: const Locale('ja'),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
+    theme: AppTheme.light,
     routerConfig: GoRouter(initialLocation: initialLocation, routes: routes),
   ),
 );

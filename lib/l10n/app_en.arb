@@ -188,5 +188,63 @@
   "authResultPasswordResetInvalidMessage": "The link is incorrect or has already been used.",
   "authResultToLogin": "Go to sign in",
   "authResultRetryPasswordReset": "Try password reset again",
-  "authResultToSignup": "Go to sign up"
+  "authResultToSignup": "Go to sign up",
+
+  "homeAppBarNotification": "Notification center is coming soon",
+  "homeAppBarAccount": "Account settings are available from the Settings screen",
+
+  "homeShoppingStoreSupermarket": "Supermarket",
+  "homeShoppingStoreOnline": "Online",
+  "homeShoppingStoreDrugStore": "Drug Store",
+
+  "homeMyTasksTitle": "My Tasks",
+  "homeMyTasksSubtitle": "Housework assigned to you",
+  "homeMyTasksToday": "Today",
+  "homeMyTasksWeek": "Next 7 days",
+  "homeMyTasksOverdue": "Overdue",
+  "homeMyTasksOpenButton": "Open My Tasks",
+  "homeMyTasksNote": "Assigned to you",
+  "homeMyTasksCountFormat": "{count}",
+  "@homeMyTasksCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeUnassignedTitle": "Unassigned Housework",
+  "homeUnassignedSubtitle": "Housework with no assignee",
+  "homeUnassignedTotal": "Total",
+  "homeUnassignedTotalPeriod": "All open tasks",
+  "homeUnassignedUrgent": "Due soon",
+  "homeUnassignedUrgentDescription": "Within 3 days",
+  "homeUnassignedNote": "Assign tasks to members",
+  "homeUnassignedOpenButton": "Open assignment",
+
+  "homeShoppingTitle": "Shopping List",
+  "homeShoppingSubtitle": "Unpurchased items by store",
+  "homeShoppingRecentlyAdded": "Added in last 2 days",
+  "homeShoppingOpenButton": "Open shopping list",
+  "homeShoppingCountFormat": "{count}",
+  "@homeShoppingCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeOverviewTitle": "Household Overview",
+  "homeOverviewSubtitle": "Task completion status",
+  "homeOverviewUnassigned": "Unassigned",
+
+  "homeOnboardingTitle": "Welcome!",
+  "homeOnboardingMessage": "Start by setting up your household and adding housework tasks.",
+  "homeOnboardingGoHousehold": "Set up household",
+  "homeOnboardingGoHousework": "Add housework",
+
+  "homeErrorRetry": "Retry",
+  "homeItemCount": "{count}",
+  "@homeItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

@@ -13,6 +13,7 @@ import 'features/auth/presentation/password_forgot/password_forgot_page.dart';
 import 'features/auth/presentation/password_reset/password_reset_page.dart';
 import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.dart';
 import 'features/auth/presentation/signup/signup_page.dart';
+import 'features/home/presentation/home_page.dart';
 import 'features/shell/main_shell.dart';
 
 // ログイン不要なパス（前方一致）
@@ -120,7 +121,7 @@ final _routes = <RouteBase>[
     branches: [
       // ホーム
       StatefulShellBranch(
-        routes: [GoRoute(path: '/', builder: (_, _) => const _P('ホーム'))],
+        routes: [GoRoute(path: '/', builder: (_, _) => const HomePage())],
       ),
       // 家事分担
       StatefulShellBranch(

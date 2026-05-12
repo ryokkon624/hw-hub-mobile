@@ -1,0 +1,265 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../home_state.dart';
+import '../models/household_member.dart';
+
+/// メンバーカラーパレット（AppColorScheme のトークンから生成）
+List<Color> _buildMemberColors(AppColorScheme colors) => [
+  colors.paletteEmeraldText,
+  colors.paletteBlueText,
+  colors.paletteAmberText,
+  colors.paletteVioletText,
+  colors.paletteRoseText,
+  colors.info, // 6人目以降のフォールバック
+];
+
+class HouseholdOverviewCard extends StatelessWidget {
+  const HouseholdOverviewCard({
+    super.key,
+    required this.overview,
+    required this.members,
+  });
+
+  final List<DailyOverview> overview;
+  final List<HouseholdMember> members;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
+
+    final memberPalette = _buildMemberColors(colors);
+    final unassignedColor = colors.textMuted;
+
+    // メンバーIDとカラーのマッピング
+    final memberColorMap = <int, Color>{};
+    for (var i = 0; i < members.length; i++) {
+      memberColorMap[members[i].userId] =
+          memberPalette[i % memberPalette.length];
+    }
+
+    return Card(
+      color: colors.surfaceCard,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.bar_chart, color: colors.primary, size: 20),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  l10n.homeOverviewTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: colors.textHeading,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              l10n.homeOverviewSubtitle,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            SizedBox(
+              height: 160,
+              child: _OverviewChart(
+                overview: overview,
+                memberColorMap: memberColorMap,
+                unassignedColor: unassignedColor,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            // 凡例
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              children: [
+                ...members.map(
+                  (m) => _LegendDot(
+                    color: memberColorMap[m.userId] ?? unassignedColor,
+                    label: m.nickname ?? m.displayName,
+                  ),
+                ),
+                _LegendDot(
+                  color: unassignedColor,
+                  label: l10n.homeOverviewUnassigned,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewChart extends StatelessWidget {
+  const _OverviewChart({
+    required this.overview,
+    required this.memberColorMap,
+    required this.unassignedColor,
+  });
+
+  final List<DailyOverview> overview;
+  final Map<int, Color> memberColorMap;
+  final Color unassignedColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final groups = <BarChartGroupData>[];
+    for (var i = 0; i < overview.length; i++) {
+      final day = overview[i];
+      final rodStackItems = <BarChartRodStackItem>[];
+      double fromY = 0;
+
+      // メンバーごと（未割当より先に積む）
+      day.countsByAssignee.forEach((userId, count) {
+        if (userId == null) return;
+        final color = memberColorMap[userId] ?? unassignedColor;
+        final c = count.toDouble();
+        if (c > 0) {
+          rodStackItems.add(BarChartRodStackItem(fromY, fromY + c, color));
+          fromY += c;
+        }
+      });
+
+      // 未割当（最後に積んで最上部に表示）
+      final unassignedCount = (day.countsByAssignee[null] ?? 0).toDouble();
+      if (unassignedCount > 0) {
+        rodStackItems.add(
+          BarChartRodStackItem(fromY, fromY + unassignedCount, unassignedColor),
+        );
+        fromY += unassignedCount;
+      }
+
+      groups.add(
+        BarChartGroupData(
+          x: i,
+          barRods: [
+            BarChartRodData(
+              toY: fromY > 0 ? fromY : 0.001, // 0のとき最小バーを表示
+              rodStackItems: rodStackItems.isNotEmpty
+                  ? rodStackItems
+                  : [
+                      BarChartRodStackItem(
+                        0,
+                        0.001,
+                        unassignedColor.withValues(alpha: 0.2),
+                      ),
+                    ],
+              width: 14,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(2),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return BarChart(
+      BarChartData(
+        barGroups: groups,
+        gridData: const FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                if (value != value.roundToDouble()) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(fontSize: 10, color: colors.textMuted),
+                );
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final idx = value.toInt();
+                if (idx < 0 || idx >= overview.length) {
+                  return const SizedBox.shrink();
+                }
+                // 今日のみラベルを強調、他は3日ごとに表示
+                final date = overview[idx].date;
+                final isToday = idx == 6; // 中央（7番目）が今日
+                if (!isToday && idx % 3 != 0) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    '${date.month}/${date.day}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isToday ? colors.primary : colors.textMuted,
+                      fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                );
+              },
+              reservedSize: 24,
+            ),
+          ),
+        ),
+        barTouchData: BarTouchData(enabled: false),
+        groupsSpace: 4,
+      ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  const _LegendDot({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+        ),
+      ],
+    );
+  }
+}
