@@ -26,16 +26,14 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
 
   Future<HomeState> _load(int householdId) async {
     final repo = ref.read(homeRepositoryProvider);
-    final dio = ref.read(dioProvider);
 
     final results = await Future.wait([
       repo.loadAll(householdId),
-      dio.get<dynamic>('/api/users/me/profile'),
+      repo.loadCurrentUserId(),
     ]);
 
     final raw = results[0] as HomeRawData;
-    final profileData = (results[1] as dynamic).data as Map<String, dynamic>;
-    final currentUserId = profileData['userId'] as int;
+    final currentUserId = results[1] as int;
 
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);

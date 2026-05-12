@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
@@ -15,12 +14,6 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home_mocks.mocks.dart';
-
-Response<dynamic> _profileResponse(int userId) => Response<dynamic>(
-  data: {'userId': userId, 'displayName': 'テストユーザー'},
-  requestOptions: RequestOptions(path: '/api/users/me/profile'),
-  statusCode: 200,
-);
 
 /// 今日の日付文字列 (yyyy-MM-dd)
 String _today() {
@@ -70,26 +63,14 @@ HomeRawData _makeRawData({
 ProviderContainer _makeContainer({
   required MockHomeRepository mockRepo,
   Household? selectedHousehold,
-  MockDio? mockDio,
+  int currentUserId = 10,
 }) {
   SharedPreferences.setMockInitialValues({});
-
-  final dio = mockDio ?? MockDio();
-  when(
-    dio.get<dynamic>(
-      '/api/users/me/profile',
-      data: anyNamed('data'),
-      queryParameters: anyNamed('queryParameters'),
-      options: anyNamed('options'),
-      cancelToken: anyNamed('cancelToken'),
-      onReceiveProgress: anyNamed('onReceiveProgress'),
-    ),
-  ).thenAnswer((_) async => _profileResponse(10));
+  when(mockRepo.loadCurrentUserId()).thenAnswer((_) async => currentUserId);
 
   final container = ProviderContainer(
     overrides: [
       homeRepositoryProvider.overrideWithValue(mockRepo),
-      dioProvider.overrideWithValue(dio),
       householdNotifierProvider.overrideWith(
         () => _FakeHouseholdNotifier(
           HouseholdState(
@@ -345,5 +326,5 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
   Future<HouseholdState> build() async => _state;
 
   @override
-  Future<void> select(household) async {}
+  Future<void> select(Household household) async {}
 }

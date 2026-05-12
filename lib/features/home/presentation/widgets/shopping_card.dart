@@ -15,21 +15,23 @@ class ShoppingCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
-    final openItems = items.where((i) => i.status == '0').toList();
-
-    final superCount = openItems.where((i) => i.storeType == '1').length;
-    final drugCount = openItems.where((i) => i.storeType == '3').length;
-    final onlineCount = openItems.where((i) => i.storeType == '2').length;
-
     final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
-    final recentCount = items.where((i) {
-      try {
-        final created = DateTime.parse(i.createdAt);
-        return created.isAfter(twoDaysAgo);
-      } catch (_) {
-        return false;
+    int superCount = 0;
+    int drugCount = 0;
+    int onlineCount = 0;
+    int recentCount = 0;
+
+    for (final item in items) {
+      if (item.status == '0') {
+        if (item.storeType == '1') superCount++;
+        if (item.storeType == '3') drugCount++;
+        if (item.storeType == '2') onlineCount++;
       }
-    }).length;
+      try {
+        final created = DateTime.parse(item.createdAt);
+        if (created.isAfter(twoDaysAgo)) recentCount++;
+      } catch (_) {}
+    }
 
     return Card(
       color: colors.surfaceCard,

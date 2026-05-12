@@ -7,12 +7,25 @@ import 'models/shopping_item_dto.dart';
 
 abstract class HomeRepository {
   Future<HomeRawData> loadAll(int householdId);
+  Future<int> loadCurrentUserId();
 }
 
 class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(this._dio);
 
   final Dio _dio;
+
+  @override
+  Future<int> loadCurrentUserId() async {
+    try {
+      final response = await _dio.get<dynamic>('/api/users/me/profile');
+      final data = response.data as Map<String, dynamic>;
+      return data['userId'] as int;
+    } on DioException catch (e) {
+      if (e.error is AppException) throw e.error!;
+      throw NetworkException(e.message ?? 'Network error');
+    }
+  }
 
   @override
   Future<HomeRawData> loadAll(int householdId) async {
