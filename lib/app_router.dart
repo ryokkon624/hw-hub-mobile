@@ -15,6 +15,7 @@ import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.
 import 'features/auth/presentation/signup/signup_page.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/shell/main_shell.dart';
+import 'features/tasks/presentation/my_tasks_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -132,7 +133,7 @@ final _routes = <RouteBase>[
       // My Tasks
       StatefulShellBranch(
         routes: [
-          GoRoute(path: '/tasks', builder: (_, _) => const _P('My Tasks')),
+          GoRoute(path: '/tasks', builder: (_, _) => const MyTasksPage()),
         ],
       ),
       // 買い物
