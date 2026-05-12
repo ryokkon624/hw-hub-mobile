@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../../../core/models/task_status.dart';
 import '../../../core/network/app_exception.dart';
 
 class HouseworkTaskDto {
@@ -69,7 +70,10 @@ class MyTasksRepositoryImpl implements MyTasksRepository {
     try {
       final response = await _dio.get<dynamic>(
         '/api/housework-tasks',
-        queryParameters: {'householdId': householdId, 'status': '0'},
+        queryParameters: {
+          'householdId': householdId,
+          'status': TaskStatus.notDone.code,
+        },
       );
       return (response.data as List<dynamic>)
           .map((e) => HouseworkTaskDto.fromJson(e as Map<String, dynamic>))

@@ -246,5 +246,51 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+
+  "myTasksBulkCompleteTitle": "過去の家事をすべて完了にしますか？",
+  "myTasksBulkCompleteContent": "過去の未対応タスクをすべて完了に更新します。",
+  "myTasksBulkCompleteConfirm": "完了にする",
+  "myTasksFutureSectionTitle": "これからの家事",
+  "myTasksFutureSectionSubtitle": "今日以降に予定されている家事",
+  "myTasksFutureSectionPendingCount": "未対応: {count}件",
+  "@myTasksFutureSectionPendingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksFilterAll": "すべて",
+  "myTasksFilterToday": "今日",
+  "myTasksFilterWeek": "1週間",
+  "myTasksPastSectionTitle": "過去の家事",
+  "myTasksPastSectionSubtitle": "今日より前に対応する予定だったタスクのうち、まだ未対応のもの",
+  "myTasksPastSectionBulkCompleteButton": "すべて完了にする",
+  "myTasksCompletedSnackBar": "完了しました",
+  "myTasksSkippedSnackBar": "スキップしました",
+  "myTasksBulkCompletedSnackBar": "過去のタスクをすべて完了にしました",
+  "myTasksSwipeCompleteLabel": "完了",
+  "myTasksSwipeSkipLabel": "スキップ",
+  "myTasksDateLabel": "{month}/{day}（{weekday}）　{count}件",
+  "@myTasksDateLabel": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksDateLabelFallback": "{date}　{count}件",
+  "@myTasksDateLabelFallback": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksWeekdayMon": "月",
+  "myTasksWeekdayTue": "火",
+  "myTasksWeekdayWed": "水",
+  "myTasksWeekdayThu": "木",
+  "myTasksWeekdayFri": "金",
+  "myTasksWeekdaySat": "土",
+  "myTasksWeekdaySun": "日"
 }

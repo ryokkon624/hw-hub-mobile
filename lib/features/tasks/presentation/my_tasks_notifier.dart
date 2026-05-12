@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/providers.dart';
+import '../../../core/models/task_status.dart';
+import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
 import 'my_tasks_state.dart';
 
@@ -28,8 +30,8 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    final pastTasks = <dynamic>[];
-    final futureTasks = <dynamic>[];
+    final pastTasks = <HouseworkTaskDto>[];
+    final futureTasks = <HouseworkTaskDto>[];
 
     for (final task in tasks) {
       final date = DateTime.tryParse(task.targetDate);
@@ -63,7 +65,7 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
 
     final repo = ref.read(myTasksRepositoryProvider);
     try {
-      await repo.updateTaskStatus(taskId: taskId, status: '1');
+      await repo.updateTaskStatus(taskId: taskId, status: TaskStatus.done.code);
       state = AsyncData(
         current.copyWith(
           pastTasks: current.pastTasks
@@ -85,7 +87,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
 
     final repo = ref.read(myTasksRepositoryProvider);
     try {
-      await repo.updateTaskStatus(taskId: taskId, status: '2');
+      await repo.updateTaskStatus(
+        taskId: taskId,
+        status: TaskStatus.skipped.code,
+      );
       state = AsyncData(
         current.copyWith(
           pastTasks: current.pastTasks
@@ -108,7 +113,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     final taskIds = current.pastTasks.map((t) => t.houseworkTaskId).toList();
     final repo = ref.read(myTasksRepositoryProvider);
     try {
-      await repo.bulkUpdateStatus(taskIds: taskIds, status: '1');
+      await repo.bulkUpdateStatus(
+        taskIds: taskIds,
+        status: TaskStatus.done.code,
+      );
       state = AsyncData(current.copyWith(pastTasks: []));
     } catch (_) {
       // 失敗時はリストを変更しない

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -21,6 +22,7 @@ class FutureTasksSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final l10n = AppLocalizations.of(context);
     final groups = _groupByDate(tasks);
 
     return Column(
@@ -46,13 +48,13 @@ class FutureTasksSection extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'これからの家事',
+                    l10n.myTasksFutureSectionTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    '未対応: ${tasks.length}件',
+                    l10n.myTasksFutureSectionPendingCount(tasks.length),
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
@@ -61,7 +63,7 @@ class FutureTasksSection extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                '今日以降に予定されている家事',
+                l10n.myTasksFutureSectionSubtitle,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
@@ -70,7 +72,7 @@ class FutureTasksSection extends ConsumerWidget {
               Row(
                 children: [
                   _FilterChip(
-                    label: 'すべて',
+                    label: l10n.myTasksFilterAll,
                     selected: filter == MyTasksFilter.all,
                     onTap: () => ref
                         .read(myTasksNotifierProvider.notifier)
@@ -78,7 +80,7 @@ class FutureTasksSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   _FilterChip(
-                    label: '今日',
+                    label: l10n.myTasksFilterToday,
                     selected: filter == MyTasksFilter.today,
                     onTap: () => ref
                         .read(myTasksNotifierProvider.notifier)
@@ -86,7 +88,7 @@ class FutureTasksSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   _FilterChip(
-                    label: '1週間',
+                    label: l10n.myTasksFilterWeek,
                     selected: filter == MyTasksFilter.week,
                     onTap: () => ref
                         .read(myTasksNotifierProvider.notifier)
@@ -106,7 +108,7 @@ class FutureTasksSection extends ConsumerWidget {
               AppSpacing.xs,
             ),
             child: Text(
-              _formatDateLabel(entry.key, entry.value.length),
+              _formatDateLabel(l10n, entry.key, entry.value.length),
               style: Theme.of(
                 context,
               ).textTheme.labelMedium?.copyWith(color: colors.textMuted),
@@ -119,13 +121,13 @@ class FutureTasksSection extends ConsumerWidget {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
                     .completeTask(task.houseworkTaskId);
-                AppSnackBar.showSuccess('完了しました');
+                AppSnackBar.showSuccess(l10n.myTasksCompletedSnackBar);
               },
               onSkip: () async {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
                     .skipTask(task.houseworkTaskId);
-                AppSnackBar.showInfo('スキップしました');
+                AppSnackBar.showInfo(l10n.myTasksSkippedSnackBar);
               },
             ),
         ],
@@ -143,12 +145,20 @@ class FutureTasksSection extends ConsumerWidget {
     return map;
   }
 
-  String _formatDateLabel(String dateStr, int count) {
+  String _formatDateLabel(AppLocalizations l10n, String dateStr, int count) {
     final date = DateTime.tryParse(dateStr);
-    if (date == null) return '$dateStr　$count件';
-    const weekdays = ['月', '火', '水', '木', '金', '土', '日'];
+    if (date == null) return l10n.myTasksDateLabelFallback(dateStr, count);
+    final weekdays = [
+      l10n.myTasksWeekdayMon,
+      l10n.myTasksWeekdayTue,
+      l10n.myTasksWeekdayWed,
+      l10n.myTasksWeekdayThu,
+      l10n.myTasksWeekdayFri,
+      l10n.myTasksWeekdaySat,
+      l10n.myTasksWeekdaySun,
+    ];
     final wd = weekdays[date.weekday - 1];
-    return '${date.month}/${date.day}（$wd）　$count件';
+    return l10n.myTasksDateLabel(date.month, date.day, wd, count);
   }
 }
 

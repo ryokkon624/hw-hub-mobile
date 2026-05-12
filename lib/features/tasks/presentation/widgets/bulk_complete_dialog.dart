@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BulkCompleteDialog extends StatelessWidget {
   const BulkCompleteDialog({super.key});
@@ -12,17 +13,18 @@ class BulkCompleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('過去の家事をすべて完了にしますか？'),
-      content: const Text('過去の未対応タスクをすべて完了に更新します。'),
+      title: Text(l10n.myTasksBulkCompleteTitle),
+      content: Text(l10n.myTasksBulkCompleteContent),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('キャンセル'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('完了にする'),
+          child: Text(l10n.myTasksBulkCompleteConfirm),
         ),
       ],
     );

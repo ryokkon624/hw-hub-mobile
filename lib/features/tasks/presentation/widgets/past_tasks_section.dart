@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -18,6 +19,7 @@ class PastTasksSection extends ConsumerWidget {
     if (tasks.isEmpty) return const SizedBox.shrink();
 
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final l10n = AppLocalizations.of(context);
     final groups = _groupByDate(tasks);
 
     return Column(
@@ -48,7 +50,7 @@ class PastTasksSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
-                    '過去の家事',
+                    l10n.myTasksPastSectionTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: colors.paletteRoseText,
                       fontWeight: FontWeight.bold,
@@ -58,7 +60,7 @@ class PastTasksSection extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                '今日より前に対応する予定だったタスクのうち、まだ未対応のもの',
+                l10n.myTasksPastSectionSubtitle,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.paletteRoseText),
@@ -71,14 +73,14 @@ class PastTasksSection extends ConsumerWidget {
                     await ref
                         .read(myTasksNotifierProvider.notifier)
                         .bulkCompletePastTasks();
-                    AppSnackBar.showSuccess('過去のタスクをすべて完了にしました');
+                    AppSnackBar.showSuccess(l10n.myTasksBulkCompletedSnackBar);
                   }
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: colors.paletteRoseText,
                   side: BorderSide(color: colors.paletteRoseBorder),
                 ),
-                child: const Text('すべて完了にする'),
+                child: Text(l10n.myTasksPastSectionBulkCompleteButton),
               ),
             ],
           ),
@@ -92,7 +94,7 @@ class PastTasksSection extends ConsumerWidget {
               AppSpacing.xs,
             ),
             child: Text(
-              _formatDateLabel(entry.key, entry.value.length),
+              _formatDateLabel(l10n, entry.key, entry.value.length),
               style: Theme.of(
                 context,
               ).textTheme.labelMedium?.copyWith(color: colors.textMuted),
@@ -105,13 +107,13 @@ class PastTasksSection extends ConsumerWidget {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
                     .completeTask(task.houseworkTaskId);
-                AppSnackBar.showSuccess('完了しました');
+                AppSnackBar.showSuccess(l10n.myTasksCompletedSnackBar);
               },
               onSkip: () async {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
                     .skipTask(task.houseworkTaskId);
-                AppSnackBar.showInfo('スキップしました');
+                AppSnackBar.showInfo(l10n.myTasksSkippedSnackBar);
               },
             ),
         ],
@@ -129,11 +131,19 @@ class PastTasksSection extends ConsumerWidget {
     return map;
   }
 
-  String _formatDateLabel(String dateStr, int count) {
+  String _formatDateLabel(AppLocalizations l10n, String dateStr, int count) {
     final date = DateTime.tryParse(dateStr);
-    if (date == null) return '$dateStr　$count件';
-    const weekdays = ['月', '火', '水', '木', '金', '土', '日'];
+    if (date == null) return l10n.myTasksDateLabelFallback(dateStr, count);
+    final weekdays = [
+      l10n.myTasksWeekdayMon,
+      l10n.myTasksWeekdayTue,
+      l10n.myTasksWeekdayWed,
+      l10n.myTasksWeekdayThu,
+      l10n.myTasksWeekdayFri,
+      l10n.myTasksWeekdaySat,
+      l10n.myTasksWeekdaySun,
+    ];
     final wd = weekdays[date.weekday - 1];
-    return '${date.month}/${date.day}（$wd）　$count件';
+    return l10n.myTasksDateLabel(date.month, date.day, wd, count);
   }
 }

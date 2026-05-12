@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../data/my_tasks_repository.dart';
@@ -18,6 +19,7 @@ class SwipeableTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final l10n = AppLocalizations.of(context);
 
     return Dismissible(
       key: ValueKey(task.houseworkTaskId),
@@ -29,13 +31,13 @@ class SwipeableTaskCard extends StatelessWidget {
         alignment: Alignment.centerLeft,
         color: colors.swipeAction,
         icon: Icons.check_circle_outline,
-        label: '完了',
+        label: l10n.myTasksSwipeCompleteLabel,
       ),
       secondaryBackground: _SwipeBackground(
         alignment: Alignment.centerRight,
         color: colors.swipeDisabled,
         icon: Icons.skip_next_outlined,
-        label: 'スキップ',
+        label: l10n.myTasksSwipeSkipLabel,
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {

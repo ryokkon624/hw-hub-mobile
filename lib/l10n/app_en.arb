@@ -246,5 +246,51 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+
+  "myTasksBulkCompleteTitle": "Mark all past tasks as complete?",
+  "myTasksBulkCompleteContent": "All pending past tasks will be updated to complete.",
+  "myTasksBulkCompleteConfirm": "Mark as complete",
+  "myTasksFutureSectionTitle": "Upcoming Housework",
+  "myTasksFutureSectionSubtitle": "Housework scheduled from today onward",
+  "myTasksFutureSectionPendingCount": "Pending: {count}",
+  "@myTasksFutureSectionPendingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksFilterAll": "All",
+  "myTasksFilterToday": "Today",
+  "myTasksFilterWeek": "1 week",
+  "myTasksPastSectionTitle": "Past Housework",
+  "myTasksPastSectionSubtitle": "Tasks that were due before today and are still pending",
+  "myTasksPastSectionBulkCompleteButton": "Mark all as complete",
+  "myTasksCompletedSnackBar": "Marked as complete",
+  "myTasksSkippedSnackBar": "Skipped",
+  "myTasksBulkCompletedSnackBar": "All past tasks marked as complete",
+  "myTasksSwipeCompleteLabel": "Complete",
+  "myTasksSwipeSkipLabel": "Skip",
+  "myTasksDateLabel": "{month}/{day} ({weekday})  {count}",
+  "@myTasksDateLabel": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksDateLabelFallback": "{date}  {count}",
+  "@myTasksDateLabelFallback": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksWeekdayMon": "Mon",
+  "myTasksWeekdayTue": "Tue",
+  "myTasksWeekdayWed": "Wed",
+  "myTasksWeekdayThu": "Thu",
+  "myTasksWeekdayFri": "Fri",
+  "myTasksWeekdaySat": "Sat",
+  "myTasksWeekdaySun": "Sun"
 }
