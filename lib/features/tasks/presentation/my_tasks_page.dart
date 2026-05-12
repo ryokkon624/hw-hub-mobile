@@ -46,6 +46,9 @@ class _TasksBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
+
     return RefreshIndicator(
       onRefresh: () async {
         // ref.invalidate は ConsumerWidget なので _TasksBody では直接呼べないが、
@@ -55,6 +58,21 @@ class _TasksBody extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         children: [
+          // ページ上部の説明テキスト（web SP版の myTasks.intro に相当）
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.xs,
+              AppSpacing.md,
+              0,
+            ),
+            child: Text(
+              l10n.myTasksIntro,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            ),
+          ),
           PastTasksSection(tasks: state.pastTasks),
           FutureTasksSection(
             tasks: state.filteredFutureTasks,

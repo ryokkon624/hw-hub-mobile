@@ -23,6 +23,8 @@ class FutureTasksSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     final l10n = AppLocalizations.of(context);
+    final now = DateTime.now();
+    final todayStr = _dateStr(now);
     final groups = _groupByDate(tasks);
 
     return Column(
@@ -41,58 +43,77 @@ class FutureTasksSection extends ConsumerWidget {
             border: Border.all(color: colors.border),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // 左側: タイトル + サブタイトル
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.myTasksFutureSectionTitle,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.myTasksFutureSectionSubtitle,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              // 右側: フィルタ（セグメントコントロール風）+ 件数
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    l10n.myTasksFutureSectionTitle,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  // セグメントコントロール（選択中=白背景+影、非選択=透明）
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceSubtle,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: colors.border),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _SegmentButton(
+                          label: l10n.myTasksFilterAll,
+                          selected: filter == MyTasksFilter.all,
+                          onTap: () => ref
+                              .read(myTasksNotifierProvider.notifier)
+                              .setFilter(MyTasksFilter.all),
+                        ),
+                        _SegmentButton(
+                          label: l10n.myTasksFilterToday,
+                          selected: filter == MyTasksFilter.today,
+                          onTap: () => ref
+                              .read(myTasksNotifierProvider.notifier)
+                              .setFilter(MyTasksFilter.today),
+                        ),
+                        _SegmentButton(
+                          label: l10n.myTasksFilterWeek,
+                          selected: filter == MyTasksFilter.week,
+                          onTap: () => ref
+                              .read(myTasksNotifierProvider.notifier)
+                              .setFilter(MyTasksFilter.week),
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  // 件数（フィルタの下に小さく表示）
                   Text(
                     l10n.myTasksFutureSectionPendingCount(tasks.length),
                     style: Theme.of(
                       context,
-                    ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                l10n.myTasksFutureSectionSubtitle,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Row(
-                children: [
-                  _FilterChip(
-                    label: l10n.myTasksFilterAll,
-                    selected: filter == MyTasksFilter.all,
-                    onTap: () => ref
-                        .read(myTasksNotifierProvider.notifier)
-                        .setFilter(MyTasksFilter.all),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  _FilterChip(
-                    label: l10n.myTasksFilterToday,
-                    selected: filter == MyTasksFilter.today,
-                    onTap: () => ref
-                        .read(myTasksNotifierProvider.notifier)
-                        .setFilter(MyTasksFilter.today),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  _FilterChip(
-                    label: l10n.myTasksFilterWeek,
-                    selected: filter == MyTasksFilter.week,
-                    onTap: () => ref
-                        .read(myTasksNotifierProvider.notifier)
-                        .setFilter(MyTasksFilter.week),
+                    ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
                   ),
                 ],
               ),
@@ -107,16 +128,31 @@ class FutureTasksSection extends ConsumerWidget {
               AppSpacing.md,
               AppSpacing.xs,
             ),
-            child: Text(
-              _formatDateLabel(l10n, entry.key, entry.value.length),
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(color: colors.textMuted),
+            child: Row(
+              children: [
+                Text(
+                  _formatDateLabel(l10n, entry.key, todayStr),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: entry.key == todayStr
+                        ? colors.primary
+                        : colors.textHeading,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  l10n.myTasksGroupCount(entry.value.length),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+                ),
+              ],
             ),
           ),
           for (final task in entry.value)
             SwipeableTaskCard(
               task: task,
+              isToday: task.targetDate == todayStr,
               onComplete: () async {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
@@ -145,9 +181,23 @@ class FutureTasksSection extends ConsumerWidget {
     return map;
   }
 
-  String _formatDateLabel(AppLocalizations l10n, String dateStr, int count) {
+  String _dateStr(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  String _formatDateLabel(
+    AppLocalizations l10n,
+    String dateStr,
+    String todayStr,
+  ) {
     final date = DateTime.tryParse(dateStr);
-    if (date == null) return l10n.myTasksDateLabelFallback(dateStr, count);
+    if (date == null) return dateStr;
+
+    if (dateStr == todayStr) return l10n.myTasksDateToday;
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowStr = _dateStr(tomorrow);
+    if (dateStr == tomorrowStr) return l10n.myTasksDateTomorrow;
+
     final weekdays = [
       l10n.myTasksWeekdayMon,
       l10n.myTasksWeekdayTue,
@@ -158,12 +208,12 @@ class FutureTasksSection extends ConsumerWidget {
       l10n.myTasksWeekdaySun,
     ];
     final wd = weekdays[date.weekday - 1];
-    return l10n.myTasksDateLabel(date.month, date.day, wd, count);
+    return l10n.myTasksDateLabelShort(date.month, date.day, wd);
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
+class _SegmentButton extends StatelessWidget {
+  const _SegmentButton({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -178,21 +228,27 @@ class _FilterChip extends StatelessWidget {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs,
-        ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: selected ? colors.primary : colors.surfaceSubtle,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? colors.primary : colors.border),
+          color: selected ? colors.surfaceCard : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ]
+              : [],
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: selected ? colors.onPrimary : colors.textBody,
-            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            color: selected ? colors.textHeading : colors.textMuted,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
       ),

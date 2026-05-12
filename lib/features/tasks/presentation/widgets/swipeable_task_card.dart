@@ -10,16 +10,43 @@ class SwipeableTaskCard extends StatelessWidget {
     required this.task,
     required this.onComplete,
     required this.onSkip,
+    this.isPast = false,
+    this.isToday = false,
   });
 
   final HouseworkTaskDto task;
   final VoidCallback onComplete;
   final VoidCallback onSkip;
 
+  /// 過去タスク（今日より前）: rose 系スタイル
+  final bool isPast;
+
+  /// 今日のタスク: emerald 系スタイル
+  final bool isToday;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     final l10n = AppLocalizations.of(context);
+
+    // カードの背景色・ボーダー色・タイトル色をバリアントに応じて切り替える
+    final Color cardBg;
+    final Color cardBorder;
+    final Color titleColor;
+
+    if (isPast) {
+      cardBg = colors.paletteRoseSoft;
+      cardBorder = colors.paletteRoseBorder;
+      titleColor = colors.paletteRoseText;
+    } else if (isToday) {
+      cardBg = colors.paletteEmeraldSoft;
+      cardBorder = colors.paletteEmeraldBorder;
+      titleColor = colors.paletteEmeraldText;
+    } else {
+      cardBg = colors.surfaceCard;
+      cardBorder = colors.border;
+      titleColor = colors.textHeading;
+    }
 
     return Dismissible(
       key: ValueKey(task.houseworkTaskId),
@@ -47,16 +74,24 @@ class SwipeableTaskCard extends StatelessWidget {
         }
         return true;
       },
-      child: Card(
+      child: Container(
         margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: cardBg,
+          border: Border.all(color: cardBorder),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Text(
             task.houseworkName,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: titleColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

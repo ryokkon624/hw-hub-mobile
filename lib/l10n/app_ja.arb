@@ -248,6 +248,25 @@
     }
   },
 
+  "myTasksIntro": "あなたに割り当てられた家事の一覧です。スワイプして完了・スキップを記録できます。",
+
+  "myTasksDateToday": "今日",
+  "myTasksDateTomorrow": "明日",
+  "myTasksDateLabelShort": "{month}/{day}（{weekday}）",
+  "@myTasksDateLabelShort": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "myTasksGroupCount": "{count}件",
+  "@myTasksGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
   "myTasksBulkCompleteTitle": "過去の家事をすべて完了にしますか？",
   "myTasksBulkCompleteContent": "過去の未対応タスクをすべて完了に更新します。",
   "myTasksBulkCompleteConfirm": "完了にする",

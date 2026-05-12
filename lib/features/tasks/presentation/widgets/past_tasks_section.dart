@@ -21,6 +21,8 @@ class PastTasksSection extends ConsumerWidget {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     final l10n = AppLocalizations.of(context);
     final groups = _groupByDate(tasks);
+    final now = DateTime.now();
+    final todayStr = _dateStr(now);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,35 +40,45 @@ class PastTasksSection extends ConsumerWidget {
             border: Border.all(color: colors.paletteRoseBorder),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    color: colors.paletteRoseText,
-                    size: 20,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    l10n.myTasksPastSectionTitle,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colors.paletteRoseText,
-                      fontWeight: FontWeight.bold,
+              // 左側: アイコン + タイトル + サブタイトル
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: colors.paletteRoseText,
+                          size: 18,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          l10n.myTasksPastSectionTitle,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: colors.paletteRoseText,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.myTasksPastSectionSubtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.paletteRoseText,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                l10n.myTasksPastSectionSubtitle,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.paletteRoseText),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              OutlinedButton(
+              const SizedBox(width: AppSpacing.sm),
+              // 右側: すべて完了にするボタン（小型 pill）
+              ElevatedButton(
                 onPressed: () async {
                   final confirmed = await BulkCompleteDialog.show(context);
                   if (confirmed == true && context.mounted) {
@@ -76,9 +88,19 @@ class PastTasksSection extends ConsumerWidget {
                     AppSnackBar.showSuccess(l10n.myTasksBulkCompletedSnackBar);
                   }
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.paletteRoseText,
-                  side: BorderSide(color: colors.paletteRoseBorder),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: const StadiumBorder(),
+                  textStyle: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 child: Text(l10n.myTasksPastSectionBulkCompleteButton),
               ),
@@ -93,16 +115,29 @@ class PastTasksSection extends ConsumerWidget {
               AppSpacing.md,
               AppSpacing.xs,
             ),
-            child: Text(
-              _formatDateLabel(l10n, entry.key, entry.value.length),
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(color: colors.textMuted),
+            child: Row(
+              children: [
+                Text(
+                  _formatDateLabel(l10n, entry.key, todayStr),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: colors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  l10n.myTasksGroupCount(entry.value.length),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+                ),
+              ],
             ),
           ),
           for (final task in entry.value)
             SwipeableTaskCard(
               task: task,
+              isPast: true,
               onComplete: () async {
                 await ref
                     .read(myTasksNotifierProvider.notifier)
@@ -131,9 +166,23 @@ class PastTasksSection extends ConsumerWidget {
     return map;
   }
 
-  String _formatDateLabel(AppLocalizations l10n, String dateStr, int count) {
+  String _dateStr(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  String _formatDateLabel(
+    AppLocalizations l10n,
+    String dateStr,
+    String todayStr,
+  ) {
     final date = DateTime.tryParse(dateStr);
-    if (date == null) return l10n.myTasksDateLabelFallback(dateStr, count);
+    if (date == null) return dateStr;
+
+    if (dateStr == todayStr) return l10n.myTasksDateToday;
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowStr = _dateStr(tomorrow);
+    if (dateStr == tomorrowStr) return l10n.myTasksDateTomorrow;
+
     final weekdays = [
       l10n.myTasksWeekdayMon,
       l10n.myTasksWeekdayTue,
@@ -144,6 +193,6 @@ class PastTasksSection extends ConsumerWidget {
       l10n.myTasksWeekdaySun,
     ];
     final wd = weekdays[date.weekday - 1];
-    return l10n.myTasksDateLabel(date.month, date.day, wd, count);
+    return l10n.myTasksDateLabelShort(date.month, date.day, wd);
   }
 }

@@ -248,6 +248,25 @@
     }
   },
 
+  "myTasksIntro": "Here are the housework tasks assigned to you. Swipe to mark them as complete or skip.",
+
+  "myTasksDateToday": "Today",
+  "myTasksDateTomorrow": "Tomorrow",
+  "myTasksDateLabelShort": "{month}/{day} ({weekday})",
+  "@myTasksDateLabelShort": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "myTasksGroupCount": "{count}",
+  "@myTasksGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
   "myTasksBulkCompleteTitle": "Mark all past tasks as complete?",
   "myTasksBulkCompleteContent": "All pending past tasks will be updated to complete.",
   "myTasksBulkCompleteConfirm": "Mark as complete",
