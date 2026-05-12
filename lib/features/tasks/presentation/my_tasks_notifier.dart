@@ -5,11 +5,6 @@ import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
 import 'my_tasks_state.dart';
 
-final myTasksNotifierProvider =
-    AsyncNotifierProvider.autoDispose<MyTasksNotifier, MyTasksState>(
-      MyTasksNotifier.new,
-    );
-
 class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
   @override
   Future<MyTasksState> build() async {
@@ -132,3 +127,8 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     }
   }
 }
+
+final myTasksNotifierProvider =
+    AsyncNotifierProvider.autoDispose<MyTasksNotifier, MyTasksState>(
+      MyTasksNotifier.new,
+    );
