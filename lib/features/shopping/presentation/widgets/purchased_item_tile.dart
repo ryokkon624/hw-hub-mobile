@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
 
 /// 購入済みタブのアイテム行（スワイプなし）
@@ -56,6 +57,7 @@ class _StoreBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final l10n = AppLocalizations.of(context);
 
     final Color bg;
     final Color text;
@@ -65,15 +67,15 @@ class _StoreBadge extends StatelessWidget {
       case PurchaseLocationType.supermarket:
         bg = colors.storeSuperSoft;
         text = colors.storeSuperText;
-        label = 'スーパー';
+        label = l10n.shoppingFilterSupermarket;
       case PurchaseLocationType.drugstore:
         bg = colors.storeDrugSoft;
         text = colors.storeDrugText;
-        label = 'ドラッグストア';
+        label = l10n.shoppingFilterDrugstore;
       case PurchaseLocationType.online:
         bg = colors.storeOnlineSoft;
         text = colors.storeOnlineText;
-        label = 'オンライン';
+        label = l10n.shoppingFilterOnline;
     }
 
     return Container(
