@@ -38,8 +38,8 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     final futureTasks = <HouseworkTaskDto>[];
 
     for (final task in tasks) {
-      // 自分以外の担当者のタスクはスキップ（未割当タスクは含める）
-      if (task.assigneeUserId != null && task.assigneeUserId != currentUserId) {
+      // AC3: assigneeUserId が currentUserId と一致しないタスク（他人・未割当）はスキップ
+      if (task.assigneeUserId != currentUserId) {
         continue;
       }
       final date = DateTime.tryParse(task.targetDate);

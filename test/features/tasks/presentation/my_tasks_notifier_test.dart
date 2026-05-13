@@ -81,6 +81,9 @@ void main() {
   });
 
   group('MyTasksNotifier 担当者フィルタ', () {
+    // AC1: assigneeUserId が currentUserId と一致し、targetDate が今日以降のタスクのみ futureTasks に表示する
+    // AC2: assigneeUserId が currentUserId と一致し、targetDate が今日より前のタスクのみ pastTasks に表示する
+    // AC3: assigneeUserId が currentUserId と一致しないタスク（他人・未割当）は past/future いずれにも表示しない
     test('自分以外の assigneeUserId のタスクは past/future に含まれない', () async {
       const h = Household(id: 1, name: '山田家');
       // userId=10 が自分、userId=99 が他人
@@ -110,20 +113,56 @@ void main() {
 
       final state = await container.read(myTasksNotifierProvider.future);
 
-      // 自分（id=1）と未割当（id=5）のみ future に含まれる
-      expect(state.futureTasks, hasLength(2));
-      expect(
-        state.futureTasks.map((t) => t.houseworkTaskId),
-        containsAll([1, 5]),
-      );
-      // 他人（id=2, 4）は含まれない
+      // AC1: 自分（id=1）のみ future に含まれる（未割当id=5は含まれない）
+      expect(state.futureTasks, hasLength(1));
+      expect(state.futureTasks.first.houseworkTaskId, 1);
+      // 他人（id=2）は含まれない
       expect(state.futureTasks.any((t) => t.houseworkTaskId == 2), isFalse);
+      // AC3: 未割当（id=5）は含まれない
+      expect(state.futureTasks.any((t) => t.houseworkTaskId == 5), isFalse);
 
-      // 自分（id=3）のみ past に含まれる
+      // AC2: 自分（id=3）のみ past に含まれる
       expect(state.pastTasks, hasLength(1));
       expect(state.pastTasks.first.houseworkTaskId, 3);
       // 他人（id=4）は含まれない
       expect(state.pastTasks.any((t) => t.houseworkTaskId == 4), isFalse);
+    });
+
+    // AC3 明示的検証: 未割当タスクが past/future いずれにも含まれないこと
+    test('未割当タスク（assigneeUserId=null）は past にも future にも含まれない', () async {
+      const h = Household(id: 1, name: '山田家');
+      final tasks = [
+        _task(
+          id: 1,
+          targetDate: _today(),
+          assigneeUserId: 10,
+        ), // 自分（today→future）
+        _task(id: 5, targetDate: _today(), assigneeUserId: null), // 未割当（today）
+        _task(
+          id: 6,
+          targetDate: _daysFromNow(-1),
+          assigneeUserId: null,
+        ), // 未割当（過去）
+      ];
+      when(
+        mockRepo.fetchOpenTasks(householdId: 1),
+      ).thenAnswer((_) async => tasks);
+
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: h,
+      );
+
+      final state = await container.read(myTasksNotifierProvider.future);
+
+      // 自分のタスク（id=1）のみ future に含まれる
+      expect(state.futureTasks, hasLength(1));
+      expect(state.futureTasks.first.houseworkTaskId, 1);
+      // 未割当タスクは future に含まれない
+      expect(state.futureTasks.any((t) => t.houseworkTaskId == 5), isFalse);
+      // 未割当タスクは past にも含まれない
+      expect(state.pastTasks.any((t) => t.houseworkTaskId == 6), isFalse);
+      expect(state.pastTasks, isEmpty);
     });
   });
 
