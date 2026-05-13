@@ -46,7 +46,10 @@ void main() {
         (_) async => Response(
           requestOptions: _req('/api/households/1/shopping-items'),
           statusCode: 200,
-          data: [_itemJson(id: 1), _itemJson(id: 2)],
+          // APIレスポンスは {"items": [...]} のラッパー構造
+          data: {
+            'items': [_itemJson(id: 1), _itemJson(id: 2)],
+          },
         ),
       );
 

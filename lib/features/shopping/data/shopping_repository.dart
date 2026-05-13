@@ -33,7 +33,8 @@ class ShoppingRepositoryImpl implements ShoppingRepository {
         '/api/households/$householdId/shopping-items',
         queryParameters: <String, dynamic>{},
       );
-      return (response.data as List<dynamic>)
+      final data = response.data as Map<String, dynamic>;
+      return (data['items'] as List<dynamic>)
           .map((e) => ShoppingItemDto.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
