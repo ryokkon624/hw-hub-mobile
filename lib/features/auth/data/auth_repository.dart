@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../core/models/auth_user.dart';
 import '../../../core/network/app_exception.dart';
 import 'auth_api.dart';
 import 'models/invitation_info.dart';
@@ -7,6 +8,8 @@ import 'models/login_response.dart';
 import 'models/register_response.dart';
 
 abstract interface class AuthRepository {
+  Future<AuthUser> getMyProfile();
+
   Future<LoginResponse> login({
     required String email,
     required String password,
@@ -48,6 +51,15 @@ class AuthRepositoryImpl implements AuthRepository {
   AppException _convert(DioException e) => e.error is AppException
       ? e.error as AppException
       : const NetworkException();
+
+  @override
+  Future<AuthUser> getMyProfile() async {
+    try {
+      return await _api.getMyProfile();
+    } on DioException catch (e) {
+      throw _convert(e);
+    }
+  }
 
   @override
   Future<LoginResponse> login({

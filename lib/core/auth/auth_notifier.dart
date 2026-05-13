@@ -5,6 +5,7 @@ import '../models/auth_user.dart';
 import 'auth_state.dart';
 import '../di/providers.dart';
 import '../storage/storage_keys.dart';
+import '../../features/auth/auth_providers.dart';
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
@@ -13,12 +14,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final token = await ref.read(tokenStorageProvider).getAccessToken();
     if (token == null) return const AuthUnauthenticated();
 
-    // トークンがある場合は /me を呼んでユーザー情報を取得する
+    // トークンがある場合は AuthRepository 経由でユーザー情報を取得する
     try {
-      final dio = ref.read(dioProvider);
-      final response = await dio.get<dynamic>('/api/users/me/profile');
-      final data = response.data as Map<String, dynamic>;
-      final user = AuthUser.fromJson(data);
+      final user = await ref.read(authRepositoryProvider).getMyProfile();
       return AuthAuthenticated(user);
     } catch (_) {
       // /me 失敗時は再ログインを促す

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../../../core/models/auth_user.dart';
 import 'models/invitation_info.dart';
 import 'models/login_response.dart';
 import 'models/register_response.dart';
@@ -10,6 +11,9 @@ part 'auth_api.g.dart';
 @RestApi()
 abstract class AuthApi {
   factory AuthApi(Dio dio, {String baseUrl}) = _AuthApi;
+
+  @GET('/api/users/me/profile')
+  Future<AuthUser> getMyProfile();
 
   @POST('/api/auth/login')
   Future<LoginResponse> login(@Body() Map<String, dynamic> body);

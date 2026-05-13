@@ -1,13 +1,15 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
+import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/mocks.mocks.dart';
+import '../../features/auth/auth_mocks.mocks.dart';
 
 const _testUser = AuthUser(
   userId: 42,
@@ -15,19 +17,13 @@ const _testUser = AuthUser(
   displayName: 'テスト',
 );
 
-final _userJson = <String, dynamic>{
-  'userId': _testUser.userId,
-  'email': _testUser.email,
-  'displayName': _testUser.displayName,
-};
-
 void main() {
   late MockFlutterSecureStorage mockStorage;
-  late MockDio mockDio;
+  late MockAuthRepository mockAuthRepo;
 
   setUp(() {
     mockStorage = MockFlutterSecureStorage();
-    mockDio = MockDio();
+    mockAuthRepo = MockAuthRepository();
     SharedPreferences.setMockInitialValues({});
     when(mockStorage.read(key: anyNamed('key'))).thenAnswer((_) async => null);
     when(
@@ -40,7 +36,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         secureStorageProvider.overrideWithValue(mockStorage),
-        dioProvider.overrideWithValue(mockDio),
+        authRepositoryProvider.overrideWithValue(mockAuthRepo),
       ],
     );
     addTearDown(container.dispose);
@@ -65,17 +61,11 @@ void main() {
       expect(state, isA<AuthUnauthenticated>());
     });
 
-    test('build() トークンあり・/me 成功 → Authenticated(user)', () async {
+    test('build() トークンあり・getMyProfile 成功 → Authenticated(user)', () async {
       when(
         mockStorage.read(key: anyNamed('key')),
       ).thenAnswer((_) async => 'some-token');
-      when(mockDio.get<dynamic>('/api/users/me/profile')).thenAnswer(
-        (_) async => Response(
-          requestOptions: RequestOptions(path: '/api/users/me/profile'),
-          statusCode: 200,
-          data: _userJson,
-        ),
-      );
+      when(mockAuthRepo.getMyProfile()).thenAnswer((_) async => _testUser);
 
       final container = makeContainer();
       final state = await container.read(authNotifierProvider.future);
@@ -86,17 +76,11 @@ void main() {
       expect(auth.user.email, _testUser.email);
     });
 
-    test('build() トークンあり・/me 失敗 → Unauthenticated', () async {
+    test('build() トークンあり・getMyProfile 失敗 → Unauthenticated', () async {
       when(
         mockStorage.read(key: anyNamed('key')),
       ).thenAnswer((_) async => 'some-token');
-      when(mockDio.get<dynamic>('/api/users/me/profile')).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(path: '/api/users/me/profile'),
-          type: DioExceptionType.connectionError,
-          message: 'Connection refused',
-        ),
-      );
+      when(mockAuthRepo.getMyProfile()).thenThrow(const NetworkException());
 
       final container = makeContainer();
       final state = await container.read(authNotifierProvider.future);
@@ -126,13 +110,7 @@ void main() {
       when(
         mockStorage.read(key: anyNamed('key')),
       ).thenAnswer((_) async => 'some-token');
-      when(mockDio.get<dynamic>('/api/users/me/profile')).thenAnswer(
-        (_) async => Response(
-          requestOptions: RequestOptions(path: '/api/users/me/profile'),
-          statusCode: 200,
-          data: _userJson,
-        ),
-      );
+      when(mockAuthRepo.getMyProfile()).thenAnswer((_) async => _testUser);
 
       final container = makeContainer();
       await container.read(authNotifierProvider.future);
