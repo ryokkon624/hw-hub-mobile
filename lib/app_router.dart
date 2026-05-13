@@ -15,6 +15,7 @@ import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.
 import 'features/auth/presentation/signup/signup_page.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/shell/main_shell.dart';
+import 'features/shopping/presentation/shopping_list_page.dart';
 import 'features/tasks/presentation/my_tasks_page.dart';
 
 // ログイン不要なパス（前方一致）
@@ -149,7 +150,7 @@ final _routes = <RouteBase>[
         routes: [
           GoRoute(
             path: AppRoutes.shopping,
-            builder: (_, _) => const _P('買い物リスト'),
+            builder: (_, _) => const ShoppingListPage(),
             routes: [
               GoRoute(
                 path: AppRoutes._shoppingNewRelative,

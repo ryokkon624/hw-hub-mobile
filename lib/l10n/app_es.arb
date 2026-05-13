@@ -311,5 +311,47 @@
   "myTasksWeekdayThu": "jue",
   "myTasksWeekdayFri": "vie",
   "myTasksWeekdaySat": "sáb",
-  "myTasksWeekdaySun": "dom"
+  "myTasksWeekdaySun": "dom",
+
+  "shoppingListTitle": "Lista de compras",
+  "shoppingListAddItemButton": "+ Agregar artículo",
+  "shoppingTabUnpurchased": "Por comprar",
+  "shoppingTabBasket": "Carrito",
+  "shoppingTabPurchased": "Comprado",
+  "shoppingFilterAll": "Todo",
+  "shoppingFilterSupermarket": "Supermercado",
+  "shoppingFilterDrugstore": "Farmacia",
+  "shoppingFilterOnline": "En línea",
+  "shoppingSwipeMoveToBasket": "Al carrito",
+  "shoppingSwipeDelete": "Eliminar",
+  "shoppingSwipeMarkPurchased": "Comprado",
+  "shoppingSwipeMoveBack": "Deshacer",
+  "shoppingBulkPurchaseButton": "Marcar todo como comprado",
+  "shoppingBulkPurchaseConfirmTitle": "¿Marcar todo como comprado?",
+  "shoppingBulkPurchaseConfirmMessage": "Todos los artículos del carrito serán marcados como comprados.",
+  "shoppingDeleteConfirmTitle": "¿Eliminar artículo?",
+  "shoppingDeleteConfirmMessage": "Este artículo será eliminado. Esta acción no se puede deshacer.",
+  "shoppingToastMovedToBasket": "Agregado al carrito",
+  "shoppingToastMarkedPurchased": "Marcado como comprado",
+  "shoppingToastDeleted": "Eliminado",
+  "shoppingToastMovedBack": "Devuelto a Por comprar",
+  "shoppingToastBulkPurchased": "Todos los artículos marcados como comprados",
+  "shoppingPurchasedDateGroupToday": "Hoy",
+  "shoppingPurchasedDateGroupYesterday": "Ayer",
+  "shoppingPurchasedDateGroupOther": "{month}/{day}",
+  "@shoppingPurchasedDateGroupOther": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" }
+    }
+  },
+  "shoppingPurchasedGroupCount": "{count} artículos",
+  "@shoppingPurchasedGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "shoppingEmptyUnpurchased": "No hay artículos por comprar",
+  "shoppingEmptyBasket": "El carrito está vacío",
+  "shoppingEmptyPurchased": "No hay artículos comprados"
 }

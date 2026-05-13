@@ -311,5 +311,47 @@
   "myTasksWeekdayThu": "Thu",
   "myTasksWeekdayFri": "Fri",
   "myTasksWeekdaySat": "Sat",
-  "myTasksWeekdaySun": "Sun"
+  "myTasksWeekdaySun": "Sun",
+
+  "shoppingListTitle": "Shopping List",
+  "shoppingListAddItemButton": "+ Add item",
+  "shoppingTabUnpurchased": "To Buy",
+  "shoppingTabBasket": "Basket",
+  "shoppingTabPurchased": "Purchased",
+  "shoppingFilterAll": "All",
+  "shoppingFilterSupermarket": "Supermarket",
+  "shoppingFilterDrugstore": "Drugstore",
+  "shoppingFilterOnline": "Online",
+  "shoppingSwipeMoveToBasket": "Basket",
+  "shoppingSwipeDelete": "Delete",
+  "shoppingSwipeMarkPurchased": "Purchased",
+  "shoppingSwipeMoveBack": "Undo",
+  "shoppingBulkPurchaseButton": "Mark all purchased",
+  "shoppingBulkPurchaseConfirmTitle": "Mark all as purchased?",
+  "shoppingBulkPurchaseConfirmMessage": "All items in basket will be marked as purchased.",
+  "shoppingDeleteConfirmTitle": "Delete item?",
+  "shoppingDeleteConfirmMessage": "This item will be deleted. This action cannot be undone.",
+  "shoppingToastMovedToBasket": "Added to basket",
+  "shoppingToastMarkedPurchased": "Marked as purchased",
+  "shoppingToastDeleted": "Deleted",
+  "shoppingToastMovedBack": "Moved back to To Buy",
+  "shoppingToastBulkPurchased": "All items marked as purchased",
+  "shoppingPurchasedDateGroupToday": "Today",
+  "shoppingPurchasedDateGroupYesterday": "Yesterday",
+  "shoppingPurchasedDateGroupOther": "{month}/{day}",
+  "@shoppingPurchasedDateGroupOther": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" }
+    }
+  },
+  "shoppingPurchasedGroupCount": "{count} items",
+  "@shoppingPurchasedGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "shoppingEmptyUnpurchased": "No items to buy",
+  "shoppingEmptyBasket": "Basket is empty",
+  "shoppingEmptyPurchased": "No purchased items"
 }

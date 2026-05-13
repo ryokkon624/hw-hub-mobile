@@ -311,5 +311,47 @@
   "myTasksWeekdayThu": "木",
   "myTasksWeekdayFri": "金",
   "myTasksWeekdaySat": "土",
-  "myTasksWeekdaySun": "日"
+  "myTasksWeekdaySun": "日",
+
+  "shoppingListTitle": "買い物リスト",
+  "shoppingListAddItemButton": "+ アイテムを追加",
+  "shoppingTabUnpurchased": "未購入",
+  "shoppingTabBasket": "かご",
+  "shoppingTabPurchased": "購入済み",
+  "shoppingFilterAll": "すべて",
+  "shoppingFilterSupermarket": "スーパー",
+  "shoppingFilterDrugstore": "ドラッグストア",
+  "shoppingFilterOnline": "オンライン",
+  "shoppingSwipeMoveToBasket": "かごへ",
+  "shoppingSwipeDelete": "削除",
+  "shoppingSwipeMarkPurchased": "購入済みに",
+  "shoppingSwipeMoveBack": "戻す",
+  "shoppingBulkPurchaseButton": "購入済みにする",
+  "shoppingBulkPurchaseConfirmTitle": "一括購入済みにしますか？",
+  "shoppingBulkPurchaseConfirmMessage": "かご内のアイテムをすべて購入済みに更新します。",
+  "shoppingDeleteConfirmTitle": "アイテムを削除しますか？",
+  "shoppingDeleteConfirmMessage": "このアイテムを削除します。この操作は取り消せません。",
+  "shoppingToastMovedToBasket": "かごに追加しました",
+  "shoppingToastMarkedPurchased": "購入済みにしました",
+  "shoppingToastDeleted": "削除しました",
+  "shoppingToastMovedBack": "未購入に戻しました",
+  "shoppingToastBulkPurchased": "一括購入済みにしました",
+  "shoppingPurchasedDateGroupToday": "今日",
+  "shoppingPurchasedDateGroupYesterday": "昨日",
+  "shoppingPurchasedDateGroupOther": "{month}/{day}",
+  "@shoppingPurchasedDateGroupOther": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" }
+    }
+  },
+  "shoppingPurchasedGroupCount": "{count}件",
+  "@shoppingPurchasedGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "shoppingEmptyUnpurchased": "未購入のアイテムはありません",
+  "shoppingEmptyBasket": "かごにアイテムはありません",
+  "shoppingEmptyPurchased": "購入済みアイテムはありません"
 }
