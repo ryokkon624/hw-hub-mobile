@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/auth_state.dart';
 import '../../../core/di/providers.dart';
 import '../data/models/home_raw_data.dart';
 import '../home_providers.dart';
@@ -25,15 +26,15 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
   }
 
   Future<HomeState> _load(int householdId) async {
+    // authState から currentUserId を取得する
+    final authState = await ref.read(authNotifierProvider.future);
+    if (authState is! AuthAuthenticated) {
+      throw StateError('ユーザー情報が取得できません。再ログインしてください。');
+    }
+    final currentUserId = authState.user.userId;
+
     final repo = ref.read(homeRepositoryProvider);
-
-    final results = await Future.wait([
-      repo.loadAll(householdId),
-      repo.loadCurrentUserId(),
-    ]);
-
-    final raw = results[0] as HomeRawData;
-    final currentUserId = results[1] as int;
+    final raw = await repo.loadAll(householdId);
 
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);

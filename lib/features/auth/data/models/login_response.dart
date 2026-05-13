@@ -1,4 +1,4 @@
-import 'auth_user.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 
 class LoginResponse {
   const LoginResponse({

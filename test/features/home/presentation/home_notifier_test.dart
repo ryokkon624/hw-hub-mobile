@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/features/home/data/models/home_raw_data.dart';
 import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dart';
@@ -66,7 +69,12 @@ ProviderContainer _makeContainer({
   int currentUserId = 10,
 }) {
   SharedPreferences.setMockInitialValues({});
-  when(mockRepo.loadCurrentUserId()).thenAnswer((_) async => currentUserId);
+
+  final testUser = AuthUser(
+    userId: currentUserId,
+    email: 'test@example.com',
+    displayName: 'テスト',
+  );
 
   final container = ProviderContainer(
     overrides: [
@@ -78,6 +86,9 @@ ProviderContainer _makeContainer({
             selectedHousehold: selectedHousehold,
           ),
         ),
+      ),
+      authNotifierProvider.overrideWith(
+        () => _FakeAuthNotifier(AuthAuthenticated(testUser)),
       ),
     ],
   );
@@ -327,4 +338,12 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
 
   @override
   Future<void> select(Household household) async {}
+}
+
+class _FakeAuthNotifier extends AuthNotifier {
+  _FakeAuthNotifier(this._authState);
+  final AuthState _authState;
+
+  @override
+  Future<AuthState> build() async => _authState;
 }

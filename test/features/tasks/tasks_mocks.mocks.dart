@@ -5,6 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
+import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart'
+    as _i4;
 import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
@@ -32,24 +34,16 @@ class MockMyTasksRepository extends _i1.Mock implements _i2.MyTasksRepository {
   }
 
   @override
-  _i3.Future<List<_i2.HouseworkTaskDto>> fetchOpenTasks({
+  _i3.Future<List<_i4.HouseworkTaskDto>> fetchOpenTasks({
     required int? householdId,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#fetchOpenTasks, [], {#householdId: householdId}),
-            returnValue: _i3.Future<List<_i2.HouseworkTaskDto>>.value(
-              <_i2.HouseworkTaskDto>[],
+            returnValue: _i3.Future<List<_i4.HouseworkTaskDto>>.value(
+              <_i4.HouseworkTaskDto>[],
             ),
           )
-          as _i3.Future<List<_i2.HouseworkTaskDto>>);
-
-  @override
-  _i3.Future<int> loadCurrentUserId() =>
-      (super.noSuchMethod(
-            Invocation.method(#loadCurrentUserId, []),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
+          as _i3.Future<List<_i4.HouseworkTaskDto>>);
 
   @override
   _i3.Future<void> updateTaskStatus({

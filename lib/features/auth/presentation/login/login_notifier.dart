@@ -31,6 +31,7 @@ class LoginNotifier extends Notifier<LoginState> {
           .saveTokens(
             accessToken: resp.accessToken,
             refreshToken: resp.refreshToken,
+            user: resp.user,
           );
     } on AppException catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.message);

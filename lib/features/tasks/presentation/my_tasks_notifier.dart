@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/auth/auth_state.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/models/task_status.dart';
 import '../data/models/housework_task_dto.dart';
@@ -20,13 +21,15 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
   }
 
   Future<MyTasksState> _load(int householdId) async {
+    // authState から currentUserId を取得する
+    final authState = await ref.read(authNotifierProvider.future);
+    if (authState is! AuthAuthenticated) {
+      throw StateError('ユーザー情報が取得できません。再ログインしてください。');
+    }
+    final currentUserId = authState.user.userId;
+
     final repo = ref.read(myTasksRepositoryProvider);
-    final results = await Future.wait([
-      repo.fetchOpenTasks(householdId: householdId),
-      repo.loadCurrentUserId(),
-    ]);
-    final tasks = results[0] as List<HouseworkTaskDto>;
-    final currentUserId = results[1] as int;
+    final tasks = await repo.fetchOpenTasks(householdId: householdId);
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

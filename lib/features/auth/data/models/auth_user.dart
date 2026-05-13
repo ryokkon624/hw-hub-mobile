@@ -1,17 +1,2 @@
-class AuthUser {
-  const AuthUser({
-    required this.userId,
-    required this.email,
-    required this.displayName,
-  });
-
-  final int userId;
-  final String email;
-  final String displayName;
-
-  factory AuthUser.fromJson(Map<String, dynamic> json) => AuthUser(
-    userId: json['userId'] as int,
-    email: json['email'] as String,
-    displayName: json['displayName'] as String,
-  );
-}
+// auth_user は core/models に移動しました。後方互換のために re-export します。
+export 'package:hw_hub_mobile/core/models/auth_user.dart';

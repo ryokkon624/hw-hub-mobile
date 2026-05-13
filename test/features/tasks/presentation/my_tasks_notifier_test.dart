@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/models/task_status.dart';
 import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
@@ -39,8 +42,16 @@ HouseworkTaskDto _task({
 ProviderContainer _makeContainer({
   required MockMyTasksRepository mockRepo,
   Household? selectedHousehold,
+  int currentUserId = 10,
 }) {
   SharedPreferences.setMockInitialValues({});
+
+  final testUser = AuthUser(
+    userId: currentUserId,
+    email: 'test@example.com',
+    displayName: 'テスト',
+  );
+
   final container = ProviderContainer(
     overrides: [
       myTasksRepositoryProvider.overrideWithValue(mockRepo),
@@ -51,6 +62,9 @@ ProviderContainer _makeContainer({
             selectedHousehold: selectedHousehold,
           ),
         ),
+      ),
+      authNotifierProvider.overrideWith(
+        () => _FakeAuthNotifier(AuthAuthenticated(testUser)),
       ),
     ],
   );
@@ -64,15 +78,12 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     mockRepo = MockMyTasksRepository();
-    // loadCurrentUserId はデフォルト userId=10 を返す（_task の assigneeUserId デフォルトと一致）
-    when(mockRepo.loadCurrentUserId()).thenAnswer((_) async => 10);
   });
 
   group('MyTasksNotifier 担当者フィルタ', () {
     test('自分以外の assigneeUserId のタスクは past/future に含まれない', () async {
       const h = Household(id: 1, name: '山田家');
       // userId=10 が自分、userId=99 が他人
-      when(mockRepo.loadCurrentUserId()).thenAnswer((_) async => 10);
       final tasks = [
         _task(id: 1, targetDate: _today(), assigneeUserId: 10), // 自分
         _task(id: 2, targetDate: _today(), assigneeUserId: 99), // 他人
@@ -359,4 +370,12 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
 
   @override
   Future<void> select(Household household) async {}
+}
+
+class _FakeAuthNotifier extends AuthNotifier {
+  _FakeAuthNotifier(this._authState);
+  final AuthState _authState;
+
+  @override
+  Future<AuthState> build() async => _authState;
 }

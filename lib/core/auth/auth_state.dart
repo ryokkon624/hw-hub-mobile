@@ -1,3 +1,5 @@
+import '../models/auth_user.dart';
+
 sealed class AuthState {
   const AuthState();
 }
@@ -7,7 +9,9 @@ final class AuthLoading extends AuthState {
 }
 
 final class AuthAuthenticated extends AuthState {
-  const AuthAuthenticated();
+  const AuthAuthenticated(this.user);
+
+  final AuthUser user;
 }
 
 final class AuthUnauthenticated extends AuthState {

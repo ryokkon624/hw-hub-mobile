@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
-import 'package:hw_hub_mobile/features/auth/data/models/auth_user.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/login_response.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/login/login_notifier.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/login/login_state.dart';
@@ -95,8 +96,13 @@ void main() {
     });
 
     test(
-      'submit() 成功時にerrorMessageはnullのまま・authNotifierがAuthenticated',
+      'submit() 成功時: errorMessageはnullのまま・authNotifierがAuthAuthenticated(user)',
       () async {
+        const loginUser = AuthUser(
+          userId: 1,
+          email: 'test@example.com',
+          displayName: 'Test',
+        );
         when(
           mockRepo.login(
             email: anyNamed('email'),
@@ -106,11 +112,7 @@ void main() {
           (_) async => const LoginResponse(
             accessToken: 'access-jwt',
             refreshToken: 'refresh-jwt',
-            user: AuthUser(
-              userId: 1,
-              email: 'test@example.com',
-              displayName: 'Test',
-            ),
+            user: loginUser,
           ),
         );
         when(
@@ -126,6 +128,13 @@ void main() {
         await container.read(loginNotifierProvider.notifier).submit();
 
         expect(container.read(loginNotifierProvider).errorMessage, isNull);
+
+        // authNotifier が user を保持した AuthAuthenticated になること
+        final authState = container.read(authNotifierProvider).value;
+        expect(authState, isA<AuthAuthenticated>());
+        final auth = authState as AuthAuthenticated;
+        expect(auth.user.userId, loginUser.userId);
+        expect(auth.user.email, loginUser.email);
       },
     );
 

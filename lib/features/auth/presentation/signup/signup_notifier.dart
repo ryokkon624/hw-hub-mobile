@@ -42,6 +42,7 @@ class SignupNotifier extends Notifier<SignupState> {
             .saveTokens(
               accessToken: resp.accessToken!,
               refreshToken: resp.refreshToken!,
+              user: resp.user,
             );
         state = state.copyWith(isLoading: false);
       } else {
