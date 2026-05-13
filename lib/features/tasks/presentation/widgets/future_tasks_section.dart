@@ -27,147 +27,165 @@ class FutureTasksSection extends ConsumerWidget {
     final todayStr = _dateStr(now);
     final groups = _groupByDate(tasks);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            0,
-          ),
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            border: Border.all(color: colors.border),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 左側: タイトル + サブタイトル
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        0,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surfaceCard,
+        border: Border.all(color: colors.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              border: Border(bottom: BorderSide(color: colors.border)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 左側: タイトル + サブタイトル
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.myTasksFutureSectionTitle,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.myTasksFutureSectionSubtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                // 右側: フィルタ（セグメントコントロール風）+ 件数
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      l10n.myTasksFutureSectionTitle,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                    // セグメントコントロール（選択中=白背景+影、非選択=透明）
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceSubtle,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: colors.border),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _SegmentButton(
+                            label: l10n.myTasksFilterAll,
+                            selected: filter == MyTasksFilter.all,
+                            onTap: () => ref
+                                .read(myTasksNotifierProvider.notifier)
+                                .setFilter(MyTasksFilter.all),
+                          ),
+                          _SegmentButton(
+                            label: l10n.myTasksFilterToday,
+                            selected: filter == MyTasksFilter.today,
+                            onTap: () => ref
+                                .read(myTasksNotifierProvider.notifier)
+                                .setFilter(MyTasksFilter.today),
+                          ),
+                          _SegmentButton(
+                            label: l10n.myTasksFilterWeek,
+                            selected: filter == MyTasksFilter.week,
+                            onTap: () => ref
+                                .read(myTasksNotifierProvider.notifier)
+                                .setFilter(MyTasksFilter.week),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
+                    // 件数（フィルタの下に小さく表示）
                     Text(
-                      l10n.myTasksFutureSectionSubtitle,
+                      l10n.myTasksFutureSectionPendingCount(tasks.length),
                       style: Theme.of(
                         context,
-                      ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+                      ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+          for (final entry in groups.entries) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.xs,
               ),
-              const SizedBox(width: AppSpacing.sm),
-              // 右側: フィルタ（セグメントコントロール風）+ 件数
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              child: Row(
                 children: [
-                  // セグメントコントロール（選択中=白背景+影、非選択=透明）
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceSubtle,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _SegmentButton(
-                          label: l10n.myTasksFilterAll,
-                          selected: filter == MyTasksFilter.all,
-                          onTap: () => ref
-                              .read(myTasksNotifierProvider.notifier)
-                              .setFilter(MyTasksFilter.all),
-                        ),
-                        _SegmentButton(
-                          label: l10n.myTasksFilterToday,
-                          selected: filter == MyTasksFilter.today,
-                          onTap: () => ref
-                              .read(myTasksNotifierProvider.notifier)
-                              .setFilter(MyTasksFilter.today),
-                        ),
-                        _SegmentButton(
-                          label: l10n.myTasksFilterWeek,
-                          selected: filter == MyTasksFilter.week,
-                          onTap: () => ref
-                              .read(myTasksNotifierProvider.notifier)
-                              .setFilter(MyTasksFilter.week),
-                        ),
-                      ],
+                  Text(
+                    _formatDateLabel(l10n, entry.key, todayStr),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: entry.key == todayStr
+                          ? colors.primary
+                          : colors.textHeading,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  // 件数（フィルタの下に小さく表示）
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
-                    l10n.myTasksFutureSectionPendingCount(tasks.length),
+                    l10n.myTasksGroupCount(entry.value.length),
                     style: Theme.of(
                       context,
                     ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-        for (final entry in groups.entries) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.md,
-              AppSpacing.xs,
             ),
-            child: Row(
-              children: [
-                Text(
-                  _formatDateLabel(l10n, entry.key, todayStr),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: entry.key == todayStr
-                        ? colors.primary
-                        : colors.textHeading,
-                    fontWeight: FontWeight.w600,
-                  ),
+            for (final task in entry.value)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm,
+                  0,
+                  AppSpacing.sm,
+                  AppSpacing.xs,
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                Text(
-                  l10n.myTasksGroupCount(entry.value.length),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+                child: SwipeableTaskCard(
+                  task: task,
+                  isToday: task.targetDate == todayStr,
+                  onComplete: () async {
+                    await ref
+                        .read(myTasksNotifierProvider.notifier)
+                        .completeTask(task.houseworkTaskId);
+                    AppSnackBar.showSuccess(l10n.myTasksCompletedSnackBar);
+                  },
+                  onSkip: () async {
+                    await ref
+                        .read(myTasksNotifierProvider.notifier)
+                        .skipTask(task.houseworkTaskId);
+                    AppSnackBar.showInfo(l10n.myTasksSkippedSnackBar);
+                  },
                 ),
-              ],
-            ),
-          ),
-          for (final task in entry.value)
-            SwipeableTaskCard(
-              task: task,
-              isToday: task.targetDate == todayStr,
-              onComplete: () async {
-                await ref
-                    .read(myTasksNotifierProvider.notifier)
-                    .completeTask(task.houseworkTaskId);
-                AppSnackBar.showSuccess(l10n.myTasksCompletedSnackBar);
-              },
-              onSkip: () async {
-                await ref
-                    .read(myTasksNotifierProvider.notifier)
-                    .skipTask(task.houseworkTaskId);
-                AppSnackBar.showInfo(l10n.myTasksSkippedSnackBar);
-              },
-            ),
+              ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
         ],
-      ],
+      ),
     );
   }
 

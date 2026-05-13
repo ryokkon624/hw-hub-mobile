@@ -75,10 +75,6 @@ class SwipeableTaskCard extends StatelessWidget {
         return true;
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.xs,
-        ),
         decoration: BoxDecoration(
           color: cardBg,
           border: Border.all(color: cardBorder),
