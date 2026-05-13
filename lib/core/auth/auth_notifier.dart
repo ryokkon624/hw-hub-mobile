@@ -1,28 +1,38 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/auth_user.dart';
 import 'auth_state.dart';
 import '../di/providers.dart';
 import '../storage/storage_keys.dart';
+import '../../features/auth/auth_providers.dart';
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
   Future<AuthState> build() async {
     await _clearOnFreshInstall();
     final token = await ref.read(tokenStorageProvider).getAccessToken();
-    return token != null
-        ? const AuthAuthenticated()
-        : const AuthUnauthenticated();
+    if (token == null) return const AuthUnauthenticated();
+
+    // トークンがある場合は AuthRepository 経由でユーザー情報を取得する
+    try {
+      final user = await ref.read(authRepositoryProvider).getMyProfile();
+      return AuthAuthenticated(user);
+    } catch (_) {
+      // /me 失敗時は再ログインを促す
+      return const AuthUnauthenticated();
+    }
   }
 
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
+    required AuthUser user,
   }) async {
     await ref
         .read(tokenStorageProvider)
         .saveTokens(accessToken: accessToken, refreshToken: refreshToken);
-    state = const AsyncData(AuthAuthenticated());
+    state = AsyncData(AuthAuthenticated(user));
   }
 
   Future<void> logout() async {

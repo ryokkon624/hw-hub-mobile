@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'email_verify_wait_notifier.dart';
 
@@ -16,7 +17,7 @@ class EmailVerifyWaitPage extends ConsumerWidget {
 
     if (email.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.go('/signup'),
+        (_) => context.go(AppRoutes.signup),
       );
       return const SizedBox.shrink();
     }
@@ -39,7 +40,7 @@ class EmailVerifyWaitPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.go('/signup')),
+        leading: BackButton(onPressed: () => context.go(AppRoutes.signup)),
       ),
       body: SafeArea(
         child: Padding(

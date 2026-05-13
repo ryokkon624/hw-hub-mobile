@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class AuthResultPage extends StatelessWidget {
@@ -19,7 +20,7 @@ class AuthResultPage extends StatelessWidget {
         l10n.authResultEmailVerifySuccessTitle,
         l10n.authResultEmailVerifySuccessMessage,
         l10n.authResultToLogin,
-        () => context.go('/login?notice=emailVerified'),
+        () => context.go('${AppRoutes.login}?notice=emailVerified'),
       ),
       ('emailVerify', _) => (
         status == 'expired'
@@ -29,13 +30,13 @@ class AuthResultPage extends StatelessWidget {
             ? l10n.authResultEmailVerifyExpiredMessage
             : l10n.authResultEmailVerifyInvalidMessage,
         l10n.authResultToSignup,
-        () => context.go('/signup'),
+        () => context.go(AppRoutes.signup),
       ),
       ('passwordReset', 'success') => (
         l10n.authResultPasswordResetSuccessTitle,
         l10n.authResultPasswordResetSuccessMessage,
         l10n.authResultToLogin,
-        () => context.go('/login?notice=passwordResetSuccess'),
+        () => context.go('${AppRoutes.login}?notice=passwordResetSuccess'),
       ),
       ('passwordReset', _) => (
         status == 'expired'
@@ -45,13 +46,13 @@ class AuthResultPage extends StatelessWidget {
             ? l10n.authResultPasswordResetExpiredMessage
             : l10n.authResultPasswordResetInvalidMessage,
         l10n.authResultRetryPasswordReset,
-        () => context.go('/forgot-password'),
+        () => context.go(AppRoutes.forgotPassword),
       ),
       _ => (
         l10n.errorUnexpected,
         '',
         l10n.authResultToLogin,
-        () => context.go('/login'),
+        () => context.go(AppRoutes.login),
       ),
     };
 

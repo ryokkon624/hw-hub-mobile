@@ -49,12 +49,4 @@ class MockHomeRepository extends _i1.Mock implements _i3.HomeRepository {
             ),
           )
           as _i4.Future<_i2.HomeRawData>);
-
-  @override
-  _i4.Future<int> loadCurrentUserId() =>
-      (super.noSuchMethod(
-            Invocation.method(#loadCurrentUserId, []),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
 }

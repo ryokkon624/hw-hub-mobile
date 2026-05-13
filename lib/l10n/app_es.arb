@@ -1,0 +1,315 @@
+{
+  "@@locale": "es",
+
+  "commonCancel": "Cancelar",
+  "commonSave": "Guardar",
+  "commonDelete": "Eliminar",
+  "commonClose": "Cerrar",
+  "commonLoading": "Cargando...",
+  "commonLogout": "Cerrar sesión",
+  "commonOk": "Aceptar",
+  "commonRetry": "Reintentar",
+  "commonSending": "Enviando...",
+  "commonLocaleJa": "Japonés",
+  "commonLocaleEn": "Inglés",
+  "commonLocaleEs": "Español",
+
+  "appName": "Housework Hub",
+  "appTagline": "Organiza las tareas del hogar en familia",
+
+  "navHome": "Inicio",
+  "navAssign": "Tareas",
+  "navMyTasks": "Mis Tareas",
+  "navShopping": "Compras",
+  "navSettings": "Ajustes",
+
+  "pageTitleHome": "Inicio",
+  "pageTitleHouseworkAssign": "Tablero de Tareas",
+  "pageTitleMyTasks": "Mis Tareas",
+  "pageTitleShopping": "Lista de Compras",
+  "pageTitleSettings": "Ajustes",
+  "pageTitleAccountSettings": "Configuración de Cuenta",
+  "pageTitleHouseholdSettings": "Configuración del Hogar",
+  "pageTitleHouseworkCreate": "Nueva Tarea del Hogar",
+  "pageTitleHouseworkEdit": "Editar Tarea del Hogar",
+  "pageTitleNotifications": "Centro de Notificaciones",
+  "pageTitleAppInfo": "Info de la App",
+  "pageTitleTerms": "Términos de Servicio",
+  "pageTitlePrivacy": "Política de Privacidad",
+  "pageTitleAuthResult": "Resultado",
+  "pageTitleInquiry": "Consultas",
+  "pageTitleInquiryCreate": "Nueva Consulta",
+  "pageTitleInquiryDetail": "Detalle de Consulta",
+
+  "errorNetwork": "Se produjo un error de red.",
+  "errorServer": "Se produjo un error del servidor.",
+  "errorUnexpected": "Se produjo un error inesperado.",
+  "errorUnauthorized": "Autenticación requerida.",
+  "errorForbidden": "Acceso denegado.",
+  "errorValidation": "Por favor, revise su entrada.",
+  "errorNotFound": "No encontrado.",
+  "errorFailed": "El proceso falló.",
+  "errorTooManyRequests": "Demasiadas solicitudes. Por favor, espere un momento.",
+  "errorAuthEmailAlreadyUsed": "Esta dirección de correo ya está en uso.",
+  "errorAuthEmailNotVerified": "La dirección de correo no ha sido verificada.",
+  "errorAuthPasswordLoginNotAllowed": "El inicio de sesión con contraseña no está permitido para esta cuenta. Por favor, use Google.",
+  "errorAuthInvalidCredentials": "El correo o la contraseña son incorrectos.",
+  "errorEmailVerifyInvalid": "El token es inválido o ha expirado.",
+  "errorEmailVerifyCooldown": "Demasiadas solicitudes de reenvío. Por favor, espere un momento.",
+  "errorEmailVerifyLimitExceeded": "Se excedió el límite diario de reenvíos.",
+  "errorEmailVerifyAlreadyVerified": "Ya está verificado. Por favor, inicie sesión.",
+  "errorPasswordResetDisabled": "El restablecimiento de contraseña no está disponible actualmente.",
+  "errorPasswordResetInvalid": "El token es inválido o ha expirado.",
+  "errorPasswordResetExpired": "El token ha expirado.",
+  "errorPasswordResetCooldown": "Demasiadas solicitudes de reenvío.",
+  "errorPasswordResetLimitExceeded": "Se excedió el límite de solicitudes.",
+  "errorOauthStateMismatch": "No coincide el estado de autenticación. Por favor, inténtelo de nuevo.",
+  "errorOauthIdTokenInvalid": "El token de autenticación es inválido. Por favor, inténtelo de nuevo.",
+  "errorOauthEmailAlreadyRegistered": "Este correo ya está registrado. Para vincularlo con Google, inicie sesión y vaya a Configuración de Cuenta.",
+
+  "loginTitle": "Iniciar Sesión",
+  "loginSubtitle": "Inicie sesión con su correo y contraseña registrados.",
+  "loginWithGoogle": "Iniciar sesión con Google",
+  "loginDivider": "o",
+  "loginEmail": "Correo",
+  "loginPassword": "Contraseña",
+  "loginEmailPlaceholder": "usted@ejemplo.com",
+  "loginPasswordPlaceholder": "••••••••",
+  "loginSubmit": "Iniciar Sesión",
+  "loginSubmitting": "Iniciando sesión...",
+  "loginNoAccount": "¿No tiene cuenta?",
+  "loginGoSignup": "Registrarse",
+  "loginForgotPassword": "¿Olvidó su contraseña?",
+
+  "signupTitle": "Crear Cuenta",
+  "signupEmail": "Correo",
+  "signupDisplayName": "Nombre de visualización",
+  "signupPassword": "Contraseña",
+  "signupPasswordConfirm": "Confirmar contraseña",
+  "signupPasswordHint": "8 caracteres o más",
+  "signupLocale": "Idioma",
+  "signupEmailPlaceholder": "usted@ejemplo.com",
+  "signupDisplayNamePlaceholder": "p.ej. Papá / Mamá / Taro",
+  "signupSubmit": "Crear cuenta",
+  "signupSubmitting": "Creando...",
+  "signupHaveAccount": "¿Ya tiene una cuenta?",
+  "signupGoLogin": "Iniciar sesión",
+  "signupErrorEmailUsed": "Esta dirección de correo ya está registrada.",
+  "signupErrorFailed": "No se pudo crear la cuenta. Por favor, inténtelo más tarde.",
+
+  "emailVerifyWaitTitle": "Correo de verificación enviado",
+  "emailVerifyWaitSentTo": "Se envió un correo de verificación a {email}.",
+  "@emailVerifyWaitSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "emailVerifyWaitInstruction": "Haga clic en el enlace del correo para completar el registro.",
+  "emailVerifyWaitSpamNote": "Revise también su carpeta de spam.",
+  "emailVerifyWaitResendButton": "Reenviar correo de verificación",
+  "emailVerifyWaitResendCooldown": "Reenviar ({seconds}s)",
+  "@emailVerifyWaitResendCooldown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "emailVerifyWaitAlertResent": "Correo de verificación reenviado",
+
+  "emailVerifyLoading": "Verificando...",
+  "emailVerifySuccess": "Verificación completada. Por favor, inicie sesión.",
+  "emailVerifyInvalid": "El enlace es inválido o ha expirado. Por favor, reenvíe desde la página de registro.",
+  "emailVerifyToLogin": "Ir a iniciar sesión",
+  "emailVerifyToSignup": "Ir a registrarse",
+
+  "inviteHeading": "Tienes una invitación al hogar.",
+  "inviteDescription": "Al aceptar, te unirás al hogar y compartirás tareas y listas de compras.",
+  "inviteLoading": "Cargando invitación...",
+  "inviteErrorInvalid": "Esta invitación no es válida o ha expirado.",
+  "inviteErrorAcceptFailed": "No se pudo unir al hogar. Por favor, inténtelo más tarde.",
+  "inviteErrorDeclineFailed": "No se pudo rechazar la invitación.",
+  "invitePageLabel": "Invitación",
+  "inviteInviterLabel": "Invitado por",
+  "inviteInvitedEmailLabel": "Correo invitado",
+  "inviteHouseholdTitle": "Hogar invitado",
+  "inviteLoginNeededMessage": "Necesitas iniciar sesión o crear una cuenta para unirte.",
+  "inviteLoginAndJoin": "Iniciar sesión y unirse",
+  "inviteSignupAndJoin": "Crear una nueva cuenta",
+  "inviteConfirmMessage": "¿Unirse a \"{householdName}\" con esta cuenta?",
+  "@inviteConfirmMessage": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "inviteAccept": "Unirse",
+  "inviteDecline": "Rechazar",
+
+  "passwordForgotTitle": "¿Olvidó su contraseña?",
+  "passwordForgotDescription": "Ingrese su correo. Si existe una cuenta, le enviaremos un enlace de restablecimiento.",
+  "passwordForgotEmail": "Correo",
+  "passwordForgotEmailPlaceholder": "usted@ejemplo.com",
+  "passwordForgotSubmit": "Enviar enlace de restablecimiento",
+  "passwordForgotBackToLogin": "Volver a iniciar sesión",
+
+  "passwordResetSentTitle": "Revise su correo",
+  "passwordResetSentDescription": "Si existe una cuenta, se ha enviado un enlace de restablecimiento.",
+  "passwordResetSentCheckSpam": "¿No recibió el correo?",
+  "passwordResetSentSpamFolder": "Revise su carpeta de spam",
+  "passwordResetSentCheckSettings": "Revise su configuración de recepción",
+  "passwordResetSentWaitAndRetry": "Espere un momento y reenvíe",
+  "passwordResetSentResend": "Reenviar correo",
+  "passwordResetSentResendSuccess": "Correo reenviado exitosamente",
+  "passwordResetSentSending": "Enviando...",
+  "passwordResetSentUseDifferentEmail": "Usar un correo diferente",
+  "passwordResetSentBackToLogin": "Volver a iniciar sesión",
+
+  "passwordResetTitle": "Restablecer Contraseña",
+  "passwordResetDescription": "Ingrese su nueva contraseña.",
+  "passwordResetMissingToken": "Token no encontrado. Por favor, revise la URL.",
+  "passwordResetNewPassword": "Nueva contraseña",
+  "passwordResetNewPasswordHint": "8 caracteres o más",
+  "passwordResetConfirmPassword": "Confirmar nueva contraseña",
+  "passwordResetConfirmPasswordHint": "Ingresar nuevamente",
+  "passwordResetSubmit": "Restablecer Contraseña",
+  "passwordResetRequestNew": "Solicitar nuevo enlace",
+  "passwordResetBackToLogin": "Volver a iniciar sesión",
+  "passwordResetErrorMismatch": "Las contraseñas no coinciden.",
+
+  "authResultEmailVerifySuccessTitle": "Correo verificado",
+  "authResultEmailVerifySuccessMessage": "Por favor, inicie sesión para continuar.",
+  "authResultEmailVerifyExpiredTitle": "El enlace ha expirado",
+  "authResultEmailVerifyExpiredMessage": "Por favor, reenvíe el correo de verificación desde la página de registro.",
+  "authResultEmailVerifyInvalidTitle": "Enlace de verificación inválido",
+  "authResultEmailVerifyInvalidMessage": "El enlace es incorrecto o ya ha sido usado.",
+  "authResultPasswordResetSuccessTitle": "Contraseña restablecida",
+  "authResultPasswordResetSuccessMessage": "Por favor, inicie sesión con su nueva contraseña.",
+  "authResultPasswordResetExpiredTitle": "El enlace ha expirado",
+  "authResultPasswordResetExpiredMessage": "Por favor, solicite un nuevo restablecimiento de contraseña.",
+  "authResultPasswordResetInvalidTitle": "Enlace de restablecimiento inválido",
+  "authResultPasswordResetInvalidMessage": "El enlace es incorrecto o ya ha sido usado.",
+  "authResultToLogin": "Ir a iniciar sesión",
+  "authResultRetryPasswordReset": "Intentar restablecer contraseña de nuevo",
+  "authResultToSignup": "Ir a registrarse",
+
+  "homeAppBarNotification": "El centro de notificaciones estará disponible próximamente",
+  "homeAppBarAccount": "La configuración de cuenta está disponible en la pantalla de Ajustes",
+
+  "homeShoppingStoreSupermarket": "Supermercado",
+  "homeShoppingStoreOnline": "En línea",
+  "homeShoppingStoreDrugStore": "Farmacia",
+
+  "homeMyTasksTitle": "Mis Tareas",
+  "homeMyTasksSubtitle": "Tareas del hogar asignadas a usted",
+  "homeMyTasksToday": "Hoy",
+  "homeMyTasksWeek": "Próximos 7 días",
+  "homeMyTasksOverdue": "Vencidas",
+  "homeMyTasksOpenButton": "Abrir Mis Tareas",
+  "homeMyTasksNote": "Asignadas a usted",
+  "homeMyTasksCountFormat": "{count}",
+  "@homeMyTasksCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeUnassignedTitle": "Tareas Sin Asignar",
+  "homeUnassignedSubtitle": "Tareas del hogar sin responsable",
+  "homeUnassignedTotal": "Total",
+  "homeUnassignedTotalPeriod": "Todas las tareas abiertas",
+  "homeUnassignedUrgent": "Próximas a vencer",
+  "homeUnassignedUrgentDescription": "En los próximos 3 días",
+  "homeUnassignedNote": "Asigne tareas a los miembros",
+  "homeUnassignedOpenButton": "Abrir asignación",
+
+  "homeShoppingTitle": "Lista de Compras",
+  "homeShoppingSubtitle": "Artículos por comprar según tienda",
+  "homeShoppingRecentlyAdded": "Añadidos en los últimos 2 días",
+  "homeShoppingOpenButton": "Abrir lista de compras",
+  "homeShoppingCountFormat": "{count}",
+  "@homeShoppingCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "homeOverviewTitle": "Resumen del Hogar",
+  "homeOverviewSubtitle": "Estado de completado de tareas",
+  "homeOverviewUnassigned": "Sin asignar",
+
+  "homeOnboardingTitle": "¡Bienvenido!",
+  "homeOnboardingMessage": "Empiece configurando su hogar y añadiendo tareas del hogar.",
+  "homeOnboardingGoHousehold": "Configurar hogar",
+  "homeOnboardingGoHousework": "Añadir tarea del hogar",
+
+  "homeErrorRetry": "Reintentar",
+  "homeItemCount": "{count}",
+  "@homeItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "myTasksIntro": "Aquí están las tareas del hogar asignadas a usted. Deslice para marcarlas como completadas o saltarlas.",
+
+  "myTasksDateToday": "Hoy",
+  "myTasksDateTomorrow": "Mañana",
+  "myTasksDateLabelShort": "{month}/{day} ({weekday})",
+  "@myTasksDateLabelShort": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "myTasksGroupCount": "{count}",
+  "@myTasksGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "myTasksBulkCompleteTitle": "¿Marcar todas las tareas pasadas como completadas?",
+  "myTasksBulkCompleteContent": "Todas las tareas pasadas pendientes se actualizarán a completadas.",
+  "myTasksBulkCompleteConfirm": "Marcar como completadas",
+  "myTasksFutureSectionTitle": "Próximas Tareas",
+  "myTasksFutureSectionSubtitle": "Tareas del hogar programadas desde hoy",
+  "myTasksFutureSectionPendingCount": "Pendientes: {count}",
+  "@myTasksFutureSectionPendingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksFilterAll": "Todas",
+  "myTasksFilterToday": "Hoy",
+  "myTasksFilterWeek": "1 semana",
+  "myTasksPastSectionTitle": "Tareas Pasadas",
+  "myTasksPastSectionSubtitle": "Tareas que debían realizarse antes de hoy y aún están pendientes",
+  "myTasksPastSectionBulkCompleteButton": "Marcar todas como completadas",
+  "myTasksCompletedSnackBar": "Marcada como completada",
+  "myTasksSkippedSnackBar": "Saltada",
+  "myTasksBulkCompletedSnackBar": "Todas las tareas pasadas marcadas como completadas",
+  "myTasksSwipeCompleteLabel": "Completar",
+  "myTasksSwipeSkipLabel": "Saltar",
+  "myTasksDateLabel": "{month}/{day} ({weekday})  {count}",
+  "@myTasksDateLabel": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "day": { "type": "int" },
+      "weekday": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksDateLabelFallback": "{date}  {count}",
+  "@myTasksDateLabelFallback": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "myTasksWeekdayMon": "lun",
+  "myTasksWeekdayTue": "mar",
+  "myTasksWeekdayWed": "mié",
+  "myTasksWeekdayThu": "jue",
+  "myTasksWeekdayFri": "vie",
+  "myTasksWeekdaySat": "sáb",
+  "myTasksWeekdaySun": "dom"
+}

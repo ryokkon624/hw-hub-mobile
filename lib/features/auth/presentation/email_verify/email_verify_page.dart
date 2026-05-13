@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import 'email_verify_notifier.dart';
 
 class EmailVerifyPage extends ConsumerWidget {
@@ -20,7 +21,7 @@ class EmailVerifyPage extends ConsumerWidget {
           EmailVerifyResult.expired => 'expired',
           EmailVerifyResult.invalid => 'invalid',
         };
-        context.go('/auth-result?type=emailVerify&status=$status');
+        context.go('${AppRoutes.authResult}?type=emailVerify&status=$status');
       });
     });
 

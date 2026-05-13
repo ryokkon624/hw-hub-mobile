@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'password_forgot_notifier.dart';
 
@@ -45,14 +46,14 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
     ref.listen(passwordForgotNotifierProvider, (_, next) {
       if (next.sentEmail != null) {
         context.go(
-          '/forgot-password/sent?email=${Uri.encodeComponent(next.sentEmail!)}',
+          '${AppRoutes.forgotPasswordSent}?email=${Uri.encodeComponent(next.sentEmail!)}',
         );
       }
     });
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.go('/login')),
+        leading: BackButton(onPressed: () => context.go(AppRoutes.login)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -105,7 +106,7 @@ class _PasswordForgotPageState extends ConsumerState<PasswordForgotPage> {
               const SizedBox(height: 16),
               const Divider(),
               TextButton(
-                onPressed: () => context.go('/login'),
+                onPressed: () => context.go(AppRoutes.login),
                 child: Text(l10n.passwordForgotBackToLogin),
               ),
             ],

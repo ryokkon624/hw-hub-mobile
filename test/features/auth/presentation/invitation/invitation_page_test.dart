@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/invitation_info.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/invitation/invitation_notifier.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/invitation/invitation_page.dart';
@@ -66,6 +69,18 @@ class _NullInfoForRetryInvitationNotifier extends InvitationNotifier {
   Future<InvitationState> build(String arg) async => const InvitationState();
 }
 
+class _AuthenticatedNotifier extends AuthNotifier {
+  @override
+  Future<AuthState> build() async => AuthAuthenticated(
+    const AuthUser(userId: 1, email: 'test@example.com', displayName: 'テスト'),
+  );
+}
+
+class _UnauthenticatedNotifier extends AuthNotifier {
+  @override
+  Future<AuthState> build() async => const AuthUnauthenticated();
+}
+
 void main() {
   late MockFlutterSecureStorage mockStorage;
 
@@ -89,6 +104,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _LoadingInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -106,6 +122,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _DataInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -118,11 +135,6 @@ void main() {
     });
 
     testWidgets('招待情報ロード後（ログイン済み）: 参加・辞退ボタンが表示される', (tester) async {
-      // access_token あり → AuthAuthenticated
-      when(
-        mockStorage.read(key: 'access_token'),
-      ).thenAnswer((_) async => 'fake_token');
-
       await tester.pumpWidget(
         buildTestPage(
           const InvitationPage(token: 'test-token'),
@@ -130,6 +142,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _DataInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _AuthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -142,10 +155,6 @@ void main() {
     });
 
     testWidgets('isActing=true: 参加ボタンが無効でインジケーターが表示される', (tester) async {
-      when(
-        mockStorage.read(key: 'access_token'),
-      ).thenAnswer((_) async => 'fake_token');
-
       await tester.pumpWidget(
         buildTestPage(
           const InvitationPage(token: 'test-token'),
@@ -153,6 +162,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _ActingInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _AuthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -173,6 +183,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _ErrorInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -191,6 +202,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _NullInfoInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -208,6 +220,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _ErrorForRetryInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -227,6 +240,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _NullInfoForRetryInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
         ),
@@ -262,6 +276,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _DataInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
           initialLocation: '/invite/test-token',
@@ -299,6 +314,7 @@ void main() {
             invitationNotifierProvider.overrideWith(
               () => _DataInvitationNotifier(),
             ),
+            authNotifierProvider.overrideWith(() => _UnauthenticatedNotifier()),
             secureStorageProvider.overrideWithValue(mockStorage),
           ],
           initialLocation: '/invite/test-token',

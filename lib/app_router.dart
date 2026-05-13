@@ -15,6 +15,7 @@ import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.
 import 'features/auth/presentation/signup/signup_page.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/shell/main_shell.dart';
+import 'features/tasks/presentation/my_tasks_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -62,28 +63,28 @@ class _RouterNotifier extends ChangeNotifier {
 final _routes = <RouteBase>[
   // ─── 未認証ルート ────────────────────────────────────────
   GoRoute(
-    path: '/login',
+    path: AppRoutes.login,
     builder: (_, state) =>
         LoginPage(notice: state.uri.queryParameters['notice']),
   ),
   GoRoute(
-    path: '/signup',
+    path: AppRoutes.signup,
     builder: (_, state) => SignupPage(
       invitationToken: state.uri.queryParameters['invitationToken'],
     ),
   ),
   GoRoute(
-    path: '/email-waiting',
+    path: AppRoutes.emailWaiting,
     builder: (_, state) =>
         EmailVerifyWaitPage(email: state.uri.queryParameters['email'] ?? ''),
   ),
   GoRoute(
-    path: '/forgot-password',
+    path: AppRoutes.forgotPassword,
     builder: (_, state) =>
         PasswordForgotPage(initialEmail: state.uri.queryParameters['email']),
     routes: [
       GoRoute(
-        path: 'sent',
+        path: AppRoutes._forgotPasswordSentRelative,
         builder: (_, state) => PasswordResetSentPage(
           email: state.uri.queryParameters['email'] ?? '',
         ),
@@ -91,7 +92,7 @@ final _routes = <RouteBase>[
     ],
   ),
   GoRoute(
-    path: '/auth-result',
+    path: AppRoutes.authResult,
     builder: (_, state) => AuthResultPage(
       type: state.uri.queryParameters['type'] ?? '',
       status: state.uri.queryParameters['status'] ?? 'invalid',
@@ -100,17 +101,17 @@ final _routes = <RouteBase>[
 
   // ─── ディープリンク（認証状態問わず受け取る）──────────────
   GoRoute(
-    path: '/email-verify',
+    path: AppRoutes.emailVerify,
     builder: (_, state) =>
         EmailVerifyPage(token: state.uri.queryParameters['token'] ?? ''),
   ),
   GoRoute(
-    path: '/invite/:token',
+    path: AppRoutes.inviteToken,
     builder: (_, state) =>
         InvitationPage(token: state.pathParameters['token'] ?? ''),
   ),
   GoRoute(
-    path: '/password/reset',
+    path: AppRoutes.passwordReset,
     builder: (_, state) =>
         PasswordResetPage(token: state.uri.queryParameters['token'] ?? ''),
   ),
@@ -121,30 +122,41 @@ final _routes = <RouteBase>[
     branches: [
       // ホーム
       StatefulShellBranch(
-        routes: [GoRoute(path: '/', builder: (_, _) => const HomePage())],
+        routes: [
+          GoRoute(path: AppRoutes.home, builder: (_, _) => const HomePage()),
+        ],
       ),
       // 家事分担
       StatefulShellBranch(
         routes: [
-          GoRoute(path: '/housework', builder: (_, _) => const _P('家事分担')),
+          GoRoute(
+            path: AppRoutes.housework,
+            builder: (_, _) => const _P('家事分担'),
+          ),
         ],
       ),
       // My Tasks
       StatefulShellBranch(
         routes: [
-          GoRoute(path: '/tasks', builder: (_, _) => const _P('My Tasks')),
+          GoRoute(
+            path: AppRoutes.tasks,
+            builder: (_, _) => const MyTasksPage(),
+          ),
         ],
       ),
       // 買い物
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: '/shopping',
+            path: AppRoutes.shopping,
             builder: (_, _) => const _P('買い物リスト'),
             routes: [
-              GoRoute(path: 'new', builder: (_, _) => const _P('買い物アイテム作成')),
               GoRoute(
-                path: ':id',
+                path: AppRoutes._shoppingNewRelative,
+                builder: (_, _) => const _P('買い物アイテム作成'),
+              ),
+              GoRoute(
+                path: AppRoutes._shoppingDetailRelative,
                 builder: (_, s) => _P('買い物アイテム詳細 ${s.pathParameters['id']}'),
               ),
             ],
@@ -155,40 +167,55 @@ final _routes = <RouteBase>[
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: '/settings',
+            path: AppRoutes.settings,
             builder: (_, _) => const _P('設定'),
             routes: [
-              GoRoute(path: 'account', builder: (_, _) => const _P('アカウント設定')),
-              GoRoute(path: 'household', builder: (_, _) => const _P('世帯設定')),
               GoRoute(
-                path: 'housework',
+                path: AppRoutes._settingsAccountRelative,
+                builder: (_, _) => const _P('アカウント設定'),
+              ),
+              GoRoute(
+                path: AppRoutes._settingsHouseholdRelative,
+                builder: (_, _) => const _P('世帯設定'),
+              ),
+              GoRoute(
+                path: AppRoutes._settingsHouseworkRelative,
                 builder: (_, _) => const _P('家事設定一覧'),
                 routes: [
-                  GoRoute(path: 'new', builder: (_, _) => const _P('家事新規作成')),
                   GoRoute(
-                    path: ':id',
+                    path: AppRoutes._settingsHouseworkNewRelative,
+                    builder: (_, _) => const _P('家事新規作成'),
+                  ),
+                  GoRoute(
+                    path: AppRoutes._settingsHouseworkDetailRelative,
                     builder: (_, s) => _P('家事編集 ${s.pathParameters['id']}'),
                   ),
                 ],
               ),
               GoRoute(
-                path: 'inquiries',
+                path: AppRoutes._settingsInquiriesRelative,
                 builder: (_, _) => const _P('問い合わせ一覧'),
                 routes: [
                   GoRoute(
-                    path: 'new',
+                    path: AppRoutes._settingsInquiriesNewRelative,
                     builder: (_, _) => const _P('問い合わせ新規作成'),
                   ),
                   GoRoute(
-                    path: ':id',
+                    path: AppRoutes._settingsInquiryDetailRelative,
                     builder: (_, s) => _P('問い合わせ詳細 ${s.pathParameters['id']}'),
                   ),
                 ],
               ),
-              GoRoute(path: 'app-info', builder: (_, _) => const _P('アプリ情報')),
-              GoRoute(path: 'terms', builder: (_, _) => const _P('利用規約')),
               GoRoute(
-                path: 'privacy',
+                path: AppRoutes._settingsAppInfoRelative,
+                builder: (_, _) => const _P('アプリ情報'),
+              ),
+              GoRoute(
+                path: AppRoutes._settingsTermsRelative,
+                builder: (_, _) => const _P('利用規約'),
+              ),
+              GoRoute(
+                path: AppRoutes._settingsPrivacyRelative,
                 builder: (_, _) => const _P('プライバシーポリシー'),
               ),
             ],
@@ -199,8 +226,60 @@ final _routes = <RouteBase>[
   ),
 
   // ─── 認証済み（シェル外・全画面）────────────────────────
-  GoRoute(path: '/notifications', builder: (_, _) => const _P('通知センター')),
+  GoRoute(path: AppRoutes.notifications, builder: (_, _) => const _P('通知センター')),
 ];
+
+abstract final class AppRoutes {
+  // ─── 絶対パス（context.go / context.push 用）────────────
+  static const login = '/login';
+  static const signup = '/signup';
+  static const emailWaiting = '/email-waiting';
+  static const forgotPassword = '/forgot-password';
+  static const forgotPasswordSent = '/forgot-password/sent';
+  static const authResult = '/auth-result';
+  static const emailVerify = '/email-verify';
+  static const inviteToken = '/invite/:token';
+  static const passwordReset = '/password/reset';
+
+  static const home = '/';
+  static const housework = '/housework';
+  static const tasks = '/tasks';
+  static const shopping = '/shopping';
+  static const shoppingNew = '/shopping/new';
+  static String shoppingDetail(String id) => '/shopping/$id';
+  static const settings = '/settings';
+  static const settingsAccount = '/settings/account';
+  static const settingsHousehold = '/settings/household';
+  static const settingsHousework = '/settings/housework';
+  static const settingsHouseworkNew = '/settings/housework/new';
+  static String settingsHouseworkDetail(String id) => '/settings/housework/$id';
+  static const settingsInquiries = '/settings/inquiries';
+  static const settingsInquiriesNew = '/settings/inquiries/new';
+  static String settingsInquiryDetail(String id) => '/settings/inquiries/$id';
+  static const settingsAppInfo = '/settings/app-info';
+  static const settingsTerms = '/settings/terms';
+  static const settingsPrivacy = '/settings/privacy';
+
+  static const notifications = '/notifications';
+
+  static String invite(String token) => '/invite/$token';
+
+  // ─── 相対パス（GoRoute(path: ...) のサブルート用）──────
+  static const _forgotPasswordSentRelative = 'sent';
+  static const _shoppingNewRelative = 'new';
+  static const _shoppingDetailRelative = ':id';
+  static const _settingsAccountRelative = 'account';
+  static const _settingsHouseholdRelative = 'household';
+  static const _settingsHouseworkRelative = 'housework';
+  static const _settingsHouseworkNewRelative = 'new';
+  static const _settingsHouseworkDetailRelative = ':id';
+  static const _settingsInquiriesRelative = 'inquiries';
+  static const _settingsInquiriesNewRelative = 'new';
+  static const _settingsInquiryDetailRelative = ':id';
+  static const _settingsAppInfoRelative = 'app-info';
+  static const _settingsTermsRelative = 'terms';
+  static const _settingsPrivacyRelative = 'privacy';
+}
 
 // Phase 4以降で実装するまでの仮画面
 class _P extends StatelessWidget {

@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
-import 'package:hw_hub_mobile/features/auth/data/models/auth_user.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/register_response.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/signup/signup_notifier.dart';
 
@@ -117,43 +118,53 @@ void main() {
       expect(state.successResult?.email, 'test@example.com');
     });
 
-    test('submit() 成功（メール認証不要・トークンあり）でsuccessResultがnull', () async {
-      when(
-        mockRepo.register(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-          displayName: anyNamed('displayName'),
-          locale: anyNamed('locale'),
-          invitationToken: anyNamed('invitationToken'),
-        ),
-      ).thenAnswer(
-        (_) async => RegisterResponse(
-          emailVerificationRequired: false,
-          accessToken: 'access-jwt',
-          refreshToken: 'refresh-jwt',
-          user: const AuthUser(
-            userId: 1,
-            email: 'test@example.com',
-            displayName: 'テスト',
+    test(
+      'submit() 成功（メール認証不要・トークンあり）: authNotifierがAuthAuthenticated(user)',
+      () async {
+        const signupUser = AuthUser(
+          userId: 1,
+          email: 'test@example.com',
+          displayName: 'テスト',
+        );
+        when(
+          mockRepo.register(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+            displayName: anyNamed('displayName'),
+            locale: anyNamed('locale'),
+            invitationToken: anyNamed('invitationToken'),
           ),
-        ),
-      );
+        ).thenAnswer(
+          (_) async => RegisterResponse(
+            emailVerificationRequired: false,
+            accessToken: 'access-jwt',
+            refreshToken: 'refresh-jwt',
+            user: signupUser,
+          ),
+        );
 
-      final container = makeContainer();
-      await container.read(authNotifierProvider.future);
+        final container = makeContainer();
+        await container.read(authNotifierProvider.future);
 
-      final n = container.read(signupNotifierProvider.notifier);
-      n.setEmail('test@example.com');
-      n.setDisplayName('テスト');
-      n.setPassword('password123');
-      n.setPasswordConfirm('password123');
-      await n.submit();
+        final n = container.read(signupNotifierProvider.notifier);
+        n.setEmail('test@example.com');
+        n.setDisplayName('テスト');
+        n.setPassword('password123');
+        n.setPasswordConfirm('password123');
+        await n.submit();
 
-      final state = container.read(signupNotifierProvider);
-      expect(state.isLoading, false);
-      expect(state.errorMessage, isNull);
-      expect(state.successResult, isNull);
-    });
+        final state = container.read(signupNotifierProvider);
+        expect(state.isLoading, false);
+        expect(state.errorMessage, isNull);
+        expect(state.successResult, isNull);
+
+        // authNotifier が user を保持した AuthAuthenticated になること
+        final authState = container.read(authNotifierProvider).value;
+        expect(authState, isA<AuthAuthenticated>());
+        final auth = authState as AuthAuthenticated;
+        expect(auth.user.userId, signupUser.userId);
+      },
+    );
 
     test('submit() 失敗時にerrorMessageがセットされる', () async {
       when(

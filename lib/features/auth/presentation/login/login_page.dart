@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'login_notifier.dart';
 
@@ -124,8 +125,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   onPressed: () {
                     final email = state.email.trim();
                     final path = email.isNotEmpty
-                        ? '/forgot-password?email=${Uri.encodeComponent(email)}'
-                        : '/forgot-password';
+                        ? '${AppRoutes.forgotPassword}?email=${Uri.encodeComponent(email)}'
+                        : AppRoutes.forgotPassword;
                     context.push(path);
                   },
                   child: Text(l10n.loginForgotPassword),
@@ -158,7 +159,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   Text(l10n.loginNoAccount),
                   TextButton(
-                    onPressed: () => context.go('/signup'),
+                    onPressed: () => context.go(AppRoutes.signup),
                     child: Text(l10n.loginGoSignup),
                   ),
                 ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'password_reset_notifier.dart';
 import 'password_reset_state.dart';
@@ -25,19 +26,19 @@ class PasswordResetPage extends ConsumerWidget {
         PasswordResetResult.expired => 'expired',
         PasswordResetResult.invalid => 'invalid',
       };
-      context.go('/auth-result?type=passwordReset&status=$status');
+      context.go('${AppRoutes.authResult}?type=passwordReset&status=$status');
     });
 
     if (token.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/auth-result?type=passwordReset&status=invalid');
+        context.go('${AppRoutes.authResult}?type=passwordReset&status=invalid');
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.go('/login')),
+        leading: BackButton(onPressed: () => context.go(AppRoutes.login)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -110,12 +111,12 @@ class PasswordResetPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    onPressed: () => context.go('/forgot-password'),
+                    onPressed: () => context.go(AppRoutes.forgotPassword),
                     child: Text(l10n.passwordResetRequestNew),
                   ),
                   const Text(' · '),
                   TextButton(
-                    onPressed: () => context.go('/login'),
+                    onPressed: () => context.go(AppRoutes.login),
                     child: Text(l10n.passwordResetBackToLogin),
                   ),
                 ],

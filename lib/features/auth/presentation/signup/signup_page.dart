@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'signup_notifier.dart';
 
@@ -20,9 +21,11 @@ class SignupPage extends ConsumerWidget {
       final result = next.successResult;
       if (result == null) return;
       if (result.requiresEmailVerify) {
-        context.go('/email-waiting?email=${Uri.encodeComponent(result.email)}');
+        context.go(
+          '${AppRoutes.emailWaiting}?email=${Uri.encodeComponent(result.email)}',
+        );
       } else {
-        context.go('/');
+        context.go(AppRoutes.home);
       }
     });
 
@@ -50,7 +53,7 @@ class SignupPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   TextButton(
-                    onPressed: () => context.go('/login'),
+                    onPressed: () => context.go(AppRoutes.login),
                     child: Text(l10n.signupGoLogin),
                   ),
                 ],
