@@ -12,6 +12,7 @@ import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart';
 import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_notifier.dart';
 import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_page.dart';
 import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_state.dart';
+import 'package:hw_hub_mobile/features/tasks/presentation/widgets/swipeable_task_card.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -268,6 +269,34 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('タスク名の長短によらずSwipeableTaskCardの幅が等しい（親コンテナ全幅）', (tester) async {
+      // 短いタスク名と長いタスク名の2枚カードを同じセクションに表示し、
+      // width: double.infinity が設定されていれば両者の幅が等しくなる
+      final state = MyTasksState(
+        pastTasks: [],
+        futureTasks: [
+          _task(id: 1, houseworkName: 'A'),
+          _task(id: 2, houseworkName: '非常に長い家事タスク名前テスト用テキスト長さ確認目的の文字列を含む家事'),
+        ],
+      );
+
+      await tester.pumpWidget(
+        buildTestPage(const MyTasksPage(), overrides: _overrides(state)),
+      );
+      await tester.pump();
+
+      final cards = find.byType(SwipeableTaskCard);
+      expect(cards, findsNWidgets(2));
+
+      final width0 = tester.getSize(cards.at(0)).width;
+      final width1 = tester.getSize(cards.at(1)).width;
+
+      // 両カードの幅が等しいこと（親コンテナ幅いっぱいに広がっていること）
+      expect(width0, equals(width1));
+      // さらに幅が0より大きいこと（レイアウトが壊れていないこと）
+      expect(width0, greaterThan(0));
     });
   });
 }
