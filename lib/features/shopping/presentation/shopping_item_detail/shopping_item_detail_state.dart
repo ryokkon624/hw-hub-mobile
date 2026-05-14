@@ -1,3 +1,6 @@
+import '../../../../core/models/favorite_flag.dart';
+import '../../../../core/models/purchase_location_type.dart';
+import '../../../../core/models/shopping_item_status.dart';
 import '../../data/shopping_repository.dart';
 import '../../data/shopping_attachment_repository.dart';
 
@@ -33,11 +36,17 @@ class ShoppingItemDetailState {
   /// 編集中の名前（item または editable の値）
   String get currentName => editableName ?? item?.name ?? '';
   String? get currentMemo => editableMemo ?? item?.memo;
-  String get currentStoreType => editableStoreType ?? item?.storeType ?? '1';
-  String get currentFavorite => editableFavorite ?? item?.favorite ?? '0';
+  String get currentStoreType =>
+      editableStoreType ??
+      item?.storeType ??
+      PurchaseLocationType.supermarket.code;
+  String get currentFavorite =>
+      editableFavorite ?? item?.favorite ?? FavoriteFlag.normal.code;
 
   /// 未購入ステータスかどうか（削除ボタン表示制御用）
-  bool get isNotPurchased => item?.status == '0' || item?.status == '1';
+  bool get isNotPurchased =>
+      item?.status == ShoppingItemStatus.notPurchased.code ||
+      item?.status == ShoppingItemStatus.inBasket.code;
 
   ShoppingItemDetailState copyWith({
     Object? item = _sentinel,

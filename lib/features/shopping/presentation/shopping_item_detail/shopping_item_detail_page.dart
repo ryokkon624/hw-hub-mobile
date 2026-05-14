@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/models/favorite_flag.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/shopping_attachment_repository.dart';
 import '../widgets/image_picker_field.dart';
 import '../widgets/status_step_selector.dart';
 import 'shopping_item_detail_notifier.dart';
@@ -29,9 +31,11 @@ class ShoppingItemDetailPage extends ConsumerWidget {
         context.pop();
       }
       if (next.errorMessage != null && prev?.errorMessage == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_resolveErrorMessage(l10n, next.errorMessage!)),
+          ),
+        );
       }
     });
 
@@ -82,17 +86,18 @@ class _ErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            errorMessage ?? '読み込みに失敗しました',
+            errorMessage ?? l10n.errorUnexpected,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 16),
-            TextButton(onPressed: onRetry, child: const Text('再試行')),
+            TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
           ],
         ],
       ),
@@ -172,7 +177,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('削除'),
+            child: Text(l10n.shoppingDetailImageDelete),
           ),
         ],
       ),
@@ -288,7 +293,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
           SwitchListTile(
             key: const Key('favoriteSwitch'),
             title: Text(l10n.shoppingNewFavorite),
-            value: state.currentFavorite == '1',
+            value: state.currentFavorite == FavoriteFlag.favorite.code,
             onChanged: (_) => widget.notifier.toggleFavorite(),
             contentPadding: EdgeInsets.zero,
           ),
@@ -347,7 +352,7 @@ class _AttachmentsSection extends StatelessWidget {
     required this.onDeleteAttachment,
   });
 
-  final List<dynamic> attachments;
+  final List<ShoppingAttachmentDto> attachments;
   final Future<void> Function() onAddCamera;
   final Future<void> Function() onAddGallery;
   final Future<void> Function(int) onDeleteAttachment;
@@ -367,8 +372,8 @@ class _AttachmentsSection extends StatelessWidget {
               itemBuilder: (_, i) {
                 final att = attachments[i];
                 return _AttachmentThumbnail(
-                  imageUrl: att.imageUrl as String,
-                  onDelete: () => onDeleteAttachment(att.id as int),
+                  imageUrl: att.imageUrl,
+                  onDelete: () => onDeleteAttachment(att.id),
                 );
               },
             ),
@@ -467,5 +472,21 @@ class _StoreTypeSelector extends StatelessWidget {
       default:
         return code;
     }
+  }
+}
+
+/// l10nキー名からローカライズ済みエラーメッセージを解決する。
+/// Notifier が l10n キー名をエラーメッセージとして設定している場合に変換する。
+/// AppException から来たメッセージ（キー名でないもの）はそのまま返す。
+String _resolveErrorMessage(AppLocalizations l10n, String messageOrKey) {
+  switch (messageOrKey) {
+    case 'shoppingDetailLoadError':
+      return l10n.shoppingDetailLoadError;
+    case 'shoppingDetailSaveError':
+      return l10n.shoppingDetailSaveError;
+    case 'shoppingDetailDeleteError':
+      return l10n.shoppingDetailDeleteError;
+    default:
+      return messageOrKey;
   }
 }

@@ -401,6 +401,10 @@
   "shoppingDetailToastDeleteSuccess": "Deleted",
   "shoppingDetailToastImageAddSuccess": "Image added",
   "shoppingDetailToastImageDeleteSuccess": "Image deleted",
+  "shoppingDetailLoadError": "Failed to load",
+  "shoppingDetailSaveError": "Failed to save",
+  "shoppingDetailDeleteError": "Failed to delete",
+  "shoppingNewSubmitError": "Failed to add item",
 
   "shoppingImagePickerCamera": "Take a photo",
   "shoppingImagePickerGallery": "Choose from gallery",

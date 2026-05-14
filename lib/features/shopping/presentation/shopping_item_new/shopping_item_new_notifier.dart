@@ -96,7 +96,10 @@ class ShoppingItemNewNotifier
     } on AppException catch (e) {
       state = state.copyWith(isSubmitting: false, errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(isSubmitting: false, errorMessage: '登録に失敗しました');
+      state = state.copyWith(
+        isSubmitting: false,
+        errorMessage: 'shoppingNewSubmitError',
+      );
     }
   }
 

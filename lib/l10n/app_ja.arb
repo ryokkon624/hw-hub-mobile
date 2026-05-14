@@ -401,6 +401,10 @@
   "shoppingDetailToastDeleteSuccess": "削除しました",
   "shoppingDetailToastImageAddSuccess": "画像を追加しました",
   "shoppingDetailToastImageDeleteSuccess": "画像を削除しました",
+  "shoppingDetailLoadError": "読み込みに失敗しました",
+  "shoppingDetailSaveError": "保存に失敗しました",
+  "shoppingDetailDeleteError": "削除に失敗しました",
+  "shoppingNewSubmitError": "登録に失敗しました",
 
   "shoppingImagePickerCamera": "カメラで撮影",
   "shoppingImagePickerGallery": "ギャラリーから選択",

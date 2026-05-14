@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../data/models/create_attachment_request.dart';
 import '../../data/models/create_upload_url_request.dart';
@@ -23,7 +24,7 @@ class ShoppingItemDetailNotifier
 
   Future<void> _initialize(int itemId) async {
     try {
-      final householdState = await ref.watch(householdNotifierProvider.future);
+      final householdState = await ref.read(householdNotifierProvider.future);
       final householdId = householdState.selectedHousehold?.id;
 
       if (householdId == null) {
@@ -56,7 +57,7 @@ class ShoppingItemDetailNotifier
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: e is AppException ? e.message : '読み込みに失敗しました',
+        errorMessage: e is AppException ? e.message : 'shoppingDetailLoadError',
       );
     }
   }
@@ -77,8 +78,10 @@ class ShoppingItemDetailNotifier
     final item = state.item;
     if (item == null) return;
 
-    final currentFavorite = item.favorite ?? '0';
-    final newFavorite = currentFavorite == '1' ? '0' : '1';
+    final currentFavorite = item.favorite ?? FavoriteFlag.normal.code;
+    final newFavorite = currentFavorite == FavoriteFlag.favorite.code
+        ? FavoriteFlag.normal.code
+        : FavoriteFlag.favorite.code;
 
     try {
       final repo = ref.read(shoppingRepositoryProvider);
@@ -138,7 +141,10 @@ class ShoppingItemDetailNotifier
     } on AppException catch (e) {
       state = state.copyWith(isSaving: false, errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(isSaving: false, errorMessage: '保存に失敗しました');
+      state = state.copyWith(
+        isSaving: false,
+        errorMessage: 'shoppingDetailSaveError',
+      );
     }
   }
 
@@ -153,7 +159,7 @@ class ShoppingItemDetailNotifier
     } on AppException catch (e) {
       state = state.copyWith(errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(errorMessage: '削除に失敗しました');
+      state = state.copyWith(errorMessage: 'shoppingDetailDeleteError');
     }
   }
 
