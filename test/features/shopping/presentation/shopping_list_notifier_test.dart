@@ -212,7 +212,7 @@ void main() {
       expect(state.basketItems, hasLength(1));
     });
 
-    test('エラー時: stateが変更されない', () async {
+    test('エラー時: 例外が伝播しstateは変更されない', () async {
       final items = [_item(id: 1, status: '0')];
       when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
       when(
@@ -222,11 +222,15 @@ void main() {
       final container = _makeContainer(mockRepo);
       await container.read(shoppingListNotifierProvider.future);
 
-      await container
-          .read(shoppingListNotifierProvider.notifier)
-          .moveToBasket(1);
+      // エラーが伝播することを確認
+      expect(
+        () => container
+            .read(shoppingListNotifierProvider.notifier)
+            .moveToBasket(1),
+        throwsA(isA<Exception>()),
+      );
+      // stateはそのまま（変更されない）
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
-      // エラー時は状態変更なし
       expect(state.unpurchasedItems, hasLength(1));
     });
   });

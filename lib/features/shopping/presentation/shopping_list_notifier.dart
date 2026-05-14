@@ -60,7 +60,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
@@ -83,7 +83,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
@@ -105,7 +105,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
@@ -132,7 +132,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
@@ -150,7 +150,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
@@ -183,7 +183,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         current.copyWith(items: List.unmodifiable(updatedItems)),
       );
     } catch (_) {
-      // エラー時はリストを変更しない
+      rethrow;
     }
   }
 
