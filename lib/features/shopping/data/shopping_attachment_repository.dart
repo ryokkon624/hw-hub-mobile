@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/network/app_exception.dart';
 import 'models/create_attachment_request.dart';
 import 'models/create_upload_url_request.dart';
@@ -67,6 +66,13 @@ class ShoppingAttachmentRepositoryImpl implements ShoppingAttachmentRepository {
     }
   }
 
+  String _resolveS3Url(String url) {
+    if (!kDebugMode) return url;
+    return url
+        .replaceFirst('localhost', '10.0.2.2')
+        .replaceFirst('127.0.0.1', '10.0.2.2');
+  }
+
   @override
   Future<void> uploadToS3({
     required String uploadUrl,
@@ -75,7 +81,7 @@ class ShoppingAttachmentRepositoryImpl implements ShoppingAttachmentRepository {
   }) async {
     try {
       await _s3Dio.put<dynamic>(
-        uploadUrl,
+        _resolveS3Url(uploadUrl),
         data: Stream.fromIterable(bytes.map((e) => [e])),
         options: Options(
           headers: {'Content-Type': mimeType, 'Content-Length': bytes.length},
@@ -113,6 +119,14 @@ class ShoppingAttachmentRepositoryImpl implements ShoppingAttachmentRepository {
       );
       return (response.data as List<dynamic>)
           .map((e) => ShoppingAttachmentDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (dto) => ShoppingAttachmentDto(
+              id: dto.id,
+              fileName: dto.fileName,
+              imageUrl: _resolveS3Url(dto.imageUrl),
+              sortOrder: dto.sortOrder,
+            ),
+          )
           .toList();
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
