@@ -247,9 +247,9 @@ void main() {
           .markPurchased(1);
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
       expect(state.basketItems, isEmpty);
-      // 購入済みに移動（purchasedAtがnullのためpurchasedItemsには含まれないが、itemsに残る）
-      final item = state.items.firstWhere((e) => e.shoppingItemId == 1);
-      expect(item.status, '9');
+      // #88: markPurchased後はpurchasedItemsに即時含まれること（purchasedAtがセットされること）
+      expect(state.purchasedItems, hasLength(1));
+      expect(state.purchasedItems.first.shoppingItemId, 1);
     });
   });
 
@@ -271,10 +271,39 @@ void main() {
       expect(state.basketItems, isEmpty);
       expect(state.unpurchasedItems, hasLength(1));
     });
+
+    test('購入済みから未購入に戻す: purchasedAtがクリアされpurchasedItemsから外れる', () async {
+      // #88: moveBackToUnpurchased後はpurchasedItemsから外れること
+      final now = DateTime.now();
+      final items = [
+        _item(id: 1, status: '9', purchasedAt: now.toIso8601String()),
+      ]; // 購入済み状態
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.updateStatus(shoppingItemId: 1, status: '0'),
+      ).thenAnswer((_) async {});
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      // 初期状態: purchasedItemsに含まれる
+      final initialState = container
+          .read(shoppingListNotifierProvider)
+          .valueOrNull!;
+      expect(initialState.purchasedItems, hasLength(1));
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .moveBackToUnpurchased(1);
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.unpurchasedItems, hasLength(1));
+      // purchasedAtがクリアされpurchasedItemsから外れる
+      expect(state.purchasedItems, isEmpty);
+    });
   });
 
   group('ShoppingListNotifier - bulkPurchase', () {
-    test('成功時: かご内全件が購入済みになる', () async {
+    test('成功時: かご内全件が購入済みになりpurchasedItemsに即時反映される', () async {
       final items = [_item(id: 1, status: '1'), _item(id: 2, status: '1')];
       when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
       when(
@@ -289,6 +318,8 @@ void main() {
           .bulkPurchase();
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
       expect(state.basketItems, isEmpty);
+      // #88: bulkPurchase後はpurchasedItemsに即時含まれること（purchasedAtがセットされること）
+      expect(state.purchasedItems, hasLength(2));
     });
 
     test('かごが空のとき: APIを呼ばない', () async {

@@ -51,7 +51,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
       await repo.updateStatus(shoppingItemId: shoppingItemId, status: '1');
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
-          return _copyItemWithStatus(item, '1');
+          // かごに入れる際は purchasedAt をクリア
+          return _copyItemWithStatus(item, '1', purchasedAt: null);
         }
         return item;
       }).toList();
@@ -70,9 +71,11 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     final repo = ref.read(shoppingRepositoryProvider);
     try {
       await repo.updateStatus(shoppingItemId: shoppingItemId, status: '9');
+      // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
+      final now = DateTime.now().toIso8601String();
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
-          return _copyItemWithStatus(item, '9');
+          return _copyItemWithStatus(item, '9', purchasedAt: now);
         }
         return item;
       }).toList();
@@ -93,7 +96,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
       await repo.updateStatus(shoppingItemId: shoppingItemId, status: '0');
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
-          return _copyItemWithStatus(item, '0');
+          // 未購入に戻す際は purchasedAt をクリア（purchasedItems から外れる）
+          return _copyItemWithStatus(item, '0', purchasedAt: null);
         }
         return item;
       }).toList();
@@ -116,9 +120,11 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     final repo = ref.read(shoppingRepositoryProvider);
     try {
       await repo.bulkUpdateStatus(ids: ids, status: '9');
+      // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
+      final now = DateTime.now().toIso8601String();
       final updatedItems = current.items.map((item) {
         if (ids.contains(item.shoppingItemId)) {
-          return _copyItemWithStatus(item, '9');
+          return _copyItemWithStatus(item, '9', purchasedAt: now);
         }
         return item;
       }).toList();
@@ -182,7 +188,12 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
   }
 
   /// ShoppingItemDto は immutable で copyWith がないため、新しいインスタンスを作成する
-  ShoppingItemDto _copyItemWithStatus(ShoppingItemDto item, String status) {
+  /// [purchasedAt]: 購入済みに変更する際は現在時刻を渡す。未購入/かごに戻す際は null を渡す
+  ShoppingItemDto _copyItemWithStatus(
+    ShoppingItemDto item,
+    String status, {
+    required String? purchasedAt,
+  }) {
     return ShoppingItemDto(
       shoppingItemId: item.shoppingItemId,
       householdId: item.householdId,
@@ -191,7 +202,7 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
       storeType: item.storeType,
       status: status,
       favorite: item.favorite,
-      purchasedAt: item.purchasedAt,
+      purchasedAt: purchasedAt,
       createdAt: item.createdAt,
       hasImage: item.hasImage,
     );
