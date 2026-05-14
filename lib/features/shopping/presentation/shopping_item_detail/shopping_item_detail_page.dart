@@ -167,17 +167,18 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
   ) async {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    // #96: dialogContextを使ってダイアログ自体をpopする（外側のcontextでpopするとgo_router環境で詳細画面がpopされてしまう）
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         content: Text(l10n.shoppingDetailImageDeleteConfirm),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(l10n.shoppingDetailImageDelete),
           ),
         ],

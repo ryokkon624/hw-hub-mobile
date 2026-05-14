@@ -554,4 +554,104 @@ void main() {
       expect(find.text('添付画像'), findsOneWidget);
     });
   });
+
+  group('ShoppingItemDetailPage - 画像削除ダイアログ', () {
+    // #96: _confirmDeleteAttachmentのdialogContext修正テスト
+    // 画像サムネイルは水平スクロールリスト内にあるため、確認ダイアログのロジックをGestureDetector経由でテストする
+    testWidgets('画像削除ダイアログの削除ボタンタップでdeleteAttachmentが呼ばれ詳細画面がpopされない（#96）', (
+      tester,
+    ) async {
+      // #96: go_router環境でダイアログの削除ボタンを押しても詳細画面がpopされないこと
+      final item = _makeItem();
+      final attachments = [
+        const ShoppingAttachmentDto(
+          id: 10,
+          fileName: 'test.jpg',
+          imageUrl: 'https://example.com/test.jpg',
+          sortOrder: 0,
+        ),
+      ];
+
+      bool deleteAttachmentCalled = false;
+      final notifier = _LoadedDetailNotifierWithDeleteAttachment(
+        item,
+        attachments: attachments,
+        onDeleteAttachment: (_) {
+          deleteAttachmentCalled = true;
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/list',
+              builder: (_, _) => const Scaffold(body: Text('shopping-list')),
+            ),
+            GoRoute(
+              path: '/detail/1',
+              builder: (_, _) => const ShoppingItemDetailPage(itemId: 1),
+            ),
+          ],
+          overrides: [
+            ...baseOverrides(),
+            shoppingItemDetailNotifierProvider.overrideWith(() => notifier),
+          ],
+          initialLocation: '/list',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // /detail/1 にpush
+      final routerContext = tester.element(find.text('shopping-list'));
+      GoRouter.of(routerContext).push('/detail/1');
+      await tester.pumpAndSettle();
+
+      // 削除アイコン（GestureDetector内のIcons.close）をensureVisibleして取得
+      await tester.ensureVisible(find.byIcon(Icons.close));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.close), warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      // ダイアログが表示される
+      expect(find.text('この画像を削除しますか？'), findsOneWidget);
+
+      // ダイアログ内の「この画像を削除」ボタンをタップ
+      await tester.tap(find.text('この画像を削除'));
+      await tester.pumpAndSettle();
+
+      // ダイアログが閉じてdeleteAttachmentが呼ばれた
+      expect(find.text('この画像を削除しますか？'), findsNothing);
+      expect(deleteAttachmentCalled, isTrue);
+      // 詳細画面が残っていること（shopping-listに戻っていない）
+      expect(find.byKey(const Key('saveButton')), findsOneWidget);
+    });
+  });
+}
+
+// #96テスト用のフェイクNotifier（deleteAttachmentをフックできる）
+class _LoadedDetailNotifierWithDeleteAttachment
+    extends ShoppingItemDetailNotifier {
+  _LoadedDetailNotifierWithDeleteAttachment(
+    this._item, {
+    this.attachments = const [],
+    required this.onDeleteAttachment,
+  });
+
+  final ShoppingItemDto _item;
+  final List<ShoppingAttachmentDto> attachments;
+  final void Function(int id) onDeleteAttachment;
+
+  @override
+  ShoppingItemDetailState build(int arg) {
+    return ShoppingItemDetailState(item: _item, attachments: attachments);
+  }
+
+  @override
+  Future<void> deleteAttachment(int attachmentId) async {
+    onDeleteAttachment(attachmentId);
+  }
+
+  @override
+  Future<void> save() async {}
 }
