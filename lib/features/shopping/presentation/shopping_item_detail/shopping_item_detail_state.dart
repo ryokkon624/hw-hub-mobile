@@ -44,9 +44,9 @@ class ShoppingItemDetailState {
       editableFavorite ?? item?.favorite ?? FavoriteFlag.normal.code;
 
   /// 未購入ステータスかどうか（削除ボタン表示制御用）
+  /// #94: 未購入（notPurchased）のときのみ true。かご（inBasket）は含まない
   bool get isNotPurchased =>
-      item?.status == ShoppingItemStatus.notPurchased.code ||
-      item?.status == ShoppingItemStatus.inBasket.code;
+      item?.status == ShoppingItemStatus.notPurchased.code;
 
   ShoppingItemDetailState copyWith({
     Object? item = _sentinel,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
@@ -269,7 +270,8 @@ void main() {
       expect(find.byKey(const Key('deleteItemButton')), findsOneWidget);
     });
 
-    testWidgets('かごステータス(1)のとき削除ボタンが表示される', (tester) async {
+    testWidgets('かごステータス(1)のとき削除ボタンが表示されない（#94 バグ修正確認・AC3）', (tester) async {
+      // #94: かご(inBasket)のとき削除ボタンは非表示
       final item = _makeItem(status: '1');
 
       await tester.pumpWidget(
@@ -285,7 +287,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byKey(const Key('deleteItemButton')), findsOneWidget);
+      expect(find.byKey(const Key('deleteItemButton')), findsNothing);
     });
 
     testWidgets('購入済みステータス(9)のとき削除ボタンが表示されない（AC4）', (tester) async {
@@ -366,6 +368,61 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('このアイテムを削除しますか？この操作は取り消せません。'), findsNothing);
+    });
+
+    testWidgets('削除ボタン（ダイアログ内OKボタン）タップでdeleteItemが呼ばれ詳細画面がpopされる（#94）', (
+      tester,
+    ) async {
+      // #94: go_router環境でダイアログの削除ボタンを押しても詳細画面がpopされること
+      // （ダイアログのcontextでpopすることでダイアログ自体が閉じ、詳細画面のref.listenでpopが呼ばれる）
+      final item = _makeItem(status: '0');
+      final notifier = _LoadedDetailNotifier(item);
+
+      // /list から /detail/1 にpushしてpopできるようにする
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/list',
+              builder: (_, _) => const Scaffold(body: Text('shopping-list')),
+            ),
+            GoRoute(
+              path: '/detail/1',
+              builder: (_, _) => const ShoppingItemDetailPage(itemId: 1),
+            ),
+          ],
+          overrides: [
+            ...baseOverrides(),
+            shoppingItemDetailNotifierProvider.overrideWith(() => notifier),
+          ],
+          initialLocation: '/list',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // /detail/1 にpush（スタックに積む）
+      final routerContext = tester.element(find.text('shopping-list'));
+      GoRouter.of(routerContext).push('/detail/1');
+      await tester.pumpAndSettle();
+
+      // スクロールして削除ボタンを表示
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('deleteItemButton')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byKey(const Key('deleteItemButton')));
+      await tester.pumpAndSettle();
+
+      // ダイアログが表示される
+      expect(find.text('このアイテムを削除しますか？この操作は取り消せません。'), findsOneWidget);
+
+      // ダイアログ内の「このアイテムを削除」ボタンをタップ（本体ボタンと同名なので最後を選択）
+      await tester.tap(find.text('このアイテムを削除').last);
+      await tester.pumpAndSettle();
+
+      // ダイアログが閉じてdeleteItemが呼ばれた（isDeletedになった）
+      expect(notifier.state.isDeleted, isTrue);
     });
   });
 
