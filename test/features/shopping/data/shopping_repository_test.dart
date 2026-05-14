@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/features/shopping/data/models/create_shopping_item_request.dart';
+import 'package:hw_hub_mobile/features/shopping/data/models/update_shopping_item_request.dart';
 import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart';
 
 import '../../../helpers/mocks.mocks.dart';
@@ -244,6 +246,187 @@ void main() {
 
       expect(
         () => repo.deleteItem(shoppingItemId: 1),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+  });
+
+  group('ShoppingRepository.createItem()', () {
+    final req = const CreateShoppingItemRequest(
+      name: 'オリーブオイル',
+      storeType: '1',
+    );
+
+    test('成功時: 作成されたアイテムのDTOを返す', () async {
+      when(
+        mockDio.post<dynamic>(
+          '/api/households/1/shopping-items',
+          data: anyNamed('data'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/households/1/shopping-items'),
+          statusCode: 201,
+          data: _itemJson(id: 10),
+        ),
+      );
+
+      final result = await repo.createItem(householdId: 1, req: req);
+      expect(result.shoppingItemId, 10);
+      expect(result.name, 'オリーブオイル');
+    });
+
+    test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
+      when(
+        mockDio.post<dynamic>(
+          '/api/households/1/shopping-items',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/households/1/shopping-items'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.createItem(householdId: 1, req: req),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+  });
+
+  group('ShoppingRepository.updateItem()', () {
+    final req = const UpdateShoppingItemRequest(
+      name: 'オリーブオイル',
+      storeType: '1',
+      favorite: '0',
+    );
+
+    test('成功時: 更新されたアイテムのDTOを返す', () async {
+      when(
+        mockDio.put<dynamic>('/api/shopping-items/1', data: anyNamed('data')),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/shopping-items/1'),
+          statusCode: 200,
+          data: _itemJson(id: 1),
+        ),
+      );
+
+      final result = await repo.updateItem(shoppingItemId: 1, req: req);
+      expect(result.shoppingItemId, 1);
+    });
+
+    test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
+      when(
+        mockDio.put<dynamic>('/api/shopping-items/1', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/shopping-items/1'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.updateItem(shoppingItemId: 1, req: req),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+  });
+
+  group('ShoppingRepository.fetchFavorites()', () {
+    test('成功時: お気に入りアイテムリストを返す', () async {
+      when(
+        mockDio.get<dynamic>(
+          '/api/households/1/shopping-items/favorites',
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/households/1/shopping-items/favorites'),
+          statusCode: 200,
+          data: {
+            'items': [_itemJson(id: 1, favorite: '1')],
+          },
+        ),
+      );
+
+      final result = await repo.fetchFavorites(householdId: 1);
+      expect(result, hasLength(1));
+      expect(result.first.favorite, '1');
+    });
+
+    test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
+      when(
+        mockDio.get<dynamic>(
+          '/api/households/1/shopping-items/favorites',
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/households/1/shopping-items/favorites'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.fetchFavorites(householdId: 1),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+  });
+
+  group('ShoppingRepository.fetchHistorySuggestions()', () {
+    test('成功時: 履歴サジェストリストを返す', () async {
+      when(
+        mockDio.get<dynamic>(
+          '/api/households/1/shopping-items/history-suggestions',
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req(
+            '/api/households/1/shopping-items/history-suggestions',
+          ),
+          statusCode: 200,
+          data: [
+            {
+              'name': 'オリーブオイル',
+              'memo': null,
+              'storeType': '1',
+              'lastPurchasedDate': '2026-04-01',
+              'purchaseCount': 3,
+              'sourceShoppingItemId': 5,
+              'favorite': '0',
+            },
+          ],
+        ),
+      );
+
+      final result = await repo.fetchHistorySuggestions(householdId: 1);
+      expect(result, hasLength(1));
+      expect(result.first.name, 'オリーブオイル');
+      expect(result.first.purchaseCount, 3);
+    });
+
+    test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
+      when(
+        mockDio.get<dynamic>(
+          '/api/households/1/shopping-items/history-suggestions',
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req(
+            '/api/households/1/shopping-items/history-suggestions',
+          ),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.fetchHistorySuggestions(householdId: 1),
         throwsA(isA<NetworkException>()),
       );
     });

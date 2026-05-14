@@ -3,12 +3,29 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i5;
+import 'dart:typed_data' as _i11;
 
 import 'package:hw_hub_mobile/features/home/data/models/shopping_item_dto.dart'
-    as _i4;
-import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart'
     as _i2;
+import 'package:hw_hub_mobile/features/shopping/data/models/create_attachment_request.dart'
+    as _i12;
+import 'package:hw_hub_mobile/features/shopping/data/models/create_shopping_item_request.dart'
+    as _i6;
+import 'package:hw_hub_mobile/features/shopping/data/models/create_upload_url_request.dart'
+    as _i10;
+import 'package:hw_hub_mobile/features/shopping/data/models/create_upload_url_response.dart'
+    as _i3;
+import 'package:hw_hub_mobile/features/shopping/data/models/shopping_attachment_dto.dart'
+    as _i13;
+import 'package:hw_hub_mobile/features/shopping/data/models/shopping_item_history_suggestion_dto.dart'
+    as _i8;
+import 'package:hw_hub_mobile/features/shopping/data/models/update_shopping_item_request.dart'
+    as _i7;
+import 'package:hw_hub_mobile/features/shopping/data/shopping_attachment_repository.dart'
+    as _i9;
+import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart'
+    as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -25,29 +42,41 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeShoppingItemDto_0 extends _i1.SmartFake
+    implements _i2.ShoppingItemDto {
+  _FakeShoppingItemDto_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeCreateUploadUrlResponse_1 extends _i1.SmartFake
+    implements _i3.CreateUploadUrlResponse {
+  _FakeCreateUploadUrlResponse_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [ShoppingRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockShoppingRepository extends _i1.Mock
-    implements _i2.ShoppingRepository {
+    implements _i4.ShoppingRepository {
   MockShoppingRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i4.ShoppingItemDto>> fetchItems({
+  _i5.Future<List<_i2.ShoppingItemDto>> fetchItems({
     required int? householdId,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#fetchItems, [], {#householdId: householdId}),
-            returnValue: _i3.Future<List<_i4.ShoppingItemDto>>.value(
-              <_i4.ShoppingItemDto>[],
+            returnValue: _i5.Future<List<_i2.ShoppingItemDto>>.value(
+              <_i2.ShoppingItemDto>[],
             ),
           )
-          as _i3.Future<List<_i4.ShoppingItemDto>>);
+          as _i5.Future<List<_i2.ShoppingItemDto>>);
 
   @override
-  _i3.Future<void> updateStatus({
+  _i5.Future<void> updateStatus({
     required int? shoppingItemId,
     required String? status,
   }) =>
@@ -56,13 +85,13 @@ class MockShoppingRepository extends _i1.Mock
               #shoppingItemId: shoppingItemId,
               #status: status,
             }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i5.Future<void>);
 
   @override
-  _i3.Future<void> bulkUpdateStatus({
+  _i5.Future<void> bulkUpdateStatus({
     required List<int>? ids,
     required String? status,
   }) =>
@@ -71,13 +100,13 @@ class MockShoppingRepository extends _i1.Mock
               #ids: ids,
               #status: status,
             }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i5.Future<void>);
 
   @override
-  _i3.Future<void> toggleFavorite({
+  _i5.Future<void> toggleFavorite({
     required int? shoppingItemId,
     required String? favorite,
   }) =>
@@ -86,19 +115,188 @@ class MockShoppingRepository extends _i1.Mock
               #shoppingItemId: shoppingItemId,
               #favorite: favorite,
             }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i5.Future<void>);
 
   @override
-  _i3.Future<void> deleteItem({required int? shoppingItemId}) =>
+  _i5.Future<void> deleteItem({required int? shoppingItemId}) =>
       (super.noSuchMethod(
             Invocation.method(#deleteItem, [], {
               #shoppingItemId: shoppingItemId,
             }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i2.ShoppingItemDto> createItem({
+    required int? householdId,
+    required _i6.CreateShoppingItemRequest? req,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createItem, [], {
+              #householdId: householdId,
+              #req: req,
+            }),
+            returnValue: _i5.Future<_i2.ShoppingItemDto>.value(
+              _FakeShoppingItemDto_0(
+                this,
+                Invocation.method(#createItem, [], {
+                  #householdId: householdId,
+                  #req: req,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i2.ShoppingItemDto>);
+
+  @override
+  _i5.Future<_i2.ShoppingItemDto> updateItem({
+    required int? shoppingItemId,
+    required _i7.UpdateShoppingItemRequest? req,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateItem, [], {
+              #shoppingItemId: shoppingItemId,
+              #req: req,
+            }),
+            returnValue: _i5.Future<_i2.ShoppingItemDto>.value(
+              _FakeShoppingItemDto_0(
+                this,
+                Invocation.method(#updateItem, [], {
+                  #shoppingItemId: shoppingItemId,
+                  #req: req,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i2.ShoppingItemDto>);
+
+  @override
+  _i5.Future<List<_i2.ShoppingItemDto>> fetchFavorites({
+    required int? householdId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchFavorites, [], {#householdId: householdId}),
+            returnValue: _i5.Future<List<_i2.ShoppingItemDto>>.value(
+              <_i2.ShoppingItemDto>[],
+            ),
+          )
+          as _i5.Future<List<_i2.ShoppingItemDto>>);
+
+  @override
+  _i5.Future<List<_i8.ShoppingItemHistorySuggestionDto>>
+  fetchHistorySuggestions({
+    required int? householdId,
+    String? q,
+    String? storeType,
+    int? limit = 100,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchHistorySuggestions, [], {
+              #householdId: householdId,
+              #q: q,
+              #storeType: storeType,
+              #limit: limit,
+            }),
+            returnValue:
+                _i5.Future<List<_i8.ShoppingItemHistorySuggestionDto>>.value(
+                  <_i8.ShoppingItemHistorySuggestionDto>[],
+                ),
+          )
+          as _i5.Future<List<_i8.ShoppingItemHistorySuggestionDto>>);
+}
+
+/// A class which mocks [ShoppingAttachmentRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockShoppingAttachmentRepository extends _i1.Mock
+    implements _i9.ShoppingAttachmentRepository {
+  MockShoppingAttachmentRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<_i3.CreateUploadUrlResponse> createUploadUrl({
+    required int? itemId,
+    required _i10.CreateUploadUrlRequest? req,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createUploadUrl, [], {
+              #itemId: itemId,
+              #req: req,
+            }),
+            returnValue: _i5.Future<_i3.CreateUploadUrlResponse>.value(
+              _FakeCreateUploadUrlResponse_1(
+                this,
+                Invocation.method(#createUploadUrl, [], {
+                  #itemId: itemId,
+                  #req: req,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.CreateUploadUrlResponse>);
+
+  @override
+  _i5.Future<void> uploadToS3({
+    required String? uploadUrl,
+    required _i11.Uint8List? bytes,
+    required String? mimeType,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#uploadToS3, [], {
+              #uploadUrl: uploadUrl,
+              #bytes: bytes,
+              #mimeType: mimeType,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> createAttachment({
+    required int? itemId,
+    required _i12.CreateAttachmentRequest? req,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createAttachment, [], {
+              #itemId: itemId,
+              #req: req,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i13.ShoppingAttachmentDto>> listAttachments({
+    required int? itemId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#listAttachments, [], {#itemId: itemId}),
+            returnValue: _i5.Future<List<_i13.ShoppingAttachmentDto>>.value(
+              <_i13.ShoppingAttachmentDto>[],
+            ),
+          )
+          as _i5.Future<List<_i13.ShoppingAttachmentDto>>);
+
+  @override
+  _i5.Future<void> deleteAttachment({
+    required int? itemId,
+    required int? attachmentId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAttachment, [], {
+              #itemId: itemId,
+              #attachmentId: attachmentId,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }

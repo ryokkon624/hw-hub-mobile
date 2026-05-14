@@ -53,6 +53,12 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<!-- image_picker: カメラ撮影に必要 -->
+	<key>NSCameraUsageDescription</key>
+	<string>買い物アイテムの画像を撮影するためにカメラを使用します。</string>
+	<!-- image_picker: フォトライブラリへのアクセスに必要 -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>買い物アイテムの画像を選択するためにフォトライブラリを使用します。</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
