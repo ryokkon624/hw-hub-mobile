@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/providers.dart';
+import '../../../core/models/favorite_flag.dart';
+import '../../../core/models/shopping_item_status.dart';
 import '../data/shopping_repository.dart';
 import '../shopping_providers.dart';
 import 'shopping_list_state.dart';
@@ -48,11 +50,18 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
 
     final repo = ref.read(shoppingRepositoryProvider);
     try {
-      await repo.updateStatus(shoppingItemId: shoppingItemId, status: '1');
+      await repo.updateStatus(
+        shoppingItemId: shoppingItemId,
+        status: ShoppingItemStatus.inBasket.code,
+      );
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
           // かごに入れる際は purchasedAt をクリア
-          return _copyItemWithStatus(item, '1', purchasedAt: null);
+          return _copyItemWithStatus(
+            item,
+            ShoppingItemStatus.inBasket.code,
+            purchasedAt: null,
+          );
         }
         return item;
       }).toList();
@@ -70,12 +79,19 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
 
     final repo = ref.read(shoppingRepositoryProvider);
     try {
-      await repo.updateStatus(shoppingItemId: shoppingItemId, status: '9');
+      await repo.updateStatus(
+        shoppingItemId: shoppingItemId,
+        status: ShoppingItemStatus.purchased.code,
+      );
       // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
       final now = DateTime.now().toIso8601String();
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
-          return _copyItemWithStatus(item, '9', purchasedAt: now);
+          return _copyItemWithStatus(
+            item,
+            ShoppingItemStatus.purchased.code,
+            purchasedAt: now,
+          );
         }
         return item;
       }).toList();
@@ -93,11 +109,18 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
 
     final repo = ref.read(shoppingRepositoryProvider);
     try {
-      await repo.updateStatus(shoppingItemId: shoppingItemId, status: '0');
+      await repo.updateStatus(
+        shoppingItemId: shoppingItemId,
+        status: ShoppingItemStatus.notPurchased.code,
+      );
       final updatedItems = current.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
           // 未購入に戻す際は purchasedAt をクリア（purchasedItems から外れる）
-          return _copyItemWithStatus(item, '0', purchasedAt: null);
+          return _copyItemWithStatus(
+            item,
+            ShoppingItemStatus.notPurchased.code,
+            purchasedAt: null,
+          );
         }
         return item;
       }).toList();
@@ -119,12 +142,19 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     final ids = basketItems.map((e) => e.shoppingItemId).toList();
     final repo = ref.read(shoppingRepositoryProvider);
     try {
-      await repo.bulkUpdateStatus(ids: ids, status: '9');
+      await repo.bulkUpdateStatus(
+        ids: ids,
+        status: ShoppingItemStatus.purchased.code,
+      );
       // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
       final now = DateTime.now().toIso8601String();
       final updatedItems = current.items.map((item) {
         if (ids.contains(item.shoppingItemId)) {
-          return _copyItemWithStatus(item, '9', purchasedAt: now);
+          return _copyItemWithStatus(
+            item,
+            ShoppingItemStatus.purchased.code,
+            purchasedAt: now,
+          );
         }
         return item;
       }).toList();
@@ -164,8 +194,10 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     if (item == null) return;
 
     // 現在の favorite を反転
-    final currentFavorite = item.favorite ?? '0';
-    final newFavorite = currentFavorite == '1' ? '0' : '1';
+    final currentFavorite = item.favorite ?? FavoriteFlag.normal.code;
+    final newFavorite = currentFavorite == FavoriteFlag.favorite.code
+        ? FavoriteFlag.normal.code
+        : FavoriteFlag.favorite.code;
 
     final repo = ref.read(shoppingRepositoryProvider);
     try {
