@@ -6,6 +6,7 @@ import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/models/purchase_location_type.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_attachment_repository.dart';
+import '../shopping_list_notifier.dart';
 import '../widgets/image_picker_field.dart';
 import '../widgets/status_step_selector.dart';
 import 'shopping_item_detail_notifier.dart';
@@ -297,7 +298,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
             key: const Key('favoriteSwitch'),
             title: Text(l10n.shoppingNewFavorite),
             value: state.currentFavorite == FavoriteFlag.favorite.code,
-            onChanged: (_) => widget.notifier.toggleFavorite(),
+            onChanged: (_) async {
+              await widget.notifier.toggleFavorite();
+              // #93: お気に入り操作後に買い物リストを即時反映するためinvalidate
+              ref.invalidate(shoppingListNotifierProvider);
+            },
             contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 16),

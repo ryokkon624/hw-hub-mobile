@@ -10,8 +10,11 @@ import 'package:hw_hub_mobile/features/home/data/models/shopping_item_dto.dart';
 import 'package:hw_hub_mobile/features/shopping/data/shopping_attachment_repository.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_detail/shopping_item_detail_notifier.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_detail/shopping_item_detail_page.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_notifier.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_state.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/widgets/status_step_selector.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
@@ -627,6 +630,85 @@ void main() {
       expect(find.byKey(const Key('saveButton')), findsOneWidget);
     });
   });
+
+  group('ShoppingItemDetailPage - お気に入り操作後のリスト即時反映（#93）', () {
+    testWidgets(
+      'お気に入りスイッチをタップするとshoppingListNotifierProviderがinvalidateされ再fetchされる',
+      (tester) async {
+        // #93: toggleFavorite後にshoppingListNotifierProviderがinvalidateされること
+        // /list にConsumerを置いてshoppingListNotifierProviderをwatchし、
+        // /detail/1 でお気に入りスイッチをタップした後にfetchItemsが再呼び出しされることを確認する
+        when(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).thenAnswer((_) async => []);
+
+        final item = _makeItem(favorite: '0');
+
+        await tester.pumpWidget(
+          buildTestPageWithRouter(
+            routes: [
+              GoRoute(
+                path: '/list',
+                builder: (_, _) => Consumer(
+                  builder: (ctx, ref, _) {
+                    ref.watch(shoppingListNotifierProvider);
+                    return const Scaffold(body: Text('shopping-list'));
+                  },
+                ),
+              ),
+              GoRoute(
+                path: '/detail/1',
+                builder: (_, _) => const ShoppingItemDetailPage(itemId: 1),
+              ),
+            ],
+            overrides: [
+              ...baseOverrides(),
+              shoppingItemDetailNotifierProvider.overrideWith(
+                () => _LoadedDetailNotifier(item),
+              ),
+              shoppingListNotifierProvider.overrideWith(
+                () => _TrackingShoppingListNotifier(),
+              ),
+            ],
+            initialLocation: '/list',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 初回fetchItemsが呼ばれたことを確認
+        verify(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).called(1);
+
+        // /detail/1 にpush
+        final routerContext = tester.element(find.text('shopping-list'));
+        GoRouter.of(routerContext).push('/detail/1');
+        await tester.pumpAndSettle();
+
+        // お気に入りスイッチをスクロールで表示してタップ（toggleFavorite後にref.invalidateが呼ばれる）
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('favoriteSwitch')),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.byKey(const Key('favoriteSwitch')));
+        await tester.pumpAndSettle();
+
+        // /list に戻る（popする）
+        final detailRouterContext = tester.element(
+          find.byKey(const Key('saveButton')),
+        );
+        GoRouter.of(detailRouterContext).pop();
+        await tester.pumpAndSettle();
+
+        // /list に戻った後、invalidateにより再fetchされたことを確認
+        // （invalidateが呼ばれており、/listのConsumerがactiveになったときにbuildが再実行される）
+        verify(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).called(1);
+      },
+    );
+  });
 }
 
 // #96テスト用のフェイクNotifier（deleteAttachmentをフックできる）
@@ -654,4 +736,17 @@ class _LoadedDetailNotifierWithDeleteAttachment
 
   @override
   Future<void> save() async {}
+}
+
+// #93テスト用: ShoppingListNotifierのbuildを追跡するフェイク
+class _TrackingShoppingListNotifier extends ShoppingListNotifier {
+  @override
+  Future<ShoppingListState> build() async {
+    final householdState = await ref.watch(householdNotifierProvider.future);
+    final selectedHousehold = householdState.selectedHousehold;
+    if (selectedHousehold == null) return const ShoppingListState();
+    final repo = ref.read(shoppingRepositoryProvider);
+    final items = await repo.fetchItems(householdId: selectedHousehold.id);
+    return ShoppingListState(items: List.unmodifiable(items));
+  }
 }

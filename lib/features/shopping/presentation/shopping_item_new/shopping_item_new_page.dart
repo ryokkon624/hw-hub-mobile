@@ -7,6 +7,7 @@ import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../shopping_list_notifier.dart';
 import '../widgets/favorite_picker_bottom_sheet.dart';
 import '../widgets/history_picker_bottom_sheet.dart';
 import '../widgets/image_picker_field.dart';
@@ -24,6 +25,8 @@ class ShoppingItemNewPage extends ConsumerWidget {
     // 登録成功後に前の画面に戻る
     ref.listen(shoppingItemNewNotifierProvider, (prev, next) {
       if (next.successItemId != null && prev?.successItemId == null) {
+        // #93: 追加成功後に買い物リストを即時反映するためinvalidate
+        ref.invalidate(shoppingListNotifierProvider);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.shoppingNewToastSuccess)));

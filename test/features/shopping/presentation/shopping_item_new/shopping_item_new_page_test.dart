@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_new/shopping_item_new_notifier.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_new/shopping_item_new_page.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_notifier.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_state.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +54,20 @@ class _SuccessShoppingItemNewNotifier extends ShoppingItemNewNotifier {
   @override
   Future<void> submit({required int householdId}) async {
     state = state.copyWith(successItemId: 999);
+  }
+}
+
+// #93テスト用: ShoppingListNotifierのbuild()をフェイクして実際のfetchItemsを呼ぶ
+class _TrackingShoppingListNotifier extends ShoppingListNotifier {
+  @override
+  Future<ShoppingListState> build() async {
+    // householdNotifierProvider を watch して fetchItems を呼ぶ（本物と同じ動き）
+    final householdState = await ref.watch(householdNotifierProvider.future);
+    final selectedHousehold = householdState.selectedHousehold;
+    if (selectedHousehold == null) return const ShoppingListState();
+    final repo = ref.read(shoppingRepositoryProvider);
+    final items = await repo.fetchItems(householdId: selectedHousehold.id);
+    return ShoppingListState(items: List.unmodifiable(items));
   }
 }
 
@@ -267,5 +284,76 @@ void main() {
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
+  });
+
+  group('ShoppingItemNewPage - アイテム追加後のリスト即時反映（#93）', () {
+    testWidgets(
+      '追加成功後にshoppingListNotifierProviderがinvalidateされリスト画面復帰時に再fetchされる',
+      (tester) async {
+        // #93: successItemId検知後にshoppingListNotifierProviderがinvalidateされること
+        // /list にConsumerを置いてshoppingListNotifierProviderをwatchし、
+        // submit後にpopで戻ったときにfetchItemsが再呼び出しされることを確認する
+        when(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).thenAnswer((_) async => []);
+
+        await tester.pumpWidget(
+          buildTestPageWithRouter(
+            routes: [
+              GoRoute(
+                path: '/list',
+                builder: (_, _) => Consumer(
+                  builder: (ctx, ref, _) {
+                    ref.watch(shoppingListNotifierProvider);
+                    return const Scaffold(body: Text('shopping-list'));
+                  },
+                ),
+              ),
+              GoRoute(
+                path: '/new',
+                builder: (_, _) => const ShoppingItemNewPage(),
+              ),
+            ],
+            overrides: [
+              householdNotifierProvider.overrideWith(
+                () => _FakeHouseholdNotifier(),
+              ),
+              shoppingRepositoryProvider.overrideWithValue(mockRepo),
+              shoppingAttachmentRepositoryProvider.overrideWithValue(
+                mockAttachRepo,
+              ),
+              shoppingItemNewNotifierProvider.overrideWith(
+                () => _SuccessShoppingItemNewNotifier(),
+              ),
+              shoppingListNotifierProvider.overrideWith(
+                () => _TrackingShoppingListNotifier(),
+              ),
+            ],
+            initialLocation: '/list',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 初回fetchItemsが呼ばれたことを確認
+        verify(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).called(1);
+
+        // /new にpush
+        final routerContext = tester.element(find.text('shopping-list'));
+        GoRouter.of(routerContext).push('/new');
+        await tester.pumpAndSettle();
+
+        // 送信ボタンをタップ（_SuccessShoppingItemNewNotifierはsubmit後にsuccessItemId=999をセット）
+        await tester.tap(find.text('追加する'));
+        await tester.pumpAndSettle(); // context.popまで完了させる
+
+        // /list に戻った後、invalidateにより再fetchされたことを確認
+        // （invalidateが呼ばれ、/listのConsumerがactiveになったときにbuildが再実行される）
+        verify(
+          mockRepo.fetchItems(householdId: anyNamed('householdId')),
+        ).called(1);
+      },
+    );
   });
 }
