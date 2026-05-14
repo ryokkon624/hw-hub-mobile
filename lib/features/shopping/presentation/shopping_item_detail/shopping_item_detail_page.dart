@@ -478,6 +478,8 @@ class _StoreTypeSelector extends StatelessWidget {
 /// AppException から来たメッセージ（キー名でないもの）はそのまま返す。
 String _resolveErrorMessage(AppLocalizations l10n, String messageOrKey) {
   switch (messageOrKey) {
+    case 'shoppingDetailItemNotFound':
+      return l10n.shoppingDetailItemNotFound;
     case 'shoppingDetailLoadError':
       return l10n.shoppingDetailLoadError;
     case 'shoppingDetailSaveError':

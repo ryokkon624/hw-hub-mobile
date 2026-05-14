@@ -401,6 +401,7 @@
   "shoppingDetailToastDeleteSuccess": "Eliminado",
   "shoppingDetailToastImageAddSuccess": "Imagen agregada",
   "shoppingDetailToastImageDeleteSuccess": "Imagen eliminada",
+  "shoppingDetailItemNotFound": "Artículo no encontrado",
   "shoppingDetailLoadError": "Error al cargar",
   "shoppingDetailSaveError": "Error al guardar",
   "shoppingDetailDeleteError": "Error al eliminar",

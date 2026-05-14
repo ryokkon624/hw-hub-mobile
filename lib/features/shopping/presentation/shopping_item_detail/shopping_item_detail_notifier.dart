@@ -41,7 +41,8 @@ class ShoppingItemDetailNotifier
 
       final item = items.firstWhere(
         (e) => e.shoppingItemId == itemId,
-        orElse: () => throw const ServerException(message: 'アイテムが見つかりません'),
+        orElse: () =>
+            throw const ServerException(message: 'shoppingDetailItemNotFound'),
       );
 
       state = state.copyWith(

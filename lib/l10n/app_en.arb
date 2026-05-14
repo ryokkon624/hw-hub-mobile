@@ -401,6 +401,7 @@
   "shoppingDetailToastDeleteSuccess": "Deleted",
   "shoppingDetailToastImageAddSuccess": "Image added",
   "shoppingDetailToastImageDeleteSuccess": "Image deleted",
+  "shoppingDetailItemNotFound": "Item not found",
   "shoppingDetailLoadError": "Failed to load",
   "shoppingDetailSaveError": "Failed to save",
   "shoppingDetailDeleteError": "Failed to delete",
