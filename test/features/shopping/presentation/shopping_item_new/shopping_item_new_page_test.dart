@@ -29,7 +29,7 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
 class _SubmittingNotifier extends ShoppingItemNewNotifier {
   @override
   ShoppingItemNewState build() {
-    return const ShoppingItemNewState(isSubmitting: true);
+    return ShoppingItemNewState(isSubmitting: true);
   }
 }
 
@@ -37,7 +37,7 @@ class _SubmittingNotifier extends ShoppingItemNewNotifier {
 class _PreFilledNotifier extends ShoppingItemNewNotifier {
   @override
   ShoppingItemNewState build() {
-    return const ShoppingItemNewState(name: 'テスト品');
+    return ShoppingItemNewState(name: 'テスト品');
   }
 }
 
@@ -45,7 +45,7 @@ class _PreFilledNotifier extends ShoppingItemNewNotifier {
 class _SuccessShoppingItemNewNotifier extends ShoppingItemNewNotifier {
   @override
   ShoppingItemNewState build() {
-    return const ShoppingItemNewState(name: 'テスト品');
+    return ShoppingItemNewState(name: 'テスト品');
   }
 
   @override

@@ -1,19 +1,23 @@
 import 'dart:typed_data';
 
+import '../../../../core/models/favorite_flag.dart';
+import '../../../../core/models/purchase_location_type.dart';
+
 /// 買い物アイテム作成画面の状態クラス。
 class ShoppingItemNewState {
-  const ShoppingItemNewState({
+  ShoppingItemNewState({
     this.name = '',
     this.memo,
-    this.storeType = '1', // デフォルト: スーパー
-    this.favorite = '0',
+    String? storeType,
+    String? favorite,
     this.pickedImageBytes,
     this.pickedImageName,
     this.sourceShoppingItemId,
     this.isSubmitting = false,
     this.errorMessage,
     this.successItemId,
-  });
+  }) : storeType = storeType ?? PurchaseLocationType.supermarket.code,
+       favorite = favorite ?? FavoriteFlag.normal.code;
 
   final String name;
   final String? memo;

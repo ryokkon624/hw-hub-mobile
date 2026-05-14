@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/models/favorite_flag.dart';
+import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/shopping_repository.dart';
-import '../../shopping_providers.dart';
 import '../widgets/favorite_picker_bottom_sheet.dart';
 import '../widgets/history_picker_bottom_sheet.dart';
 import '../widgets/image_picker_field.dart';
@@ -109,13 +109,9 @@ class _ShoppingItemNewFormState extends ConsumerState<_ShoppingItemNewForm> {
     final householdId = householdAsync.valueOrNull?.selectedHousehold?.id;
     if (householdId == null) return;
 
-    final repo = ref.read(shoppingRepositoryProvider);
-    List<ShoppingItemHistorySuggestionDto> suggestions = [];
-    try {
-      suggestions = await repo.fetchHistorySuggestions(
-        householdId: householdId,
-      );
-    } catch (_) {}
+    final suggestions = await widget.notifier.fetchHistorySuggestions(
+      householdId: householdId,
+    );
 
     if (!mounted) return;
 
@@ -137,11 +133,9 @@ class _ShoppingItemNewFormState extends ConsumerState<_ShoppingItemNewForm> {
     final householdId = householdAsync.valueOrNull?.selectedHousehold?.id;
     if (householdId == null) return;
 
-    final repo = ref.read(shoppingRepositoryProvider);
-    final favorites = <ShoppingItemDto>[];
-    try {
-      favorites.addAll(await repo.fetchFavorites(householdId: householdId));
-    } catch (_) {}
+    final favorites = await widget.notifier.fetchFavorites(
+      householdId: householdId,
+    );
 
     if (!mounted) return;
 
@@ -149,7 +143,7 @@ class _ShoppingItemNewFormState extends ConsumerState<_ShoppingItemNewForm> {
       context: context,
       isScrollControlled: true,
       builder: (_) => FavoritePickerBottomSheet(
-        favorites: List.from(favorites),
+        favorites: favorites,
         onSelected: (item) {
           widget.notifier.setFromFavorite(item);
           Navigator.pop(context);
@@ -248,8 +242,10 @@ class _ShoppingItemNewFormState extends ConsumerState<_ShoppingItemNewForm> {
           // お気に入り
           SwitchListTile(
             title: Text(l10n.shoppingNewFavorite),
-            value: state.favorite == '1',
-            onChanged: (v) => widget.notifier.setFavorite(v ? '1' : '0'),
+            value: state.favorite == FavoriteFlag.favorite.code,
+            onChanged: (v) => widget.notifier.setFavorite(
+              v ? FavoriteFlag.favorite.code : FavoriteFlag.normal.code,
+            ),
             contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: AppSpacing.md),
@@ -284,36 +280,28 @@ class _StoreTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    const options = [
-      ('1', 'shoppingFilterSupermarket'),
-      ('2', 'shoppingFilterOnline'),
-      ('3', 'shoppingFilterDrugstore'),
-    ];
 
     return Wrap(
       spacing: 8,
-      children: options.map((opt) {
-        final code = opt.$1;
-        final isSelected = value == code;
+      children: PurchaseLocationType.values.map((type) {
+        final isSelected = value == type.code;
         return ChoiceChip(
-          label: Text(_labelOf(l10n, code)),
+          label: Text(_labelOf(l10n, type)),
           selected: isSelected,
-          onSelected: (_) => onChanged(code),
+          onSelected: (_) => onChanged(type.code),
         );
       }).toList(),
     );
   }
 
-  String _labelOf(AppLocalizations l10n, String code) {
-    switch (code) {
-      case '1':
+  String _labelOf(AppLocalizations l10n, PurchaseLocationType type) {
+    switch (type) {
+      case PurchaseLocationType.supermarket:
         return l10n.shoppingFilterSupermarket;
-      case '2':
+      case PurchaseLocationType.online:
         return l10n.shoppingFilterOnline;
-      case '3':
+      case PurchaseLocationType.drugstore:
         return l10n.shoppingFilterDrugstore;
-      default:
-        return code;
     }
   }
 }

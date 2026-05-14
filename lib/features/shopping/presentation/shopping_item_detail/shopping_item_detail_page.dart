@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/models/favorite_flag.dart';
+import '../../../../core/models/purchase_location_type.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_attachment_repository.dart';
 import '../widgets/image_picker_field.dart';
@@ -446,31 +447,28 @@ class _StoreTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    const codes = ['1', '2', '3'];
 
     return Wrap(
       spacing: 8,
-      children: codes.map((code) {
-        final isSelected = value == code;
+      children: PurchaseLocationType.values.map((type) {
+        final isSelected = value == type.code;
         return ChoiceChip(
-          label: Text(_labelOf(l10n, code)),
+          label: Text(_labelOf(l10n, type)),
           selected: isSelected,
-          onSelected: (_) => onChanged(code),
+          onSelected: (_) => onChanged(type.code),
         );
       }).toList(),
     );
   }
 
-  String _labelOf(AppLocalizations l10n, String code) {
-    switch (code) {
-      case '1':
+  String _labelOf(AppLocalizations l10n, PurchaseLocationType type) {
+    switch (type) {
+      case PurchaseLocationType.supermarket:
         return l10n.shoppingFilterSupermarket;
-      case '2':
+      case PurchaseLocationType.online:
         return l10n.shoppingFilterOnline;
-      case '3':
+      case PurchaseLocationType.drugstore:
         return l10n.shoppingFilterDrugstore;
-      default:
-        return code;
     }
   }
 }

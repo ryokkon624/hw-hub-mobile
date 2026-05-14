@@ -14,7 +14,7 @@ export 'shopping_item_new_state.dart';
 class ShoppingItemNewNotifier
     extends AutoDisposeNotifier<ShoppingItemNewState> {
   @override
-  ShoppingItemNewState build() => const ShoppingItemNewState();
+  ShoppingItemNewState build() => ShoppingItemNewState();
 
   void setName(String value) {
     state = state.copyWith(name: value, errorMessage: null);
@@ -30,6 +30,30 @@ class ShoppingItemNewNotifier
 
   void setFavorite(String value) {
     state = state.copyWith(favorite: value);
+  }
+
+  /// 過去の購入履歴候補を取得して返す（Page からの呼び出し用）
+  Future<List<ShoppingItemHistorySuggestionDto>> fetchHistorySuggestions({
+    required int householdId,
+  }) async {
+    try {
+      final repo = ref.read(shoppingRepositoryProvider);
+      return await repo.fetchHistorySuggestions(householdId: householdId);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// お気に入りアイテム一覧を取得して返す（Page からの呼び出し用）
+  Future<List<ShoppingItemDto>> fetchFavorites({
+    required int householdId,
+  }) async {
+    try {
+      final repo = ref.read(shoppingRepositoryProvider);
+      return await repo.fetchFavorites(householdId: householdId);
+    } catch (_) {
+      return [];
+    }
   }
 
   /// 過去履歴から選択: name / storeType / sourceShoppingItemId をセット
