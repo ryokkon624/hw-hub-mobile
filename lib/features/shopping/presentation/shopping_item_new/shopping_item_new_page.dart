@@ -138,7 +138,7 @@ class _ShoppingItemNewFormState extends ConsumerState<_ShoppingItemNewForm> {
     if (householdId == null) return;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    final favorites = <dynamic>[];
+    final favorites = <ShoppingItemDto>[];
     try {
       favorites.addAll(await repo.fetchFavorites(householdId: householdId));
     } catch (_) {}

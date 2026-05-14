@@ -36,13 +36,8 @@ class ShoppingItemDetailNotifier
       final attachRepo = ref.read(shoppingAttachmentRepositoryProvider);
 
       // item と attachments を並行取得
-      final results = await Future.wait([
-        repo.fetchItems(householdId: householdId),
-        attachRepo.listAttachments(itemId: itemId),
-      ]);
-
-      final items = results[0] as List<ShoppingItemDto>;
-      final attachments = results[1] as List<dynamic>;
+      final items = await repo.fetchItems(householdId: householdId);
+      final attachments = await attachRepo.listAttachments(itemId: itemId);
 
       final item = items.firstWhere(
         (e) => e.shoppingItemId == itemId,
@@ -51,7 +46,7 @@ class ShoppingItemDetailNotifier
 
       state = state.copyWith(
         item: item,
-        attachments: List<dynamic>.from(attachments).cast(),
+        attachments: attachments,
         isLoading: false,
       );
     } catch (e) {
