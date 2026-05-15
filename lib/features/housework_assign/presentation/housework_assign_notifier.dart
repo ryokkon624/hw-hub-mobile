@@ -31,11 +31,24 @@ class HouseworkAssignNotifier
     return HouseworkAssignState(
       tasks: tasks,
       members: members,
+      memberTaskCounts: _computeMemberTaskCounts(tasks),
       filter: current?.filter ?? AssignFilter.all,
       mode: AssignMode.list,
       swipeTarget: SwipeTarget.unassigned,
       swipeIndex: 0,
     );
+  }
+
+  /// userId → 未対応タスク件数マップを一括計算する（O(タスク数)）
+  Map<int, int> _computeMemberTaskCounts(List<HouseworkTaskDto> tasks) {
+    final counts = <int, int>{};
+    for (final t in tasks) {
+      final uid = t.assigneeUserId;
+      if (uid != null) {
+        counts[uid] = (counts[uid] ?? 0) + 1;
+      }
+    }
+    return counts;
   }
 
   void setFilter(AssignFilter filter) {
@@ -103,7 +116,13 @@ class HouseworkAssignNotifier
         }
         return t;
       }).toList();
-      state = AsyncData(current.copyWith(tasks: updated, clearError: true));
+      state = AsyncData(
+        current.copyWith(
+          tasks: updated,
+          memberTaskCounts: _computeMemberTaskCounts(updated),
+          clearError: true,
+        ),
+      );
       return true;
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
@@ -138,7 +157,13 @@ class HouseworkAssignNotifier
         }
         return t;
       }).toList();
-      state = AsyncData(current.copyWith(tasks: updated, clearError: true));
+      state = AsyncData(
+        current.copyWith(
+          tasks: updated,
+          memberTaskCounts: _computeMemberTaskCounts(updated),
+          clearError: true,
+        ),
+      );
       return true;
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
@@ -197,7 +222,13 @@ class HouseworkAssignNotifier
       final remaining = current.tasks
           .where((t) => !taskIds.contains(t.houseworkTaskId))
           .toList();
-      state = AsyncData(current.copyWith(tasks: remaining, clearError: true));
+      state = AsyncData(
+        current.copyWith(
+          tasks: remaining,
+          memberTaskCounts: _computeMemberTaskCounts(remaining),
+          clearError: true,
+        ),
+      );
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {

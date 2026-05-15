@@ -10,6 +10,7 @@ class HouseworkAssignState {
   const HouseworkAssignState({
     this.tasks = const [],
     this.members = const [],
+    this.memberTaskCounts = const {},
     this.filter = AssignFilter.all,
     this.mode = AssignMode.list,
     this.swipeTarget = SwipeTarget.unassigned,
@@ -21,6 +22,10 @@ class HouseworkAssignState {
 
   final List<HouseworkTaskDto> tasks;
   final List<HouseholdMemberDto> members;
+
+  /// userId → 未対応タスク件数の事前計算マップ（MemberSummaryStrip 向け）
+  final Map<int, int> memberTaskCounts;
+
   final AssignFilter filter;
   final AssignMode mode;
   final SwipeTarget swipeTarget;
@@ -35,6 +40,7 @@ class HouseworkAssignState {
   HouseworkAssignState copyWith({
     List<HouseworkTaskDto>? tasks,
     List<HouseholdMemberDto>? members,
+    Map<int, int>? memberTaskCounts,
     AssignFilter? filter,
     AssignMode? mode,
     SwipeTarget? swipeTarget,
@@ -47,6 +53,7 @@ class HouseworkAssignState {
     return HouseworkAssignState(
       tasks: tasks ?? this.tasks,
       members: members ?? this.members,
+      memberTaskCounts: memberTaskCounts ?? this.memberTaskCounts,
       filter: filter ?? this.filter,
       mode: mode ?? this.mode,
       swipeTarget: swipeTarget ?? this.swipeTarget,

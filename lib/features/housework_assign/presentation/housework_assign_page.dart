@@ -86,8 +86,9 @@ class _ListModePage extends ConsumerWidget {
         children: [
           // メンバーサマリ
           MemberSummaryStrip(
-            tasks: state.tasks,
             members: state.members,
+            memberTaskCounts: state.memberTaskCounts,
+            unassignedCount: unassignedCount,
             currentUserId: currentUserId,
           ),
           const Divider(height: 1),

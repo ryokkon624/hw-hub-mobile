@@ -106,9 +106,12 @@ void main() {
     });
 
     test('世帯所属時: タスクとメンバーを取得する', () async {
-      when(
-        mockRepo.fetchTasks(householdId: 1),
-      ).thenAnswer((_) async => [_task(id: 1), _task(id: 2)]);
+      when(mockRepo.fetchTasks(householdId: 1)).thenAnswer(
+        (_) async => [
+          _task(id: 1, assigneeUserId: 10),
+          _task(id: 2, assigneeUserId: 20),
+        ],
+      );
       when(
         mockRepo.fetchMembers(householdId: 1),
       ).thenAnswer((_) async => [_member(userId: 10), _member(userId: 20)]);
@@ -122,6 +125,9 @@ void main() {
       expect(state.members, hasLength(2));
       expect(state.filter, AssignFilter.all);
       expect(state.mode, AssignMode.list);
+      // memberTaskCounts が事前計算されていることを確認
+      expect(state.memberTaskCounts[10], 1);
+      expect(state.memberTaskCounts[20], 1);
     });
 
     test('API失敗時: AsyncErrorになる', () async {
@@ -179,6 +185,8 @@ void main() {
       final state = container.read(houseworkAssignNotifierProvider).value!;
       final task = state.tasks.firstWhere((t) => t.houseworkTaskId == 1);
       expect(task.assigneeUserId, 10);
+      // memberTaskCounts が割り当て後に更新されていることを確認
+      expect(state.memberTaskCounts[10], 1);
     });
 
     test('API失敗時: errorMessageがセットされtrueを返さない', () async {

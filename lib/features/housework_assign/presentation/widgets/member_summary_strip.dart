@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
-import '../../data/housework_assign_repository.dart';
+import '../../data/housework_assign_repository.dart' show HouseholdMemberDto;
 
 class MemberSummaryStrip extends StatelessWidget {
   const MemberSummaryStrip({
     super.key,
-    required this.tasks,
     required this.members,
+    required this.memberTaskCounts,
+    required this.unassignedCount,
     required this.currentUserId,
   });
 
-  final List<HouseworkTaskDto> tasks;
   final List<HouseholdMemberDto> members;
+
+  /// userId → 担当タスク件数の事前計算マップ（Notifier で集計済み）
+  final Map<int, int> memberTaskCounts;
+
+  /// 未割当タスク件数（Notifier で集計済み）
+  final int unassignedCount;
+
   final int currentUserId;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final unassignedCount = tasks.where((t) => t.assigneeUserId == null).length;
 
     return SizedBox(
       height: 72,
@@ -31,9 +37,7 @@ class MemberSummaryStrip extends StatelessWidget {
             isHighlighted: false,
           ),
           ...members.map((m) {
-            final count = tasks
-                .where((t) => t.assigneeUserId == m.userId)
-                .length;
+            final count = memberTaskCounts[m.userId] ?? 0;
             return _SummaryChip(
               key: ValueKey(m.userId),
               label: m.displayName,
