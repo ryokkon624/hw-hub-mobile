@@ -19,6 +19,7 @@ class SwipeableShoppingCard extends StatelessWidget {
     required this.onTap,
     required this.onFavoriteTap,
     this.enableSwipe = true,
+    this.direction = DismissDirection.horizontal,
   });
 
   final ShoppingItemDto item;
@@ -35,6 +36,9 @@ class SwipeableShoppingCard extends StatelessWidget {
 
   /// false のときはスワイプなしでカード本体（_CardBody）のみを表示する（購入済みタブ用）
   final bool enableSwipe;
+
+  /// スワイプ方向。購入済みタブでは endToStart（左スワイプのみ）を指定する
+  final DismissDirection direction;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +65,7 @@ class SwipeableShoppingCard extends StatelessWidget {
 
     return Dismissible(
       key: ValueKey('${variant.name}_${item.shoppingItemId}'),
+      direction: direction,
       dismissThresholds: const {
         DismissDirection.startToEnd: 0.3,
         DismissDirection.endToStart: 0.3,

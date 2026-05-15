@@ -33,6 +33,7 @@ Widget _buildCard({
   required ShoppingItemDto item,
   ShoppingTab variant = ShoppingTab.unpurchased,
   bool enableSwipe = true,
+  DismissDirection direction = DismissDirection.horizontal,
   VoidCallback? onTap,
   VoidCallback? onFavoriteTap,
   Future<bool> Function()? onPrimarySwipe,
@@ -47,6 +48,7 @@ Widget _buildCard({
       item: item,
       variant: variant,
       enableSwipe: enableSwipe,
+      direction: direction,
       onTap: onTap ?? () {},
       onFavoriteTap: onFavoriteTap ?? () {},
       onPrimarySwipe: onPrimarySwipe ?? () async => true,
@@ -173,6 +175,63 @@ void main() {
 
       await tester.tap(find.text('タップテスト'));
       expect(tapped, isTrue);
+    });
+  });
+
+  group('SwipeableShoppingCard - directionパラメータ（#91）', () {
+    testWidgets('direction=endToStartのときDismissibleのdirectionがendToStartになる', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildCard(
+          item: _item(),
+          enableSwipe: true,
+          direction: DismissDirection.endToStart,
+        ),
+      );
+      await tester.pump();
+
+      final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
+      expect(dismissible.direction, DismissDirection.endToStart);
+    });
+
+    testWidgets(
+      'direction=horizontalのときDismissibleのdirectionがhorizontalになる（デフォルト動作）',
+      (tester) async {
+        await tester.pumpWidget(_buildCard(item: _item(), enableSwipe: true));
+        await tester.pump();
+
+        final dismissible = tester.widget<Dismissible>(
+          find.byType(Dismissible),
+        );
+        expect(dismissible.direction, DismissDirection.horizontal);
+      },
+    );
+
+    testWidgets('directionパラメータを指定しない場合（デフォルト）はhorizontalになる', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('ja'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SwipeableShoppingCard(
+              item: _item(),
+              variant: ShoppingTab.unpurchased,
+              enableSwipe: true,
+              onTap: () {},
+              onFavoriteTap: () {},
+              onPrimarySwipe: () async => true,
+              onSecondarySwipe: () async => true,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
+      expect(dismissible.direction, DismissDirection.horizontal);
     });
   });
 
