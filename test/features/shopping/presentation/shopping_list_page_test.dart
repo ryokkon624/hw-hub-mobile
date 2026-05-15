@@ -660,8 +660,8 @@ void main() {
     });
   });
 
-  group('ShoppingListPage - 購入済みタブ店舗バッジ', () {
-    testWidgets('購入済みアイテムに購入場所バッジが表示される', (tester) async {
+  group('ShoppingListPage - 購入済みタブカード表示（#90）', () {
+    testWidgets('購入済みアイテムがカード形式で表示される', (tester) async {
       final now = DateTime.now();
       final items = [
         _item(
@@ -684,9 +684,8 @@ void main() {
       await tester.tap(find.text('購入済み'));
       await tester.pump();
 
+      // カード形式でアイテム名が表示される（バッジ表示から背景色表示に変更）
       expect(find.text('スーパーで買ったもの'), findsOneWidget);
-      // 店舗バッジが表示される
-      expect(find.text('スーパー'), findsOneWidget);
     });
   });
 
@@ -855,8 +854,8 @@ void main() {
     });
   });
 
-  group('ShoppingListPage - 購入済みタブ ドラッグストア/オンラインバッジ', () {
-    testWidgets('購入済みアイテムのドラッグストアバッジが表示される', (tester) async {
+  group('ShoppingListPage - 購入済みタブ 購入場所別カード（#90）', () {
+    testWidgets('ドラッグストアの購入済みアイテムが表示される', (tester) async {
       final now = DateTime.now();
       final items = [
         _item(
@@ -879,11 +878,11 @@ void main() {
       await tester.tap(find.text('購入済み'));
       await tester.pump();
 
+      // カード形式でアイテム名が表示される（背景色でstoreTypeを表現）
       expect(find.text('ドラッグストア購入品'), findsOneWidget);
-      expect(find.text('ドラッグストア'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('購入済みアイテムのオンラインバッジが表示される', (tester) async {
+    testWidgets('オンラインの購入済みアイテムが表示される', (tester) async {
       final now = DateTime.now();
       final items = [
         _item(
@@ -907,10 +906,9 @@ void main() {
       await tester.pump();
 
       expect(find.text('オンライン購入品'), findsOneWidget);
-      expect(find.text('オンライン'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('購入場所未設定のアイテムにはバッジが表示されない', (tester) async {
+    testWidgets('購入場所未設定の購入済みアイテムが表示される', (tester) async {
       final now = DateTime.now();
       final items = [
         _item(

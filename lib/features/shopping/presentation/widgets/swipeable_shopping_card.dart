@@ -6,8 +6,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
 import '../shopping_list_state.dart';
 
-/// 未購入・かごタブのスワイプ可能なアイテムカード。
+/// 未購入・かご・購入済みタブのアイテムカード。
 /// [variant] により背景・スワイプアクションが変わる。
+/// [enableSwipe] が false のときはスワイプなしでカード本体のみ表示する（購入済みタブ用）。
 class SwipeableShoppingCard extends StatelessWidget {
   const SwipeableShoppingCard({
     super.key,
@@ -17,6 +18,7 @@ class SwipeableShoppingCard extends StatelessWidget {
     required this.onSecondarySwipe,
     required this.onTap,
     required this.onFavoriteTap,
+    this.enableSwipe = true,
   });
 
   final ShoppingItemDto item;
@@ -31,8 +33,19 @@ class SwipeableShoppingCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onFavoriteTap;
 
+  /// false のときはスワイプなしでカード本体（_CardBody）のみを表示する（購入済みタブ用）
+  final bool enableSwipe;
+
   @override
   Widget build(BuildContext context) {
+    final cardBody = _CardBody(
+      item: item,
+      onTap: onTap,
+      onFavoriteTap: onFavoriteTap,
+    );
+
+    if (!enableSwipe) return cardBody;
+
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
@@ -75,7 +88,7 @@ class SwipeableShoppingCard extends StatelessWidget {
           return onSecondarySwipe();
         }
       },
-      child: _CardBody(item: item, onTap: onTap, onFavoriteTap: onFavoriteTap),
+      child: cardBody,
     );
   }
 }
@@ -94,91 +107,72 @@ class _CardBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
-    final storeColor = _storeColor(colors, item.storeType);
+    final bgColor = _storeBackgroundColor(colors, item.storeType);
 
     return InkWell(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: colors.surfaceCard,
+          color: bgColor,
           border: Border(bottom: BorderSide(color: colors.border)),
         ),
-        child: IntrinsicHeight(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 購入場所カラーバー
-              Container(
-                width: 4,
-                decoration: BoxDecoration(
-                  color: storeColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    bottomLeft: Radius.circular(4),
-                  ),
-                ),
-              ),
               // コンテンツ
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.name,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.textHeading,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (item.memo != null && item.memo!.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          item.memo!,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colors.textMuted),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              // アイコンエリア
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // お気に入りアイコン（AC10）
-                    GestureDetector(
-                      onTap: onFavoriteTap,
-                      child: Icon(
-                        item.favorite == '1' ? Icons.star : Icons.star_border,
-                        color: item.favorite == '1'
-                            ? Colors.amber
-                            : colors.textMuted,
-                        size: 20,
+                    Text(
+                      item.name,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colors.textHeading,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    // 画像アイコン（AC3: 画像がある場合のみ）
-                    if (item.hasImage) ...[
-                      const SizedBox(width: AppSpacing.xs),
-                      Icon(
-                        Icons.photo_camera_outlined,
-                        color: colors.textMuted,
-                        size: 20,
+                    if (item.memo != null && item.memo!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        item.memo!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.textMuted,
+                        ),
                       ),
                     ],
                   ],
                 ),
+              ),
+              // アイコンエリア
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // お気に入りアイコン（AC10）
+                  GestureDetector(
+                    onTap: onFavoriteTap,
+                    child: Icon(
+                      item.favorite == '1' ? Icons.star : Icons.star_border,
+                      color: item.favorite == '1'
+                          ? Colors.amber
+                          : colors.textMuted,
+                      size: 20,
+                    ),
+                  ),
+                  // 画像アイコン（AC3: 画像がある場合のみ）
+                  if (item.hasImage) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    Icon(
+                      Icons.photo_camera_outlined,
+                      color: colors.textMuted,
+                      size: 20,
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
@@ -187,17 +181,18 @@ class _CardBody extends StatelessWidget {
     );
   }
 
-  Color _storeColor(AppColorScheme colors, String? storeType) {
+  /// 購入場所に対応したカード背景色を返す（AC1）
+  Color _storeBackgroundColor(AppColorScheme colors, String? storeType) {
     final type = PurchaseLocationType.fromCode(storeType);
     switch (type) {
       case PurchaseLocationType.supermarket:
-        return colors.storeSuper;
-      case PurchaseLocationType.drugstore:
-        return colors.storeDrug;
+        return colors.paletteEmeraldSoft;
       case PurchaseLocationType.online:
-        return colors.storeOnline;
+        return colors.paletteBlueSoft;
+      case PurchaseLocationType.drugstore:
+        return colors.paletteRoseSoft;
       case null:
-        return colors.border;
+        return colors.surfaceCard;
     }
   }
 }
