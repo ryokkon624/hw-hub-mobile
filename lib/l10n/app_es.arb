@@ -23,6 +23,12 @@
   "navShopping": "Compras",
   "navSettings": "Ajustes",
 
+  "shellNavHome": "Inicio",
+  "shellNavHousework": "Tareas",
+  "shellNavTasks": "Actividades",
+  "shellNavShopping": "Compras",
+  "shellNavSettings": "Ajustes",
+
   "pageTitleHome": "Inicio",
   "pageTitleHouseworkAssign": "Tablero de Tareas",
   "pageTitleMyTasks": "Mis Tareas",

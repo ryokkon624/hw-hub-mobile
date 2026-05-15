@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../app_router.dart';
 import '../../core/theme/app_color_scheme.dart';
+import '../../l10n/app_localizations.dart';
 import 'widgets/household_indicator_bar.dart';
 
 class MainShell extends StatelessWidget {
@@ -23,6 +24,7 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     final hideIndicator = _shouldHideIndicator(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: Column(
@@ -43,27 +45,27 @@ class MainShell extends StatelessWidget {
               NavigationDestination(
                 icon: const Icon(Icons.home_outlined),
                 selectedIcon: Icon(Icons.home, color: colors.primary),
-                label: 'ホーム',
+                label: l10n.shellNavHome,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.assignment_outlined),
                 selectedIcon: Icon(Icons.assignment, color: colors.primary),
-                label: '家事分担',
+                label: l10n.shellNavHousework,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.check_circle_outline),
                 selectedIcon: Icon(Icons.check_circle, color: colors.primary),
-                label: 'タスク',
+                label: l10n.shellNavTasks,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.shopping_cart_outlined),
                 selectedIcon: Icon(Icons.shopping_cart, color: colors.primary),
-                label: '買い物',
+                label: l10n.shellNavShopping,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings, color: colors.primary),
-                label: '設定',
+                label: l10n.shellNavSettings,
               ),
             ],
           ),
