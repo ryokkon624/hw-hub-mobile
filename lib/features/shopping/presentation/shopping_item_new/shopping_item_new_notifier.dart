@@ -39,7 +39,11 @@ class ShoppingItemNewNotifier
     try {
       final repo = ref.read(shoppingRepositoryProvider);
       return await repo.fetchHistorySuggestions(householdId: householdId);
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
+      return [];
     } catch (_) {
+      state = state.copyWith(errorMessage: 'errorUnexpected');
       return [];
     }
   }
@@ -51,26 +55,32 @@ class ShoppingItemNewNotifier
     try {
       final repo = ref.read(shoppingRepositoryProvider);
       return await repo.fetchFavorites(householdId: householdId);
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
+      return [];
     } catch (_) {
+      state = state.copyWith(errorMessage: 'errorUnexpected');
       return [];
     }
   }
 
-  /// 過去履歴から選択: name / storeType / sourceShoppingItemId をセット
+  /// 過去履歴から選択: name / storeType / sourceShoppingItemId / memo をセット
   void setFromHistory(ShoppingItemHistorySuggestionDto suggestion) {
     state = state.copyWith(
       name: suggestion.name,
       storeType: suggestion.storeType ?? state.storeType,
       sourceShoppingItemId: suggestion.sourceShoppingItemId,
+      memo: suggestion.memo ?? '',
     );
   }
 
-  /// お気に入りから選択: name / storeType / sourceShoppingItemId をセット
+  /// お気に入りから選択: name / storeType / sourceShoppingItemId / memo をセット
   void setFromFavorite(ShoppingItemDto item) {
     state = state.copyWith(
       name: item.name,
       storeType: item.storeType ?? state.storeType,
       sourceShoppingItemId: item.shoppingItemId,
+      memo: item.memo ?? '',
     );
   }
 

@@ -103,6 +103,44 @@ void main() {
       expect(state.storeType, '3');
       expect(state.sourceShoppingItemId, 5);
     });
+
+    test('履歴から選択するとメモが反映される（メモあり）', () {
+      final container = makeContainer();
+      final suggestion = const ShoppingItemHistorySuggestionDto(
+        name: 'オリーブオイル',
+        memo: '安いやつを買う',
+        storeType: '3',
+        purchaseCount: 2,
+        sourceShoppingItemId: 5,
+      );
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setFromHistory(suggestion);
+
+      final state = container.read(shoppingItemNewNotifierProvider);
+      expect(state.memo, '安いやつを買う');
+    });
+
+    test('履歴から選択するとメモが空になる（メモなし）', () {
+      final container = makeContainer();
+      // 先にメモを設定しておく
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setMemo('事前入力のメモ');
+      final suggestion = const ShoppingItemHistorySuggestionDto(
+        name: 'オリーブオイル',
+        storeType: '3',
+        purchaseCount: 2,
+        sourceShoppingItemId: 5,
+        // memo は null
+      );
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setFromHistory(suggestion);
+
+      final state = container.read(shoppingItemNewNotifierProvider);
+      expect(state.memo, '');
+    });
   });
 
   group('ShoppingItemNewNotifier setFromFavorite', () {
@@ -117,6 +155,42 @@ void main() {
       expect(state.name, 'オリーブオイル');
       expect(state.storeType, '1');
       expect(state.sourceShoppingItemId, 1);
+    });
+
+    test('お気に入りから選択するとメモが反映される（メモあり）', () {
+      final container = makeContainer();
+      final item = ShoppingItemDto(
+        shoppingItemId: 1,
+        householdId: 100,
+        name: 'オリーブオイル',
+        memo: '高級品を買う',
+        storeType: '1',
+        status: '0',
+        favorite: '1',
+        createdAt: '2026-05-01T10:00:00',
+        hasImage: false,
+      );
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setFromFavorite(item);
+
+      final state = container.read(shoppingItemNewNotifierProvider);
+      expect(state.memo, '高級品を買う');
+    });
+
+    test('お気に入りから選択するとメモが空になる（メモなし）', () {
+      final container = makeContainer();
+      // 先にメモを設定しておく
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setMemo('事前入力のメモ');
+      final item = _makeItem(); // memo は null
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setFromFavorite(item);
+
+      final state = container.read(shoppingItemNewNotifierProvider);
+      expect(state.memo, '');
     });
   });
 
