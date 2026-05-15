@@ -32,18 +32,21 @@ class ShoppingTabBar extends StatelessWidget {
             label: l10n.shoppingTabUnpurchased,
             count: unpurchasedCount,
             isActive: activeTab == ShoppingTab.unpurchased,
+            showCount: true,
             onTap: () => onTabChanged(ShoppingTab.unpurchased),
           ),
           _TabItem(
             label: l10n.shoppingTabBasket,
             count: basketCount,
             isActive: activeTab == ShoppingTab.basket,
+            showCount: true,
             onTap: () => onTabChanged(ShoppingTab.basket),
           ),
           _TabItem(
             label: l10n.shoppingTabPurchased,
             count: purchasedCount,
             isActive: activeTab == ShoppingTab.purchased,
+            showCount: false, // #92: 購入済みタブは件数バッジを非表示
             onTap: () => onTabChanged(ShoppingTab.purchased),
           ),
         ],
@@ -58,12 +61,16 @@ class _TabItem extends StatelessWidget {
     required this.count,
     required this.isActive,
     required this.onTap,
+    this.showCount = true,
   });
 
   final String label;
   final int count;
   final bool isActive;
   final VoidCallback onTap;
+
+  /// false のとき件数バッジを非表示にする（購入済みタブ用）
+  final bool showCount;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +101,7 @@ class _TabItem extends StatelessWidget {
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
-              if (count > 0) ...[
+              if (showCount && count > 0) ...[
                 const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(

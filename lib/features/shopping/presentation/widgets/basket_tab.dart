@@ -53,67 +53,78 @@ class BasketTab extends ConsumerWidget {
           ),
         // アイテム一覧
         Expanded(
-          child: items.isEmpty
-              ? Center(
-                  child: Text(
-                    l10n.shoppingEmptyBasket,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.xs,
+          child: RefreshIndicator(
+            onRefresh: () async => ref.invalidate(shoppingListNotifierProvider),
+            child: items.isEmpty
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        child: Center(
+                          child: Text(
+                            l10n.shoppingEmptyBasket,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: colors.textMuted),
+                          ),
+                        ),
                       ),
-                      child: SwipeableShoppingCard(
-                        item: item,
-                        variant: ShoppingTab.basket,
-                        onPrimarySwipe: () async {
-                          // 右スワイプ: 購入済みに
-                          await ref
-                              .read(shoppingListNotifierProvider.notifier)
-                              .markPurchased(item.shoppingItemId);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  l10n.shoppingToastMarkedPurchased,
+                    ],
+                  )
+                : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.xs,
+                        ),
+                        child: SwipeableShoppingCard(
+                          item: item,
+                          variant: ShoppingTab.basket,
+                          onPrimarySwipe: () async {
+                            // 右スワイプ: 購入済みに
+                            await ref
+                                .read(shoppingListNotifierProvider.notifier)
+                                .markPurchased(item.shoppingItemId);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    l10n.shoppingToastMarkedPurchased,
+                                  ),
+                                  duration: const Duration(seconds: 2),
                                 ),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                          return true;
-                        },
-                        onSecondarySwipe: () async {
-                          // 左スワイプ: 未購入に戻す
-                          await ref
+                              );
+                            }
+                            return true;
+                          },
+                          onSecondarySwipe: () async {
+                            // 左スワイプ: 未購入に戻す
+                            await ref
+                                .read(shoppingListNotifierProvider.notifier)
+                                .moveBackToUnpurchased(item.shoppingItemId);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(l10n.shoppingToastMovedBack),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                            return true;
+                          },
+                          onTap: () => onCardTap(item.shoppingItemId),
+                          onFavoriteTap: () => ref
                               .read(shoppingListNotifierProvider.notifier)
-                              .moveBackToUnpurchased(item.shoppingItemId);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.shoppingToastMovedBack),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                          return true;
-                        },
-                        onTap: () => onCardTap(item.shoppingItemId),
-                        onFavoriteTap: () => ref
-                            .read(shoppingListNotifierProvider.notifier)
-                            .toggleFavorite(item.shoppingItemId),
-                      ),
-                    );
-                  },
-                ),
+                              .toggleFavorite(item.shoppingItemId),
+                        ),
+                      );
+                    },
+                  ),
+          ),
         ),
       ],
     );

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
-import 'purchased_item_tile.dart';
+import '../shopping_list_notifier.dart';
+import '../shopping_list_state.dart';
+import 'swipeable_shopping_card.dart';
 
-class PurchasedTab extends StatelessWidget {
+class PurchasedTab extends ConsumerWidget {
   const PurchasedTab({
     super.key,
     required this.itemsByDate,
@@ -16,71 +19,97 @@ class PurchasedTab extends StatelessWidget {
   final ValueChanged<int> onCardTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
 
+    Widget listContent;
     if (itemsByDate.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.shoppingEmptyPurchased,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
-        ),
+      listContent = ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: 200,
+            child: Center(
+              child: Text(
+                l10n.shoppingEmptyPurchased,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      final sortedDates = itemsByDate.keys.toList()
+        ..sort((a, b) => b.compareTo(a));
+
+      listContent = ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: sortedDates.length,
+        itemBuilder: (context, index) {
+          final dateKey = sortedDates[index];
+          final items = itemsByDate[dateKey]!;
+          final dateLabel = _formatDateLabel(l10n, dateKey);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 日付グループヘッダー
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      dateLabel,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      l10n.shoppingPurchasedGroupCount(items.length),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              // アイテム一覧（スワイプなしカード形式）
+              ...items.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: SwipeableShoppingCard(
+                    item: item,
+                    variant: ShoppingTab.purchased,
+                    enableSwipe: false,
+                    onTap: () => onCardTap(item.shoppingItemId),
+                    onFavoriteTap: () {},
+                    onPrimarySwipe: () async => false,
+                    onSecondarySwipe: () async => false,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       );
     }
 
-    final sortedDates = itemsByDate.keys.toList()
-      ..sort((a, b) => b.compareTo(a));
-
-    return ListView.builder(
-      itemCount: sortedDates.length,
-      itemBuilder: (context, index) {
-        final dateKey = sortedDates[index];
-        final items = itemsByDate[dateKey]!;
-        final dateLabel = _formatDateLabel(l10n, dateKey);
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 日付グループヘッダー
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.xs,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    dateLabel,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.textMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    l10n.shoppingPurchasedGroupCount(items.length),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-                  ),
-                ],
-              ),
-            ),
-            // アイテム一覧
-            ...items.map(
-              (item) => PurchasedItemTile(
-                item: item,
-                onTap: () => onCardTap(item.shoppingItemId),
-              ),
-            ),
-          ],
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: () async => ref.invalidate(shoppingListNotifierProvider),
+      child: listContent,
     );
   }
 
