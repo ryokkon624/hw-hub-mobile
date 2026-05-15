@@ -631,6 +631,144 @@ void main() {
     });
   });
 
+  group('ShoppingItemDetailPage - 削除後のリスト即時反映（#108）', () {
+    testWidgets('削除後にshoppingListNotifierProviderがinvalidateされ再fetchされる', (
+      tester,
+    ) async {
+      // #108: deleteItem後にshoppingListNotifierProviderがinvalidateされること
+      when(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).thenAnswer((_) async => []);
+
+      final item = _makeItem(status: '0');
+
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/list',
+              builder: (_, _) => Consumer(
+                builder: (ctx, ref, _) {
+                  ref.watch(shoppingListNotifierProvider);
+                  return const Scaffold(body: Text('shopping-list'));
+                },
+              ),
+            ),
+            GoRoute(
+              path: '/detail/1',
+              builder: (_, _) => const ShoppingItemDetailPage(itemId: 1),
+            ),
+          ],
+          overrides: [
+            ...baseOverrides(),
+            shoppingItemDetailNotifierProvider.overrideWith(
+              () => _LoadedDetailNotifier(item),
+            ),
+            shoppingListNotifierProvider.overrideWith(
+              () => _TrackingShoppingListNotifier(),
+            ),
+          ],
+          initialLocation: '/list',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 初回fetchItemsが呼ばれたことを確認
+      verify(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).called(1);
+
+      // /detail/1 にpush
+      final routerContext = tester.element(find.text('shopping-list'));
+      GoRouter.of(routerContext).push('/detail/1');
+      await tester.pumpAndSettle();
+
+      // スクロールして削除ボタンを表示してタップ
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('deleteItemButton')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byKey(const Key('deleteItemButton')));
+      await tester.pumpAndSettle();
+
+      // ダイアログ内の「このアイテムを削除」ボタンをタップ
+      await tester.tap(find.text('このアイテムを削除').last);
+      await tester.pumpAndSettle();
+
+      // invalidateにより再fetchされたことを確認
+      verify(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).called(1);
+    });
+  });
+
+  group('ShoppingItemDetailPage - ステータス変更後のリスト即時反映（#107）', () {
+    testWidgets('ステータス変更後にshoppingListNotifierProviderがinvalidateされ再fetchされる', (
+      tester,
+    ) async {
+      // #107: updateStatus後にshoppingListNotifierProviderがinvalidateされること
+      when(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).thenAnswer((_) async => []);
+
+      final item = _makeItem(status: '0');
+      final notifier = _LoadedDetailNotifierWithStatusChange(item);
+
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/list',
+              builder: (_, _) => Consumer(
+                builder: (ctx, ref, _) {
+                  ref.watch(shoppingListNotifierProvider);
+                  return const Scaffold(body: Text('shopping-list'));
+                },
+              ),
+            ),
+            GoRoute(
+              path: '/detail/1',
+              builder: (_, _) => const ShoppingItemDetailPage(itemId: 1),
+            ),
+          ],
+          overrides: [
+            ...baseOverrides(),
+            shoppingItemDetailNotifierProvider.overrideWith(() => notifier),
+            shoppingListNotifierProvider.overrideWith(
+              () => _TrackingShoppingListNotifier(),
+            ),
+          ],
+          initialLocation: '/list',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 初回fetchItemsが呼ばれたことを確認
+      verify(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).called(1);
+
+      // /detail/1 にpush
+      final routerContext = tester.element(find.text('shopping-list'));
+      GoRouter.of(routerContext).push('/detail/1');
+      await tester.pumpAndSettle();
+
+      // StatusStepSelectorの「かごに入れる」ステップをタップ
+      final statusStepSelector = tester.widget<StatusStepSelector>(
+        find.byKey(const Key('statusStepSelector')),
+      );
+      // onChangedに '1' を渡してupdateStatusを呼ぶ
+      statusStepSelector.onChanged('1');
+      await tester.pumpAndSettle();
+
+      // invalidateにより再fetchされたことを確認
+      verify(
+        mockRepo.fetchItems(householdId: anyNamed('householdId')),
+      ).called(1);
+    });
+  });
+
   group('ShoppingItemDetailPage - お気に入り操作後のリスト即時反映（#93）', () {
     testWidgets(
       'お気に入りスイッチをタップするとshoppingListNotifierProviderがinvalidateされ再fetchされる',
@@ -732,6 +870,39 @@ class _LoadedDetailNotifierWithDeleteAttachment
   @override
   Future<void> deleteAttachment(int attachmentId) async {
     onDeleteAttachment(attachmentId);
+  }
+
+  @override
+  Future<void> save() async {}
+}
+
+// #107テスト用のフェイクNotifier（updateStatusをフックできる）
+class _LoadedDetailNotifierWithStatusChange extends ShoppingItemDetailNotifier {
+  _LoadedDetailNotifierWithStatusChange(this._item);
+
+  final ShoppingItemDto _item;
+
+  @override
+  ShoppingItemDetailState build(int arg) {
+    return ShoppingItemDetailState(item: _item);
+  }
+
+  @override
+  Future<void> updateStatus(String status) async {
+    state = state.copyWith(
+      item: ShoppingItemDto(
+        shoppingItemId: _item.shoppingItemId,
+        householdId: _item.householdId,
+        name: _item.name,
+        memo: _item.memo,
+        storeType: _item.storeType,
+        status: status,
+        favorite: _item.favorite,
+        purchasedAt: _item.purchasedAt,
+        createdAt: _item.createdAt,
+        hasImage: _item.hasImage,
+      ),
+    );
   }
 
   @override

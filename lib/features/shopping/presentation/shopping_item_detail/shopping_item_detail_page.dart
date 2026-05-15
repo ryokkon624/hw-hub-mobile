@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/models/purchase_location_type.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_attachment_repository.dart';
 import '../shopping_list_notifier.dart';
@@ -30,14 +31,12 @@ class ShoppingItemDetailPage extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.shoppingDetailToastDeleteSuccess)),
         );
+        // #108: 削除後に一覧を即時反映するためinvalidate
+        ref.invalidate(shoppingListNotifierProvider);
         context.pop();
       }
       if (next.errorMessage != null && prev?.errorMessage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_resolveErrorMessage(l10n, next.errorMessage!)),
-          ),
-        );
+        AppSnackBar.showError(_resolveErrorMessage(l10n, next.errorMessage!));
       }
     });
 
@@ -242,7 +241,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
           StatusStepSelector(
             key: const Key('statusStepSelector'),
             currentStatus: state.item!.status,
-            onChanged: widget.notifier.updateStatus,
+            onChanged: (status) async {
+              // #107: ステータス変更後に一覧を即時反映するためinvalidate
+              await widget.notifier.updateStatus(status);
+              ref.invalidate(shoppingListNotifierProvider);
+            },
           ),
           const SizedBox(height: 16),
 
