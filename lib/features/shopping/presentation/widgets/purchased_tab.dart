@@ -99,6 +99,7 @@ class PurchasedTab extends ConsumerWidget {
               // アイテム一覧（左スワイプのみ有効）
               ...items.map(
                 (item) => Padding(
+                  key: ValueKey(item.shoppingItemId),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.xs,
