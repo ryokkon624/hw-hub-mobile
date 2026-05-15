@@ -332,6 +332,7 @@
   "shoppingSwipeDelete": "Eliminar",
   "shoppingSwipeMarkPurchased": "Comprado",
   "shoppingSwipeMoveBack": "Deshacer",
+  "shoppingSwipePurchasedHint": "Para cambiar el estado, actualiza en la pantalla de edición.",
   "shoppingBulkPurchaseButton": "Marcar todo como comprado",
   "shoppingBulkPurchaseConfirmTitle": "¿Marcar todo como comprado?",
   "shoppingBulkPurchaseConfirmMessage": "Todos los artículos del carrito serán marcados como comprados.",

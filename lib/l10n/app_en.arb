@@ -332,6 +332,7 @@
   "shoppingSwipeDelete": "Delete",
   "shoppingSwipeMarkPurchased": "Purchased",
   "shoppingSwipeMoveBack": "Undo",
+  "shoppingSwipePurchasedHint": "To change the status, please update in the edit screen.",
   "shoppingBulkPurchaseButton": "Mark all purchased",
   "shoppingBulkPurchaseConfirmTitle": "Mark all as purchased?",
   "shoppingBulkPurchaseConfirmMessage": "All items in basket will be marked as purchased.",

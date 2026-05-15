@@ -8,6 +8,19 @@ import '../shopping_list_notifier.dart';
 import '../shopping_list_state.dart';
 import 'swipeable_shopping_card.dart';
 
+/// 購入済みタブのカードで左スワイプしたときに表示するSnackBar
+void _showPurchasedSwipeHint(BuildContext context, AppLocalizations l10n) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(l10n.shoppingSwipePurchasedHint),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+}
+
 class PurchasedTab extends ConsumerWidget {
   const PurchasedTab({
     super.key,
@@ -83,9 +96,10 @@ class PurchasedTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              // アイテム一覧（スワイプなしカード形式）
+              // アイテム一覧（左スワイプのみ有効）
               ...items.map(
                 (item) => Padding(
+                  key: ValueKey(item.shoppingItemId),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.xs,
@@ -93,11 +107,15 @@ class PurchasedTab extends ConsumerWidget {
                   child: SwipeableShoppingCard(
                     item: item,
                     variant: ShoppingTab.purchased,
-                    enableSwipe: false,
+                    enableSwipe: true,
+                    direction: DismissDirection.endToStart,
                     onTap: () => onCardTap(item.shoppingItemId),
                     onFavoriteTap: () {},
                     onPrimarySwipe: () async => false,
-                    onSecondarySwipe: () async => false,
+                    onSecondarySwipe: () async {
+                      _showPurchasedSwipeHint(context, l10n);
+                      return false;
+                    },
                   ),
                 ),
               ),
