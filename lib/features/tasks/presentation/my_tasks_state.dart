@@ -7,11 +7,15 @@ class MyTasksState {
     this.pastTasks = const [],
     this.futureTasks = const [],
     this.filter = MyTasksFilter.all,
+    this.errorMessage,
   });
 
   final List<HouseworkTaskDto> pastTasks;
   final List<HouseworkTaskDto> futureTasks;
   final MyTasksFilter filter;
+
+  /// 操作エラー時のメッセージ（i18nキー名 or AppExceptionのメッセージ）
+  final String? errorMessage;
 
   List<HouseworkTaskDto> get filteredFutureTasks {
     if (filter == MyTasksFilter.all) return futureTasks;
@@ -36,11 +40,18 @@ class MyTasksState {
     List<HouseworkTaskDto>? pastTasks,
     List<HouseworkTaskDto>? futureTasks,
     MyTasksFilter? filter,
+    Object? errorMessage = _myTasksSentinel,
   }) {
     return MyTasksState(
       pastTasks: pastTasks ?? this.pastTasks,
       futureTasks: futureTasks ?? this.futureTasks,
       filter: filter ?? this.filter,
+      errorMessage: errorMessage == _myTasksSentinel
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }
+
+// null をリセット指定と区別するためのセンチネル値
+const _myTasksSentinel = Object();

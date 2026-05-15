@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- image_picker: カメラ撮影に必要 -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="hw_hub_mobile"
         android:name="${applicationName}"
