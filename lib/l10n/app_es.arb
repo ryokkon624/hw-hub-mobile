@@ -416,5 +416,61 @@
 
   "shoppingImagePickerCamera": "Tomar una foto",
   "shoppingImagePickerGallery": "Elegir de la galería",
-  "shoppingImagePickerCancel": "Cancelar"
+  "shoppingImagePickerCancel": "Cancelar",
+
+  "houseworkAssignTitle": "Asignar tareas",
+  "houseworkAssignMemberSummaryUnassigned": "Sin asignar",
+  "houseworkAssignUntreatedCountLabel": "{total} tareas pendientes ({unassigned} sin asignar)",
+  "@houseworkAssignUntreatedCountLabel": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "unassigned": { "type": "int" }
+    }
+  },
+  "houseworkAssignPastUnassignedLabel": "Sin asignar pasadas: {count}",
+  "@houseworkAssignPastUnassignedLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignBulkSkipButton": "Omitir tareas sin asignar pasadas",
+  "houseworkAssignBulkSkipDialogTitle": "Confirmar",
+  "houseworkAssignBulkSkipDialogBody": "¿Omitir {count} tareas sin asignar pasadas?",
+  "@houseworkAssignBulkSkipDialogBody": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignFilterAll": "Todas",
+  "houseworkAssignFilterUnassigned": "Sin asignar",
+  "houseworkAssignFilterMeAndUnassigned": "Yo+Sin",
+  "houseworkAssignSwipeMakeMineLabel": "Asignarme",
+  "houseworkAssignSwipePickMemberLabel": "Elegir miembro",
+  "houseworkAssignStartSwipeUnassigned": "Asignarme sin asignar ▶",
+  "houseworkAssignStartSwipeOthers": "Tomar de otros ▶",
+  "houseworkAssignSwipeModeTitle": "Asignarme",
+  "houseworkAssignSwipeProgressLabel": "{current} / {total}",
+  "@houseworkAssignSwipeProgressLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkAssignSwipeNextLabel": "Siguiente",
+  "houseworkAssignSwipeFinishedMessage": "¡Terminado!",
+  "houseworkAssignAssigneeUnassigned": "Sin asignar",
+  "houseworkAssignCurrentAssigneeLabel": "Asignado a: {name}",
+  "@houseworkAssignCurrentAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkAssignTargetDateLabel": "Fecha: {date}",
+  "@houseworkAssignTargetDateLabel": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "houseworkAssignErrorAssign": "Error al cambiar el asignado",
+  "houseworkAssignErrorBulkSkip": "Error al omitir en bloque"
 }

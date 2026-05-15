@@ -416,5 +416,61 @@
 
   "shoppingImagePickerCamera": "カメラで撮影",
   "shoppingImagePickerGallery": "ギャラリーから選択",
-  "shoppingImagePickerCancel": "キャンセル"
+  "shoppingImagePickerCancel": "キャンセル",
+
+  "houseworkAssignTitle": "家事割り当て",
+  "houseworkAssignMemberSummaryUnassigned": "未割当",
+  "houseworkAssignUntreatedCountLabel": "未対応タスク {total}件（未割当: {unassigned}件）",
+  "@houseworkAssignUntreatedCountLabel": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "unassigned": { "type": "int" }
+    }
+  },
+  "houseworkAssignPastUnassignedLabel": "過去の未割当: {count}件",
+  "@houseworkAssignPastUnassignedLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignBulkSkipButton": "過去の未割当をスキップ",
+  "houseworkAssignBulkSkipDialogTitle": "確認",
+  "houseworkAssignBulkSkipDialogBody": "過去の未割当タスク {count}件をスキップしますか？",
+  "@houseworkAssignBulkSkipDialogBody": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignFilterAll": "すべて",
+  "houseworkAssignFilterUnassigned": "未割当",
+  "houseworkAssignFilterMeAndUnassigned": "自分+未",
+  "houseworkAssignSwipeMakeMineLabel": "自分にする",
+  "houseworkAssignSwipePickMemberLabel": "メンバー選択",
+  "houseworkAssignStartSwipeUnassigned": "未割当を自分に割り当てる ▶",
+  "houseworkAssignStartSwipeOthers": "他メンバーのタスクを奪う ▶",
+  "houseworkAssignSwipeModeTitle": "自分に割り当てる",
+  "houseworkAssignSwipeProgressLabel": "{current} / {total}",
+  "@houseworkAssignSwipeProgressLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkAssignSwipeNextLabel": "次へ",
+  "houseworkAssignSwipeFinishedMessage": "お疲れさまでした！",
+  "houseworkAssignAssigneeUnassigned": "未割当",
+  "houseworkAssignCurrentAssigneeLabel": "現在の担当: {name}",
+  "@houseworkAssignCurrentAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkAssignTargetDateLabel": "実施日: {date}",
+  "@houseworkAssignTargetDateLabel": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "houseworkAssignErrorAssign": "担当者の変更に失敗しました",
+  "houseworkAssignErrorBulkSkip": "一括スキップに失敗しました"
 }
