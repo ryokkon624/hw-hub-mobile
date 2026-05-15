@@ -5,6 +5,7 @@ import '../../../app_router.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/ui/app_snack_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import 'shopping_list_notifier.dart';
 import 'shopping_list_state.dart';
@@ -20,6 +21,14 @@ class ShoppingListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final shoppingAsync = ref.watch(shoppingListNotifierProvider);
+
+    // 操作エラー時にAppSnackBarで通知する
+    ref.listen(shoppingListNotifierProvider, (prev, next) {
+      final errorMessage = next.valueOrNull?.errorMessage;
+      if (errorMessage != null && prev?.valueOrNull?.errorMessage == null) {
+        AppSnackBar.showError(_resolveErrorMessage(l10n, errorMessage));
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.shoppingListTitle)),
@@ -40,6 +49,16 @@ class ShoppingListPage extends ConsumerWidget {
     if (error is ServerException) return l10n.errorServer;
     if (error is AppException) return error.message;
     return l10n.errorUnexpected;
+  }
+}
+
+/// l10nキー名からローカライズ済みエラーメッセージを解決する。
+String _resolveErrorMessage(AppLocalizations l10n, String messageOrKey) {
+  switch (messageOrKey) {
+    case 'errorUnexpected':
+      return l10n.errorUnexpected;
+    default:
+      return messageOrKey;
   }
 }
 

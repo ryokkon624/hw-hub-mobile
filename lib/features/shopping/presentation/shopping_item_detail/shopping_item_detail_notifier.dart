@@ -86,8 +86,10 @@ class ShoppingItemDetailNotifier
         favorite: newFavorite,
       );
       state = state.copyWith(item: _copyItemWith(item, favorite: newFavorite));
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
     } catch (_) {
-      // エラー時は状態を変更しない
+      state = state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 
@@ -102,8 +104,10 @@ class ShoppingItemDetailNotifier
         status: status,
       );
       state = state.copyWith(item: _copyItemWith(item, status: status));
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
     } catch (_) {
-      // エラー時は状態を変更しない
+      state = state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 
@@ -195,8 +199,10 @@ class ShoppingItemDetailNotifier
         itemId: item.shoppingItemId,
       );
       state = state.copyWith(attachments: attachments);
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
     } catch (_) {
-      // エラー時は変更しない
+      state = state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 
@@ -216,8 +222,10 @@ class ShoppingItemDetailNotifier
         itemId: item.shoppingItemId,
       );
       state = state.copyWith(attachments: attachments);
+    } on AppException catch (e) {
+      state = state.copyWith(errorMessage: e.message);
     } catch (_) {
-      // エラー時は変更しない
+      state = state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 

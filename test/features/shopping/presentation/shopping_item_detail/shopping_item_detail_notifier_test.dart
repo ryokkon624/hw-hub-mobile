@@ -266,6 +266,33 @@ void main() {
       ).thenAnswer((_) async => []);
     });
 
+    test('エラー時: errorMessageがセットされitemは変化しない', () async {
+      when(
+        mockRepo.updateStatus(
+          shoppingItemId: anyNamed('shoppingItemId'),
+          status: anyNamed('status'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .updateStatus('1');
+
+      final state = container.read(shoppingItemDetailNotifierProvider(1));
+      expect(state.item?.status, '0'); // 変化しない
+      expect(state.errorMessage, isNotNull);
+      sub.close();
+    });
+
     test('成功時: item.status が更新される', () async {
       when(
         mockRepo.updateStatus(
@@ -306,6 +333,33 @@ void main() {
       ).thenAnswer((_) async => []);
     });
 
+    test('エラー時: errorMessageがセットされitemは変化しない', () async {
+      when(
+        mockRepo.toggleFavorite(
+          shoppingItemId: anyNamed('shoppingItemId'),
+          favorite: anyNamed('favorite'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .toggleFavorite();
+
+      final state = container.read(shoppingItemDetailNotifierProvider(1));
+      expect(state.item?.favorite, '0'); // 変化しない
+      expect(state.errorMessage, isNotNull);
+      sub.close();
+    });
+
     test('favorite が "0" の場合: "1" に反転してAPIを呼ぶ', () async {
       when(
         mockRepo.toggleFavorite(
@@ -343,6 +397,33 @@ void main() {
       when(
         mockAttachRepo.listAttachments(itemId: anyNamed('itemId')),
       ).thenAnswer((_) async => []);
+    });
+
+    test('エラー時: errorMessageがセットされattachmentsは変化しない', () async {
+      when(
+        mockAttachRepo.createUploadUrl(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .addImage(bytes: Uint8List.fromList([1, 2, 3]), fileName: 'test.jpg');
+
+      final state = container.read(shoppingItemDetailNotifierProvider(1));
+      expect(state.attachments, isEmpty);
+      expect(state.errorMessage, isNotNull);
+      sub.close();
     });
 
     test('成功時: attachments が更新される', () async {
@@ -404,6 +485,33 @@ void main() {
       when(
         mockAttachRepo.listAttachments(itemId: anyNamed('itemId')),
       ).thenAnswer((_) async => [_makeAttachment()]);
+    });
+
+    test('エラー時: errorMessageがセットされattachmentsは変化しない', () async {
+      when(
+        mockAttachRepo.deleteAttachment(
+          itemId: anyNamed('itemId'),
+          attachmentId: anyNamed('attachmentId'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .deleteAttachment(10);
+
+      final state = container.read(shoppingItemDetailNotifierProvider(1));
+      expect(state.attachments, hasLength(1)); // 変化しない
+      expect(state.errorMessage, isNotNull);
+      sub.close();
     });
 
     test('成功時: 削除後に attachments を再取得する', () async {

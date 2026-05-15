@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/auth_state.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/models/task_status.dart';
+import '../../../core/network/app_exception.dart';
 import '../data/models/housework_task_dto.dart';
 import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
@@ -84,8 +85,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
               .toList(),
         ),
       );
+    } on AppException catch (e) {
+      state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {
-      // 失敗時はリストを変更しない
+      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
     }
   }
 
@@ -109,8 +112,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
               .toList(),
         ),
       );
+    } on AppException catch (e) {
+      state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {
-      // 失敗時はリストを変更しない
+      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
     }
   }
 
@@ -126,8 +131,10 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
         status: TaskStatus.done.code,
       );
       state = AsyncData(current.copyWith(pastTasks: []));
+    } on AppException catch (e) {
+      state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {
-      // 失敗時はリストを変更しない
+      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
     }
   }
 }

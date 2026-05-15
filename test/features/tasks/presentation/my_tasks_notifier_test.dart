@@ -299,7 +299,7 @@ void main() {
       expect(state.futureTasks.any((t) => t.houseworkTaskId == 1), isFalse);
     });
 
-    test('完了失敗時: タスクがリストに残る', () async {
+    test('完了失敗時: タスクがリストに残りerrorMessageがセットされる', () async {
       const h = Household(id: 1, name: '山田家');
       final tasks = [_task(id: 1, targetDate: _today())];
       when(
@@ -319,10 +319,34 @@ void main() {
 
       final state = container.read(myTasksNotifierProvider).value!;
       expect(state.futureTasks.any((t) => t.houseworkTaskId == 1), isTrue);
+      expect(state.errorMessage, isNotNull);
     });
   });
 
   group('MyTasksNotifier.skipTask()', () {
+    test('スキップ失敗時: タスクがリストに残りerrorMessageがセットされる', () async {
+      const h = Household(id: 1, name: '山田家');
+      final tasks = [_task(id: 1, targetDate: _today())];
+      when(
+        mockRepo.fetchOpenTasks(householdId: 1),
+      ).thenAnswer((_) async => tasks);
+      when(
+        mockRepo.updateTaskStatus(taskId: 1, status: TaskStatus.skipped.code),
+      ).thenThrow(Exception('Error'));
+
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: h,
+      );
+      await container.read(myTasksNotifierProvider.future);
+
+      await container.read(myTasksNotifierProvider.notifier).skipTask(1);
+
+      final state = container.read(myTasksNotifierProvider).value!;
+      expect(state.futureTasks.any((t) => t.houseworkTaskId == 1), isTrue);
+      expect(state.errorMessage, isNotNull);
+    });
+
     test('スキップ成功時: タスクがリストから削除される', () async {
       const h = Household(id: 1, name: '山田家');
       final tasks = [_task(id: 1, targetDate: _today())];
@@ -374,7 +398,7 @@ void main() {
       expect(state.pastTasks, isEmpty);
     });
 
-    test('一括完了失敗時: 過去タスクがリストに残る', () async {
+    test('一括完了失敗時: 過去タスクがリストに残りerrorMessageがセットされる', () async {
       const h = Household(id: 1, name: '山田家');
       final tasks = [_task(id: 1, targetDate: _daysFromNow(-1))];
       when(
@@ -396,6 +420,7 @@ void main() {
 
       final state = container.read(myTasksNotifierProvider).value!;
       expect(state.pastTasks, hasLength(1));
+      expect(state.errorMessage, isNotNull);
     });
   });
 }

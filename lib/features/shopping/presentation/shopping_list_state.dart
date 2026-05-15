@@ -7,6 +7,7 @@ class ShoppingListState {
     this.items = const [],
     this.locationFilter,
     this.activeTab = ShoppingTab.unpurchased,
+    this.errorMessage,
   });
 
   final List<ShoppingItemDto> items;
@@ -15,6 +16,9 @@ class ShoppingListState {
   final String? locationFilter;
 
   final ShoppingTab activeTab;
+
+  /// 操作エラー時のメッセージ（i18nキー名 or AppExceptionのメッセージ）
+  final String? errorMessage;
 
   // ─── 派生 getter ────────────────────────────────────────────────
   List<ShoppingItemDto> get unpurchasedItems =>
@@ -63,6 +67,7 @@ class ShoppingListState {
     List<ShoppingItemDto>? items,
     Object? locationFilter = _sentinel,
     ShoppingTab? activeTab,
+    Object? errorMessage = _sentinel,
   }) {
     return ShoppingListState(
       items: items ?? this.items,
@@ -70,6 +75,9 @@ class ShoppingListState {
           ? this.locationFilter
           : locationFilter as String?,
       activeTab: activeTab ?? this.activeTab,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }

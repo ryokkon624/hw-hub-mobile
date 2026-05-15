@@ -212,7 +212,7 @@ void main() {
       expect(state.basketItems, hasLength(1));
     });
 
-    test('エラー時: 例外が伝播しstateは変更されない', () async {
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
       final items = [_item(id: 1, status: '0')];
       when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
       when(
@@ -222,20 +222,38 @@ void main() {
       final container = _makeContainer(mockRepo);
       await container.read(shoppingListNotifierProvider.future);
 
-      // エラーが伝播することを確認
-      expect(
-        () => container
-            .read(shoppingListNotifierProvider.notifier)
-            .moveToBasket(1),
-        throwsA(isA<Exception>()),
-      );
-      // stateはそのまま（変更されない）
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .moveToBasket(1);
+
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      // stateはそのまま（変更されない）
       expect(state.unpurchasedItems, hasLength(1));
+      // errorMessageがセットされる
+      expect(state.errorMessage, isNotNull);
     });
   });
 
   group('ShoppingListNotifier - markPurchased', () {
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
+      final items = [_item(id: 1, status: '1')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.updateStatus(shoppingItemId: 1, status: '9'),
+      ).thenThrow(Exception('error'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .markPurchased(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.basketItems, hasLength(1));
+      expect(state.errorMessage, isNotNull);
+    });
+
     test('成功時: ステータスが9に更新されローカルstateも変わる', () async {
       final items = [_item(id: 1, status: '1')]; // かご状態
       when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
@@ -344,6 +362,48 @@ void main() {
     });
   });
 
+  group('ShoppingListNotifier - moveBackToUnpurchased エラー', () {
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
+      final items = [_item(id: 1, status: '1')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.updateStatus(shoppingItemId: 1, status: '0'),
+      ).thenThrow(Exception('error'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .moveBackToUnpurchased(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.basketItems, hasLength(1));
+      expect(state.errorMessage, isNotNull);
+    });
+  });
+
+  group('ShoppingListNotifier - bulkPurchase エラー', () {
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
+      final items = [_item(id: 1, status: '1')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.bulkUpdateStatus(ids: [1], status: '9'),
+      ).thenThrow(Exception('error'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .bulkPurchase();
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.basketItems, hasLength(1));
+      expect(state.errorMessage, isNotNull);
+    });
+  });
+
   group('ShoppingListNotifier - deleteItem', () {
     test('成功時: アイテムがstateから除外される', () async {
       final items = [_item(id: 1, status: '0')];
@@ -356,6 +416,25 @@ void main() {
       await container.read(shoppingListNotifierProvider.notifier).deleteItem(1);
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
       expect(state.items, isEmpty);
+    });
+  });
+
+  group('ShoppingListNotifier - deleteItem エラー', () {
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
+      final items = [_item(id: 1, status: '0')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.deleteItem(shoppingItemId: 1),
+      ).thenThrow(Exception('error'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container.read(shoppingListNotifierProvider.notifier).deleteItem(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.items, hasLength(1));
+      expect(state.errorMessage, isNotNull);
     });
   });
 
@@ -376,6 +455,26 @@ void main() {
       final state = container.read(shoppingListNotifierProvider).valueOrNull!;
       final item = state.items.firstWhere((e) => e.shoppingItemId == 1);
       expect(item.favorite, '1');
+    });
+
+    test('エラー時: errorMessageがセットされstateは変更されない', () async {
+      final items = [_item(id: 1, status: '0', favorite: '0')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.toggleFavorite(shoppingItemId: 1, favorite: '1'),
+      ).thenThrow(Exception('error'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .toggleFavorite(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      final item = state.items.firstWhere((e) => e.shoppingItemId == 1);
+      expect(item.favorite, '0'); // 変わらない
+      expect(state.errorMessage, isNotNull);
     });
 
     test('お気に入りON → OFF: favoriteが0に変わる', () async {
