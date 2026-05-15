@@ -23,6 +23,12 @@
   "navShopping": "買い物",
   "navSettings": "設定",
 
+  "shellNavHome": "ホーム",
+  "shellNavHousework": "家事分担",
+  "shellNavTasks": "タスク",
+  "shellNavShopping": "買い物",
+  "shellNavSettings": "設定",
+
   "pageTitleHome": "ホーム",
   "pageTitleHouseworkAssign": "家事分担",
   "pageTitleMyTasks": "My Tasks",

@@ -23,6 +23,12 @@
   "navShopping": "Shopping",
   "navSettings": "Settings",
 
+  "shellNavHome": "Home",
+  "shellNavHousework": "Board",
+  "shellNavTasks": "Tasks",
+  "shellNavShopping": "Shopping",
+  "shellNavSettings": "Settings",
+
   "pageTitleHome": "Home",
   "pageTitleHouseworkAssign": "Housework Board",
   "pageTitleMyTasks": "My Tasks",
