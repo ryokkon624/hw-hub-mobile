@@ -51,6 +51,7 @@ class MemberPickerBottomSheet extends StatelessWidget {
           ),
           ...members.map(
             (m) => ListTile(
+              key: ValueKey(m.userId),
               title: Text(m.displayName),
               leading: const Icon(Icons.person),
               onTap: () => onSelected(m.userId, m.displayName),

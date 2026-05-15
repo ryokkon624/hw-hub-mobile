@@ -62,25 +62,23 @@ class _ListModePage extends ConsumerWidget {
     // フィルタ適用後タスク
     final filteredTasks = _filteredTasks(state, currentUserId);
 
-    // 過去の未割当タスク（スキップボタン表示用）
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final pastUnassigned = state.tasks.where((t) {
-      if (t.assigneeUserId != null) return false;
-      final date = DateTime.tryParse(t.targetDate);
-      if (date == null) return false;
-      return DateTime(date.year, date.month, date.day).isBefore(today);
-    }).toList();
-
-    final unassignedCount = state.tasks
-        .where((t) => t.assigneeUserId == null)
-        .length;
+    // 未割当・割当済みタスク（スワイプボタンの有効化判定 / 件数表示で共用）
     final unassignedForSwipe = state.tasks
         .where((t) => t.assigneeUserId == null)
         .toList();
     final othersForSwipe = state.tasks
         .where((t) => t.assigneeUserId != null)
         .toList();
+    final unassignedCount = unassignedForSwipe.length;
+
+    // 過去の未割当タスク（スキップボタン表示用）
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final pastUnassigned = unassignedForSwipe.where((t) {
+      final date = DateTime.tryParse(t.targetDate);
+      if (date == null) return false;
+      return DateTime(date.year, date.month, date.day).isBefore(today);
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.houseworkAssignTitle)),

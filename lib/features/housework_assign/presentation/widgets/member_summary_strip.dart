@@ -35,6 +35,7 @@ class MemberSummaryStrip extends StatelessWidget {
                 .where((t) => t.assigneeUserId == m.userId)
                 .length;
             return _SummaryChip(
+              key: ValueKey(m.userId),
               label: m.displayName,
               count: count,
               isHighlighted: m.userId == currentUserId,
@@ -48,6 +49,7 @@ class MemberSummaryStrip extends StatelessWidget {
 
 class _SummaryChip extends StatelessWidget {
   const _SummaryChip({
+    super.key,
     required this.label,
     required this.count,
     required this.isHighlighted,

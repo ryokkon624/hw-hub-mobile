@@ -95,19 +95,10 @@ class HouseworkAssignNotifier
       // タスクリスト内の該当タスクの assigneeUserId を更新
       final updated = current.tasks.map((t) {
         if (t.houseworkTaskId == taskId) {
-          return HouseworkTaskDto(
-            houseworkTaskId: t.houseworkTaskId,
-            householdId: t.householdId,
-            houseworkId: t.houseworkId,
-            houseworkName: t.houseworkName,
-            categoryCode: t.categoryCode,
-            targetDate: t.targetDate,
+          return t.copyWith(
             assigneeUserId: myUserId,
             assigneeNickname: authState.user.displayName,
-            status: t.status,
             assignReasonType: TaskAssignReason.selfAssigned.code,
-            doneAt: t.doneAt,
-            skippedReason: t.skippedReason,
           );
         }
         return t;
@@ -139,19 +130,10 @@ class HouseworkAssignNotifier
       await repo.updateAssignee(taskId: taskId, assigneeUserId: assigneeUserId);
       final updated = current.tasks.map((t) {
         if (t.houseworkTaskId == taskId) {
-          return HouseworkTaskDto(
-            houseworkTaskId: t.houseworkTaskId,
-            householdId: t.householdId,
-            houseworkId: t.houseworkId,
-            houseworkName: t.houseworkName,
-            categoryCode: t.categoryCode,
-            targetDate: t.targetDate,
+          return t.copyWith(
             assigneeUserId: assigneeUserId,
             assigneeNickname: assigneeNickname,
-            status: t.status,
             assignReasonType: TaskAssignReason.selfAssigned.code,
-            doneAt: t.doneAt,
-            skippedReason: t.skippedReason,
           );
         }
         return t;
