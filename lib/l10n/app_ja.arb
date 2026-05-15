@@ -326,6 +326,7 @@
   "shoppingSwipeDelete": "削除",
   "shoppingSwipeMarkPurchased": "購入済みに",
   "shoppingSwipeMoveBack": "戻す",
+  "shoppingSwipePurchasedHint": "ステータスを変更するには、編集画面で更新してください",
   "shoppingBulkPurchaseButton": "購入済みにする",
   "shoppingBulkPurchaseConfirmTitle": "一括購入済みにしますか？",
   "shoppingBulkPurchaseConfirmMessage": "かご内のアイテムをすべて購入済みに更新します。",
