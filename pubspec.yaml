@@ -63,6 +63,9 @@ dependencies:
   # Calendar
   table_calendar: ^3.1.2
 
+  # Google Sign-In（AC6: Googleアカウント連携のモバイル用）
+  google_sign_in: ^6.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
