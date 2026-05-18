@@ -4,6 +4,7 @@ import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/ui/app_snack_bar.dart';
+import '../../../core/ui/main_app_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import 'my_tasks_notifier.dart';
 import 'my_tasks_state.dart';
@@ -27,7 +28,7 @@ class MyTasksPage extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.pageTitleMyTasks)),
+      appBar: MainAppBar(title: l10n.pageTitleMyTasks),
       body: tasksAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorBody(

@@ -5,10 +5,10 @@ import '../../../app_router.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/ui/main_app_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import 'home_notifier.dart';
 import 'home_state.dart';
-import 'widgets/home_app_bar.dart';
 import 'widgets/household_overview_card.dart';
 import 'widgets/my_tasks_card.dart';
 import 'widgets/onboarding_card.dart';
@@ -24,7 +24,7 @@ class HomePage extends ConsumerWidget {
     final homeAsync = ref.watch(homeNotifierProvider);
 
     return Scaffold(
-      appBar: const HomeAppBar(),
+      appBar: MainAppBar(title: l10n.pageTitleHome),
       body: homeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorBody(
