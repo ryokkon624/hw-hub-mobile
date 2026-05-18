@@ -474,5 +474,98 @@
     }
   },
   "houseworkAssignErrorAssign": "Failed to change assignee",
-  "houseworkAssignErrorBulkSkip": "Failed to bulk skip"
+  "houseworkAssignErrorBulkSkip": "Failed to bulk skip",
+
+  "notificationsBellTitle": "Notification Center",
+  "notificationsViewAll": "View all",
+  "notificationsEmpty": "No notifications",
+  "notificationsCenterTitle": "Notification Center",
+  "notificationsCenterSubtitle": "Latest notifications",
+  "notificationsReload": "Reload",
+
+  "notificationsAcceptInvitationTitle": "An invited member has joined the household.",
+  "notificationsAcceptInvitationBody": "{memberName} has joined the household [{householdName}].",
+  "@notificationsAcceptInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsDeclineInvitationTitle": "Invitation declined.",
+  "notificationsDeclineInvitationBody": "{memberName} has declined the invitation to the household [{householdName}].",
+  "@notificationsDeclineInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsRemovedFromHouseholdTitle": "Removed from household.",
+  "notificationsRemovedFromHouseholdBody": "You have been removed from the household [{householdName}].",
+  "@notificationsRemovedFromHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsLeftHouseholdTitle": "A member has left the household.",
+  "notificationsLeftHouseholdBody": "{memberName} has left the household [{householdName}]. Tasks assigned to {memberName} have been updated to unassigned.",
+  "@notificationsLeftHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsAssigned2OwnerTitle": "Set as household OWNER.",
+  "notificationsAssigned2OwnerBody": "You have been set as the OWNER of the household [{householdName}].",
+  "@notificationsAssigned2OwnerBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsTaskAssignedTitle": "Task assigned",
+  "notificationsTaskAssignedBody": "A task has been assigned by {actorName}. Household: {household}, Date: {date}, Tasks: {count}",
+  "@notificationsTaskAssignedBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsBeDumpedTasksTitle": "Task requested by another member",
+  "notificationsBeDumpedTasksBody": "A task has been requested by {actorName}. Household: {household}, Date: {date}, Tasks: {count}",
+  "@notificationsBeDumpedTasksBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsYourTaskWasTakenTitle": "Another member took your task",
+  "notificationsYourTaskWasTakenBody": "{actorName} has taken your task. Household: {household}, Date: {date}, Tasks: {count}",
+  "@notificationsYourTaskWasTakenBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsGenericTitle": "Task assigned",
+  "notificationsGenericBody": "A task has been assigned. Household: {household}, Date: {date}, Tasks: {count}",
+  "@notificationsGenericBody": {
+    "placeholders": {
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsInquiryRepliedTitle": "A reply has been received for your inquiry",
+  "notificationsInquiryRepliedBody": "Reply received for #{inquiryId} \"{title}\". Please check the details.",
+  "@notificationsInquiryRepliedBody": {
+    "placeholders": {
+      "inquiryId": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  }
 }

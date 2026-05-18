@@ -474,5 +474,98 @@
     }
   },
   "houseworkAssignErrorAssign": "担当者の変更に失敗しました",
-  "houseworkAssignErrorBulkSkip": "一括スキップに失敗しました"
+  "houseworkAssignErrorBulkSkip": "一括スキップに失敗しました",
+
+  "notificationsBellTitle": "通知センター",
+  "notificationsViewAll": "すべて見る",
+  "notificationsEmpty": "通知はありません",
+  "notificationsCenterTitle": "通知センター",
+  "notificationsCenterSubtitle": "最新の通知",
+  "notificationsReload": "更新",
+
+  "notificationsAcceptInvitationTitle": "招待したメンバーがおうちに参加しました。",
+  "notificationsAcceptInvitationBody": "おうち[{householdName}]に{memberName}が参加しました。",
+  "@notificationsAcceptInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsDeclineInvitationTitle": "招待を辞退されました。",
+  "notificationsDeclineInvitationBody": "おうち[{householdName}]への招待を{memberName}が辞退しました。",
+  "@notificationsDeclineInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsRemovedFromHouseholdTitle": "おうちから削除されました。",
+  "notificationsRemovedFromHouseholdBody": "おうち[{householdName}]から削除されました。",
+  "@notificationsRemovedFromHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsLeftHouseholdTitle": "メンバーがおうちから離脱しました。",
+  "notificationsLeftHouseholdBody": "おうち[{householdName}]から、{memberName}が離脱しました。{memberName}に割当てられていたタスクは未割当に更新されています。",
+  "@notificationsLeftHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsAssigned2OwnerTitle": "おうちのOWNERに設定されました。",
+  "notificationsAssigned2OwnerBody": "おうち[{householdName}]のOWNERに設定されました。",
+  "@notificationsAssigned2OwnerBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsTaskAssignedTitle": "タスクが割り当てられました",
+  "notificationsTaskAssignedBody": "{actorName}によってタスクが割り当てられました。おうち: {household}, 日付: {date}, 件数: {count}件",
+  "@notificationsTaskAssignedBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsBeDumpedTasksTitle": "他メンバーからタスクを依頼されました",
+  "notificationsBeDumpedTasksBody": "{actorName}のタスクを依頼されました。おうち: {household}, 日付: {date}, 件数: {count}件",
+  "@notificationsBeDumpedTasksBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsYourTaskWasTakenTitle": "他メンバーがあなたのタスクを奪いました",
+  "notificationsYourTaskWasTakenBody": "{actorName}があなたのタスクを奪いました。おうち: {household}, 日付: {date}, 件数: {count}件",
+  "@notificationsYourTaskWasTakenBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsGenericTitle": "タスクが割り当てられました",
+  "notificationsGenericBody": "タスクが割り当てられました。おうち: {household}, 日付: {date}, 件数: {count}件",
+  "@notificationsGenericBody": {
+    "placeholders": {
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsInquiryRepliedTitle": "問い合わせに返信が届きました",
+  "notificationsInquiryRepliedBody": "#{inquiryId}「{title}」に返信が届いています。内容をご確認ください。",
+  "@notificationsInquiryRepliedBody": {
+    "placeholders": {
+      "inquiryId": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  }
 }
