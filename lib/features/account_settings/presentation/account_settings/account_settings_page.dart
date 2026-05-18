@@ -124,6 +124,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           // AC4: プロフィール画像
           IconSection(
             iconUrl: profile.iconUrl,
+            displayName: profile.displayName,
             isUploading: state.isUploadingIcon,
             onImageSelected: (bytes, fileName, mimeType) async {
               await ref

@@ -10,11 +10,13 @@ class IconSection extends StatelessWidget {
   const IconSection({
     super.key,
     required this.iconUrl,
+    required this.displayName,
     required this.isUploading,
     required this.onImageSelected,
   });
 
   final String? iconUrl;
+  final String displayName;
   final bool isUploading;
   final Future<void> Function(List<int> bytes, String fileName, String mimeType)
   onImageSelected;
@@ -65,7 +67,11 @@ class IconSection extends StatelessWidget {
           child: Column(
             children: [
               // 現在のアイコン
-              UserAvatar(iconUrl: iconUrl, label: 'U', size: UserAvatarSize.lg),
+              UserAvatar(
+                iconUrl: iconUrl,
+                label: displayName,
+                size: UserAvatarSize.lg,
+              ),
               const SizedBox(height: 16),
               if (isUploading)
                 const CircularProgressIndicator()

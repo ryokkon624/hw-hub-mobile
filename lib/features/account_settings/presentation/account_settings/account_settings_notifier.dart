@@ -17,8 +17,8 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
     ]);
 
     return AccountSettingsState(
-      profile: results[0] as dynamic,
-      notificationSettings: results[1] as dynamic,
+      profile: results[0] as UserProfileDto,
+      notificationSettings: results[1] as NotificationSettingsDto,
     );
   }
 

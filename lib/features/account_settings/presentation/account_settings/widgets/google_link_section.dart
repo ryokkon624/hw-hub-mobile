@@ -33,7 +33,7 @@ class GoogleLinkSection extends StatelessWidget {
     } on Exception catch (e) {
       // Google サインイン失敗: Notifier 側でハンドリングされるが、
       // ここで catch した場合は onLink が呼ばれていないため Notifier の state には影響しない
-      debugPrint('Google Sign-In error: $e');
+      debugPrint('Google Sign-In error occurred');
     }
   }
 
