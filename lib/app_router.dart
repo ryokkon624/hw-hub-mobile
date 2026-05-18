@@ -14,6 +14,7 @@ import 'features/auth/presentation/password_reset/password_reset_page.dart';
 import 'features/auth/presentation/password_reset_sent/password_reset_sent_page.dart';
 import 'features/auth/presentation/signup/signup_page.dart';
 import 'features/home/presentation/home_page.dart';
+import 'features/settings/presentation/settings_top/settings_top_page.dart';
 import 'features/shell/main_shell.dart';
 import 'features/shopping/presentation/shopping_item_detail/shopping_item_detail_page.dart';
 import 'features/shopping/presentation/shopping_item_new/shopping_item_new_page.dart';
@@ -175,7 +176,7 @@ final _routes = <RouteBase>[
         routes: [
           GoRoute(
             path: AppRoutes.settings,
-            builder: (_, _) => const _P('設定'),
+            builder: (_, _) => const SettingsTopPage(),
             routes: [
               GoRoute(
                 path: AppRoutes._settingsAccountRelative,
