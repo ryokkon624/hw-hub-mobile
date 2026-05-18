@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/app_exception.dart';
 import '../../notifications_providers.dart';
 import '../notification_global_notifier.dart';
 import 'notification_center_state.dart';
@@ -25,8 +26,10 @@ class NotificationCenterNotifier extends Notifier<NotificationCenterState> {
       state = state.copyWith(notifications: notifications, isLoading: false);
       // 既読になるため未読件数をリセット
       ref.read(notificationGlobalNotifierProvider.notifier).resetToZero();
+    } on AppException catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(isLoading: false, errorMessage: 'errorUnexpected');
+      rethrow;
     }
   }
 

@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app_router.dart';
 import '../../../../core/models/notification_link_type.dart';
+import '../../../../core/network/app_exception.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/notification_repository.dart';
 import '../../notifications_providers.dart';
@@ -25,6 +27,7 @@ class NotificationPopover extends ConsumerStatefulWidget {
 class _NotificationPopoverState extends ConsumerState<NotificationPopover> {
   List<NotificationDto> _notifications = [];
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -44,9 +47,20 @@ class _NotificationPopoverState extends ConsumerState<NotificationPopover> {
         // 既読になるためバッジをリセット
         ref.read(notificationGlobalNotifierProvider.notifier).resetToZero();
       }
+    } on AppException catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.message;
+        });
+      }
     } catch (_) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _errorMessage = null; // SnackBarで通知するためnullのまま
+        });
+        AppSnackBar.showError(AppLocalizations.of(context).errorUnexpected);
       }
     }
   }
@@ -113,6 +127,15 @@ class _NotificationPopoverState extends ConsumerState<NotificationPopover> {
                   const Padding(
                     padding: EdgeInsets.all(32),
                     child: CircularProgressIndicator(),
+                  )
+                else if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: colors.danger),
+                      textAlign: TextAlign.center,
+                    ),
                   )
                 else if (_notifications.isEmpty)
                   Padding(

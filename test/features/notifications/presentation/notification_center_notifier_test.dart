@@ -81,13 +81,14 @@ void main() {
       sub.close();
     });
 
-    test('初期ロード失敗時: errorMessageがセットされる', () async {
+    test('初期ロード失敗時（AppException）: e.messageがerrorMessageにセットされる', () async {
+      const exception = NetworkException('ネットワーク接続できません');
       when(
         mockRepo.fetchNotifications(
           limit: anyNamed('limit'),
           markRead: anyNamed('markRead'),
         ),
-      ).thenThrow(const NetworkException());
+      ).thenThrow(exception);
 
       final container = _makeContainer(mockRepo: mockRepo);
       final sub = container.listen(
@@ -98,7 +99,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       final state = container.read(notificationCenterNotifierProvider);
-      expect(state.errorMessage, isNotNull);
+      expect(state.errorMessage, exception.message);
       expect(state.isLoading, false);
       sub.close();
     });
@@ -132,7 +133,34 @@ void main() {
       sub.close();
     });
 
-    test('リロード失敗時: errorMessageがセットされる', () async {
+    test('リロード失敗時（AppException）: e.messageがerrorMessageにセットされる', () async {
+      when(
+        mockRepo.fetchNotifications(limit: 50, markRead: true),
+      ).thenAnswer((_) async => [_dto()]);
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      final sub = container.listen(
+        notificationCenterNotifierProvider,
+        (_, _) {},
+      );
+      await Future<void>.microtask(() {});
+      await Future<void>.delayed(Duration.zero);
+
+      const exception = NetworkException('接続エラー');
+      when(
+        mockRepo.fetchNotifications(limit: 50, markRead: true),
+      ).thenThrow(exception);
+
+      await container
+          .read(notificationCenterNotifierProvider.notifier)
+          .reload();
+
+      final state = container.read(notificationCenterNotifierProvider);
+      expect(state.errorMessage, exception.message);
+      sub.close();
+    });
+
+    test('リロード失敗時（AppException以外）: rethrowされる', () async {
       when(
         mockRepo.fetchNotifications(limit: 50, markRead: true),
       ).thenAnswer((_) async => [_dto()]);
@@ -147,14 +175,14 @@ void main() {
 
       when(
         mockRepo.fetchNotifications(limit: 50, markRead: true),
-      ).thenThrow(const NetworkException());
+      ).thenThrow(Exception('予期しない例外'));
 
-      await container
-          .read(notificationCenterNotifierProvider.notifier)
-          .reload();
-
-      final state = container.read(notificationCenterNotifierProvider);
-      expect(state.errorMessage, isNotNull);
+      expect(
+        () => container
+            .read(notificationCenterNotifierProvider.notifier)
+            .reload(),
+        throwsA(isA<Exception>()),
+      );
       sub.close();
     });
   });
