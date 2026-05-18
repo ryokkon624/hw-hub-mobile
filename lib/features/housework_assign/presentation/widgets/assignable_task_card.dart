@@ -10,11 +10,13 @@ class AssignableTaskCard extends StatelessWidget {
     required this.task,
     required this.onAssignToMe,
     required this.onPickMember,
+    this.assigneeIconUrl,
   });
 
   final HouseworkTaskDto task;
   final Future<bool> Function() onAssignToMe;
   final VoidCallback onPickMember;
+  final String? assigneeIconUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class AssignableTaskCard extends StatelessWidget {
           return false; // モーダルで選択するため dismiss はしない
         }
       },
-      child: _CardContent(task: task),
+      child: _CardContent(task: task, assigneeIconUrl: assigneeIconUrl),
     );
   }
 }
@@ -86,9 +88,10 @@ class _SwipeBackground extends StatelessWidget {
 }
 
 class _CardContent extends StatelessWidget {
-  const _CardContent({required this.task});
+  const _CardContent({required this.task, this.assigneeIconUrl});
 
   final HouseworkTaskDto task;
+  final String? assigneeIconUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +108,7 @@ class _CardContent extends StatelessWidget {
       child: Row(
         children: [
           UserAvatar(
-            iconUrl: null,
+            iconUrl: assigneeIconUrl,
             label: assigneeLabel,
             isUnassigned: isUnassigned,
             size: UserAvatarSize.md,

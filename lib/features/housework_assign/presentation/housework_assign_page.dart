@@ -178,6 +178,10 @@ class _ListModePage extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 1),
                     child: AssignableTaskCard(
                       task: task,
+                      assigneeIconUrl: state.members
+                          .where((m) => m.userId == task.assigneeUserId)
+                          .firstOrNull
+                          ?.iconUrl,
                       onAssignToMe: () =>
                           notifier.assignToMe(taskId: task.houseworkTaskId),
                       onPickMember: () => MemberPickerBottomSheet.show(
@@ -274,6 +278,10 @@ class _SwipeModePage extends ConsumerWidget {
                   child: Center(
                     child: SwipeModeCard(
                       task: currentTask,
+                      assigneeIconUrl: state.members
+                          .where((m) => m.userId == currentTask.assigneeUserId)
+                          .firstOrNull
+                          ?.iconUrl,
                       onAssignToMe: () => notifier.swipeAssignToMe(),
                       onNext: () => notifier.swipeNext(),
                     ),
