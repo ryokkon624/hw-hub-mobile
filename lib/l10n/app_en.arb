@@ -416,5 +416,62 @@
 
   "shoppingImagePickerCamera": "Take a photo",
   "shoppingImagePickerGallery": "Choose from gallery",
-  "shoppingImagePickerCancel": "Cancel"
+  "shoppingImagePickerCancel": "Cancel",
+
+  "houseworkAssignTitle": "Assign Housework",
+  "houseworkAssignMemberSummaryUnassigned": "Unassigned",
+  "houseworkAssignUntreatedCountLabel": "{total} pending tasks ({unassigned} unassigned)",
+  "@houseworkAssignUntreatedCountLabel": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "unassigned": { "type": "int" }
+    }
+  },
+  "houseworkAssignPastUnassignedLabel": "Past unassigned: {count}",
+  "@houseworkAssignPastUnassignedLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignBulkSkipButton": "Skip past unassigned",
+  "houseworkAssignBulkSkipDialogTitle": "Confirm",
+  "houseworkAssignBulkSkipDialogBody": "Skip {count} past unassigned tasks?",
+  "@houseworkAssignBulkSkipDialogBody": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkAssignFilterAll": "All",
+  "houseworkAssignFilterUnassigned": "Unassigned",
+  "houseworkAssignFilterMeAndUnassigned": "Me+Un",
+  "houseworkAssignSwipeMakeMineLabel": "Assign to me",
+  "houseworkAssignSwipePickMemberLabel": "Pick member",
+  "houseworkAssignStartSwipeUnassigned": "Assign unassigned to me ▶",
+  "houseworkAssignStartSwipeOthers": "Take from others ▶",
+  "houseworkAssignSwipeModeTitle": "Assign to me",
+  "houseworkAssignSwipeProgressLabel": "{current} / {total}",
+  "@houseworkAssignSwipeProgressLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkAssignSwipeNextLabel": "Next",
+  "houseworkAssignSwipeFinishedMessage": "All done!",
+  "houseworkAssignAssigneeUnassigned": "Unassigned",
+  "houseworkAssignUnassignedBadge": "Un",
+  "houseworkAssignCurrentAssigneeLabel": "Assigned to: {name}",
+  "@houseworkAssignCurrentAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkAssignTargetDateLabel": "Date: {date}",
+  "@houseworkAssignTargetDateLabel": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "houseworkAssignErrorAssign": "Failed to change assignee",
+  "houseworkAssignErrorBulkSkip": "Failed to bulk skip"
 }
