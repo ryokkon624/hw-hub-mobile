@@ -171,7 +171,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      // エラーなく表示される（UserAvatar が isUnassigned のような fallback で表示される）
+      // エラーなく表示される（displayName が空文字のため UserAvatar がイニシャル '?' を表示する）
       expect(find.byType(UserAvatar), findsOneWidget);
     });
   });

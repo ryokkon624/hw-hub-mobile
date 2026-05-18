@@ -32,11 +32,17 @@ class HouseworkAssignNotifier
       tasks: tasks,
       members: members,
       memberTaskCounts: _computeMemberTaskCounts(tasks),
+      memberIconUrls: _computeMemberIconUrls(members),
       filter: current?.filter ?? AssignFilter.all,
       mode: AssignMode.list,
       swipeTarget: SwipeTarget.unassigned,
       swipeIndex: 0,
     );
+  }
+
+  /// userId → アイコン URL マップを一括計算する（O(メンバー数)）
+  Map<int, String?> _computeMemberIconUrls(List<HouseholdMemberDto> members) {
+    return {for (final m in members) m.userId: m.iconUrl};
   }
 
   /// userId → 未対応タスク件数マップを一括計算する（O(タスク数)）

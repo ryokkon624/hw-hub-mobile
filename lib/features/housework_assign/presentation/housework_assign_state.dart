@@ -11,6 +11,7 @@ class HouseworkAssignState {
     this.tasks = const [],
     this.members = const [],
     this.memberTaskCounts = const {},
+    this.memberIconUrls = const {},
     this.filter = AssignFilter.all,
     this.mode = AssignMode.list,
     this.swipeTarget = SwipeTarget.unassigned,
@@ -25,6 +26,9 @@ class HouseworkAssignState {
 
   /// userId → 未対応タスク件数の事前計算マップ（MemberSummaryStrip 向け）
   final Map<int, int> memberTaskCounts;
+
+  /// userId → アイコン URL の事前計算マップ（O(1) lookup 用）
+  final Map<int, String?> memberIconUrls;
 
   final AssignFilter filter;
   final AssignMode mode;
@@ -41,6 +45,7 @@ class HouseworkAssignState {
     List<HouseworkTaskDto>? tasks,
     List<HouseholdMemberDto>? members,
     Map<int, int>? memberTaskCounts,
+    Map<int, String?>? memberIconUrls,
     AssignFilter? filter,
     AssignMode? mode,
     SwipeTarget? swipeTarget,
@@ -54,6 +59,7 @@ class HouseworkAssignState {
       tasks: tasks ?? this.tasks,
       members: members ?? this.members,
       memberTaskCounts: memberTaskCounts ?? this.memberTaskCounts,
+      memberIconUrls: memberIconUrls ?? this.memberIconUrls,
       filter: filter ?? this.filter,
       mode: mode ?? this.mode,
       swipeTarget: swipeTarget ?? this.swipeTarget,
