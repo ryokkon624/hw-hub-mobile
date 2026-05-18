@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/app_exception.dart';
 import '../../account_settings_providers.dart';
 import '../../data/account_settings_repository.dart';
 import 'account_settings_state.dart';
 
-class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
+class AccountSettingsNotifier
+    extends AutoDisposeAsyncNotifier<AccountSettingsState> {
   AccountSettingsRepository get _repo =>
       ref.read(accountSettingsRepositoryProvider);
 
@@ -42,9 +44,13 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
           clearError: true,
         ),
       );
-    } on Exception catch (e) {
+    } on AppException catch (e) {
       state = AsyncData(
-        current.copyWith(errorMessage: e.toString(), clearSuccess: true),
+        current.copyWith(errorMessage: e.message, clearSuccess: true),
+      );
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(errorMessage: 'errorUnexpected', clearSuccess: true),
       );
     }
   }
@@ -68,9 +74,13 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
           clearError: true,
         ),
       );
-    } on Exception catch (e) {
+    } on AppException catch (e) {
       state = AsyncData(
-        current.copyWith(errorMessage: e.toString(), clearSuccess: true),
+        current.copyWith(errorMessage: e.message, clearSuccess: true),
+      );
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(errorMessage: 'errorUnexpected', clearSuccess: true),
       );
     }
   }
@@ -124,11 +134,19 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
           clearError: true,
         ),
       );
-    } on Exception catch (e) {
+    } on AppException catch (e) {
       state = AsyncData(
         current.copyWith(
           isUploadingIcon: false,
-          errorMessage: e.toString(),
+          errorMessage: e.message,
+          clearSuccess: true,
+        ),
+      );
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(
+          isUploadingIcon: false,
+          errorMessage: 'errorUnexpected',
           clearSuccess: true,
         ),
       );
@@ -149,8 +167,10 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
     try {
       final updated = await _repo.updateNotificationSettings(newSettings);
       state = AsyncData(current.copyWith(notificationSettings: updated));
-    } on Exception catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.toString()));
+    } on AppException catch (e) {
+      state = AsyncData(current.copyWith(errorMessage: e.message));
+    } catch (_) {
+      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
     }
   }
 
@@ -174,8 +194,10 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
     try {
       final updated = await _repo.updateNotificationSettings(newSettings);
       state = AsyncData(current.copyWith(notificationSettings: updated));
-    } on Exception catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.toString()));
+    } on AppException catch (e) {
+      state = AsyncData(current.copyWith(errorMessage: e.message));
+    } catch (_) {
+      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
     }
   }
 
@@ -200,11 +222,19 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
           clearError: true,
         ),
       );
-    } on Exception catch (e) {
+    } on AppException catch (e) {
       state = AsyncData(
         current.copyWith(
           isLinkingGoogle: false,
-          errorMessage: e.toString(),
+          errorMessage: e.message,
+          clearSuccess: true,
+        ),
+      );
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(
+          isLinkingGoogle: false,
+          errorMessage: 'errorUnexpected',
           clearSuccess: true,
         ),
       );
@@ -221,9 +251,16 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
     try {
       await _repo.deleteAccount();
       state = AsyncData(current.copyWith(isDeletingAccount: false));
-    } on Exception catch (e) {
+    } on AppException catch (e) {
       state = AsyncData(
-        current.copyWith(isDeletingAccount: false, errorMessage: e.toString()),
+        current.copyWith(isDeletingAccount: false, errorMessage: e.message),
+      );
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(
+          isDeletingAccount: false,
+          errorMessage: 'errorUnexpected',
+        ),
       );
     }
   }
@@ -244,6 +281,7 @@ class AccountSettingsNotifier extends AsyncNotifier<AccountSettingsState> {
 }
 
 final accountSettingsNotifierProvider =
-    AsyncNotifierProvider<AccountSettingsNotifier, AccountSettingsState>(
-      AccountSettingsNotifier.new,
-    );
+    AutoDisposeAsyncNotifierProvider<
+      AccountSettingsNotifier,
+      AccountSettingsState
+    >(AccountSettingsNotifier.new);

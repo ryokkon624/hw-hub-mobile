@@ -80,14 +80,14 @@ void main() {
       await tester.pumpWidget(_buildPage(_localState()));
       await tester.pump();
 
-      expect(find.text('パスワード変更'), findsOneWidget);
+      expect(find.byKey(const Key('passwordChangeSection')), findsOneWidget);
     });
 
     testWidgets('Googleのみのアカウントはパスワード変更セクションを非表示', (tester) async {
       await tester.pumpWidget(_buildPage(_googleLinkedState()));
       await tester.pump();
 
-      expect(find.text('パスワード変更'), findsNothing);
+      expect(find.byKey(const Key('passwordChangeSection')), findsNothing);
     });
   });
 
@@ -96,22 +96,22 @@ void main() {
       await tester.pumpWidget(_buildPage(_googleLinkedState()));
       await tester.pump();
 
-      expect(find.text('Googleアカウント連携'), findsOneWidget);
+      expect(find.byKey(const Key('googleLinkSection')), findsOneWidget);
     });
 
     testWidgets('@gmail.com以外はGoogleセクションを非表示', (tester) async {
       await tester.pumpWidget(_buildPage(_localState()));
       await tester.pump();
 
-      expect(find.text('Googleアカウント連携'), findsNothing);
+      expect(find.byKey(const Key('googleLinkSection')), findsNothing);
     });
 
-    testWidgets('連携済み（GOOGLE）は「連携済み」バッジを表示', (tester) async {
+    testWidgets('連携済み（GOOGLE）は連携済みバッジを表示', (tester) async {
       await tester.pumpWidget(_buildPage(_googleLinkedState()));
       await tester.pump();
 
-      expect(find.text('連携済み'), findsOneWidget);
-      expect(find.text('Googleと連携する'), findsNothing);
+      expect(find.byKey(const Key('googleLinkedBadge')), findsOneWidget);
+      expect(find.byKey(const Key('googleLinkButton')), findsNothing);
     });
   });
 
@@ -120,7 +120,10 @@ void main() {
       await tester.pumpWidget(_buildPage(_localState()));
       await tester.pump();
 
-      expect(find.text('通知設定'), findsOneWidget);
+      expect(
+        find.byKey(const Key('notificationSettingsSection')),
+        findsOneWidget,
+      );
     });
   });
 
@@ -129,7 +132,7 @@ void main() {
       await tester.pumpWidget(_buildPage(_localState()));
       await tester.pump();
 
-      expect(find.text('アカウント削除'), findsOneWidget);
+      expect(find.byKey(const Key('deleteAccountButton')), findsOneWidget);
     });
   });
 

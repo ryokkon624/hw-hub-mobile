@@ -77,6 +77,7 @@ class GoogleLinkSection extends StatelessWidget {
     return Row(
       children: [
         Container(
+          key: const Key('googleLinkedBadge'),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: colors.paletteEmeraldSoft,
@@ -124,6 +125,7 @@ class GoogleLinkSection extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
     return ElevatedButton.icon(
+      key: const Key('googleLinkButton'),
       onPressed: () => _handleLink(context),
       icon: const Icon(Icons.login, size: 18),
       label: Text(l10n.accountSettingsGoogleLinkButton),

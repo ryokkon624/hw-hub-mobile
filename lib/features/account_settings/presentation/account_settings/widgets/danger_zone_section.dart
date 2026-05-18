@@ -68,6 +68,7 @@ class DangerZoneSection extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton(
+              key: const Key('deleteAccountButton'),
               onPressed: isDeleting
                   ? null
                   : () => _confirmAndDelete(context, l10n),

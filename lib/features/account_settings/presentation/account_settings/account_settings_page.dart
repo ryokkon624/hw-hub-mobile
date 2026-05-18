@@ -94,6 +94,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           // AC2: パスワード変更（Googleのみアカウントは非表示）
           if (!profile.isGoogleOnly) ...[
             PasswordChangeSection(
+              key: const Key('passwordChangeSection'),
               onSave: (current, next) async {
                 await ref
                     .read(accountSettingsNotifierProvider.notifier)
@@ -141,6 +142,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           // AC5: 通知設定
           if (state.notificationSettings != null)
             NotificationSettingsSection(
+              key: const Key('notificationSettingsSection'),
               settings: state.notificationSettings!,
               onToggleGlobal: (enabled) async {
                 await ref
@@ -158,6 +160,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           // AC6: Google連携（@gmail.com のみ表示）
           if (profile.email.endsWith('@gmail.com'))
             GoogleLinkSection(
+              key: const Key('googleLinkSection'),
               isLinked: profile.isGoogleOnly,
               isLinking: state.isLinkingGoogle,
               onLink: (idToken) async {
@@ -170,6 +173,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
 
           // AC7: 危険ゾーン（アカウント削除）
           DangerZoneSection(
+            key: const Key('dangerZoneSection'),
             isDeleting: state.isDeletingAccount,
             onDelete: () async {
               await ref
