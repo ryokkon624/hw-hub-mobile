@@ -65,6 +65,8 @@ class SettingsCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: colors.textHeading,
                         fontWeight: FontWeight.w600,
