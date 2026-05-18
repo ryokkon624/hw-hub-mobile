@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hw_hub_mobile/core/theme/app_color_scheme.dart';
+import 'package:hw_hub_mobile/core/ui/user_avatar.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import '../../data/housework_assign_repository.dart';
 
@@ -29,18 +30,18 @@ class AssignableTaskCard extends StatelessWidget {
       },
       background: _SwipeBackground(
         alignment: Alignment.centerLeft,
-        color: colorScheme?.swipeSelf ?? const Color(0xFF0EA5E9),
-        label: l10n.houseworkAssignSwipeMakeMineLabel,
-        icon: Icons.person,
-      ),
-      secondaryBackground: _SwipeBackground(
-        alignment: Alignment.centerRight,
         color: colorScheme?.swipeMembers ?? const Color(0xFFF59E0B),
         label: l10n.houseworkAssignSwipePickMemberLabel,
         icon: Icons.group,
       ),
+      secondaryBackground: _SwipeBackground(
+        alignment: Alignment.centerRight,
+        color: colorScheme?.swipeSelf ?? const Color(0xFF0EA5E9),
+        label: l10n.houseworkAssignSwipeMakeMineLabel,
+        icon: Icons.person,
+      ),
       confirmDismiss: (direction) async {
-        if (direction == DismissDirection.startToEnd) {
+        if (direction == DismissDirection.endToStart) {
           return await onAssignToMe();
         } else {
           onPickMember();
@@ -92,7 +93,8 @@ class _CardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final assigneeLabel = task.assigneeUserId == null
+    final isUnassigned = task.assigneeUserId == null;
+    final assigneeLabel = isUnassigned
         ? l10n.houseworkAssignAssigneeUnassigned
         : (task.assigneeNickname ?? task.assigneeUserId.toString());
 
@@ -102,9 +104,11 @@ class _CardContent extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _AssigneeBadge(
+          UserAvatar(
+            iconUrl: null,
             label: assigneeLabel,
-            isUnassigned: task.assigneeUserId == null,
+            isUnassigned: isUnassigned,
+            size: UserAvatarSize.md,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -124,36 +128,6 @@ class _CardContent extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _AssigneeBadge extends StatelessWidget {
-  const _AssigneeBadge({required this.label, required this.isUnassigned});
-
-  final String label;
-  final bool isUnassigned;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).extension<AppColorScheme>();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isUnassigned
-            ? (colorScheme?.accentBadgeBg ?? const Color(0xFFFEF3C7))
-            : (colorScheme?.primary50 ?? const Color(0xFFECFDF5)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: isUnassigned
-              ? (colorScheme?.accentBadgeText ?? const Color(0xFFB45309))
-              : (colorScheme?.primaryText ?? const Color(0xFF047857)),
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }

@@ -459,6 +459,7 @@
   "houseworkAssignSwipeNextLabel": "次へ",
   "houseworkAssignSwipeFinishedMessage": "お疲れさまでした！",
   "houseworkAssignAssigneeUnassigned": "未割当",
+  "houseworkAssignUnassignedBadge": "未",
   "houseworkAssignCurrentAssigneeLabel": "現在の担当: {name}",
   "@houseworkAssignCurrentAssigneeLabel": {
     "placeholders": {

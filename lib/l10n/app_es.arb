@@ -459,6 +459,7 @@
   "houseworkAssignSwipeNextLabel": "Siguiente",
   "houseworkAssignSwipeFinishedMessage": "¡Terminado!",
   "houseworkAssignAssigneeUnassigned": "Sin asignar",
+  "houseworkAssignUnassignedBadge": "Sin",
   "houseworkAssignCurrentAssigneeLabel": "Asignado a: {name}",
   "@houseworkAssignCurrentAssigneeLabel": {
     "placeholders": {
