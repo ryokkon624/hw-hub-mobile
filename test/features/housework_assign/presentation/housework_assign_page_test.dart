@@ -6,7 +6,9 @@ import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dar
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_notifier.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_page.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_state.dart';
+import 'package:hw_hub_mobile/features/housework_assign/presentation/widgets/swipe_date_calendar.dart';
 import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../../helpers/widget_test_helpers.dart';
 
@@ -187,6 +189,108 @@ void main() {
     });
   });
 
+  group('HouseworkAssignPage スワイプモード UX改善（#114）', () {
+    HouseworkAssignState buildSwipeState({
+      int swipeIndex = 0,
+      int swipeTaskCount = 3,
+      String targetDate = '2026-05-20',
+    }) => HouseworkAssignState(
+      tasks: [
+        _task(id: 1, assigneeUserId: null, targetDate: targetDate),
+        _task(id: 2, assigneeUserId: null, targetDate: targetDate),
+        _task(id: 3, assigneeUserId: null, targetDate: targetDate),
+      ],
+      members: [],
+      mode: AssignMode.swipe,
+      swipeTarget: SwipeTarget.unassigned,
+      swipeIndex: swipeIndex,
+      swipeTaskCount: swipeTaskCount,
+    );
+
+    testWidgets('AC1: 進捗テキストが body 内に headlineSmall スタイルで表示される', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      // headlineSmall スタイルを持つ Text ウィジェットで進捗テキストが表示される
+      final progressTextFinder = find.byWidgetPredicate((widget) {
+        if (widget is! Text) return false;
+        if (widget.style?.fontSize == null) return false;
+        // headlineSmall は約 24sp
+        return (widget.style!.fontSize! >= 20) &&
+            (widget.data?.contains('/') ?? false);
+      });
+      expect(progressTextFinder, findsOneWidget);
+    });
+
+    testWidgets('AC1: AppBar の actions に進捗テキストが存在しない', (tester) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      // AppBar の actions ウィジェットツリーを確認。
+      // actions 内の Padding > Center > Text として進捗テキストがないことを確認する。
+      final appBarFinder = find.byType(AppBar);
+      expect(appBarFinder, findsOneWidget);
+
+      // AppBar を取得して actions が null または空であるか確認
+      // (Flutter では actions を未指定の場合 null が返る)
+      final appBar = tester.widget<AppBar>(appBarFinder);
+      expect(appBar.actions == null || appBar.actions!.isEmpty, isTrue);
+    });
+
+    testWidgets('AC2: 「割り当てを中断する」ボタンが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('割り当てを中断する'), findsOneWidget);
+    });
+
+    testWidgets('AC2: AppBar に BackButton が表示されない', (tester) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      // automaticallyImplyLeading: false なので BackButton がない
+      expect(find.byType(BackButton), findsNothing);
+    });
+
+    testWidgets('AC2: 「割り当てを中断する」タップで exitSwipeMode が呼ばれる', (tester) async {
+      bool exitCalled = false;
+      final fakeNotifier = _ExitTrackingNotifier(
+        buildSwipeState(),
+        onExit: () => exitCalled = true,
+      );
+      await tester.pumpWidget(
+        buildTestPage(
+          const HouseworkAssignPage(),
+          overrides: [
+            houseworkAssignNotifierProvider.overrideWith(() => fakeNotifier),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('割り当てを中断する'));
+      await tester.pump();
+
+      expect(exitCalled, isTrue);
+    });
+
+    testWidgets('AC3: TableCalendar ウィジェットが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TableCalendar), findsOneWidget);
+    });
+
+    testWidgets('AC3: SwipeDateCalendar ウィジェットが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(buildSwipeState()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SwipeDateCalendar), findsOneWidget);
+    });
+  });
+
   group('HouseworkAssignPage ローディング', () {
     testWidgets('ローディング中はCircularProgressIndicatorが表示される', (tester) async {
       // loading state - Completer を使って pending timer を作らずローディング状態を維持
@@ -209,5 +313,19 @@ class _LoadingNotifier extends HouseworkAssignNotifier {
   Future<HouseworkAssignState> build() {
     // Completer で永続的なローディング状態（timer は作らない）
     return Completer<HouseworkAssignState>().future;
+  }
+}
+
+class _ExitTrackingNotifier extends HouseworkAssignNotifier {
+  _ExitTrackingNotifier(this._initialState, {required this.onExit});
+  final HouseworkAssignState _initialState;
+  final VoidCallback onExit;
+
+  @override
+  Future<HouseworkAssignState> build() async => _initialState;
+
+  @override
+  void exitSwipeMode() {
+    onExit();
   }
 }

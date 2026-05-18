@@ -11,7 +11,9 @@ import 'widgets/assignable_task_card.dart';
 import 'widgets/bulk_skip_dialog.dart';
 import 'widgets/member_picker_bottom_sheet.dart';
 import 'widgets/member_summary_strip.dart';
+import 'widgets/swipe_date_calendar.dart';
 import 'widgets/swipe_mode_card.dart';
+import 'widgets/swipe_progress_header.dart';
 
 class HouseworkAssignPage extends ConsumerWidget {
   const HouseworkAssignPage({super.key});
@@ -242,24 +244,10 @@ class _SwipeModePage extends ConsumerWidget {
         : null;
 
     return Scaffold(
+      // AC2: AppBar の BackButton を削除（automaticallyImplyLeading: false）
       appBar: AppBar(
         title: Text(l10n.houseworkAssignSwipeModeTitle),
-        leading: BackButton(onPressed: () => notifier.exitSwipeMode()),
-        actions: [
-          if (!isFinished)
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: Text(
-                  l10n.houseworkAssignSwipeProgressLabel(
-                    state.swipeIndex + 1,
-                    state.swipeTaskCount,
-                  ),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            ),
-        ],
+        automaticallyImplyLeading: false,
       ),
       body: isFinished
           ? Center(
@@ -270,12 +258,42 @@ class _SwipeModePage extends ConsumerWidget {
             )
           : currentTask == null
           ? const Center(child: CircularProgressIndicator())
-          : Center(
-              child: SwipeModeCard(
-                task: currentTask,
-                onAssignToMe: () => notifier.swipeAssignToMe(),
-                onNext: () => notifier.swipeNext(),
-              ),
+          : Column(
+              children: [
+                // AC1: 進捗を body 最上部に headlineSmall で中央寄せ表示
+                SwipeProgressHeader(
+                  current: state.swipeIndex + 1,
+                  total: state.swipeTaskCount,
+                ),
+
+                // AC3: カレンダー表示（targetDate でハイライト）
+                SwipeDateCalendar(targetDate: currentTask.targetDate),
+
+                // スワイプカード
+                Expanded(
+                  child: Center(
+                    child: SwipeModeCard(
+                      task: currentTask,
+                      onAssignToMe: () => notifier.swipeAssignToMe(),
+                      onNext: () => notifier.swipeNext(),
+                    ),
+                  ),
+                ),
+
+                // AC2: 画面下部に「割り当てを中断する」ボタン
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: OutlinedButton(
+                      onPressed: () => notifier.exitSwipeMode(),
+                      child: Text(l10n.houseworkAssignSwipeExitButton),
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }

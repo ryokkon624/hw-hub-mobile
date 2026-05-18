@@ -457,6 +457,7 @@
     }
   },
   "houseworkAssignSwipeNextLabel": "Next",
+  "houseworkAssignSwipeExitButton": "Stop assigning",
   "houseworkAssignSwipeFinishedMessage": "All done!",
   "houseworkAssignAssigneeUnassigned": "Unassigned",
   "houseworkAssignUnassignedBadge": "Un",

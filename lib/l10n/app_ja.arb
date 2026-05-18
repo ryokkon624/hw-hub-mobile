@@ -457,6 +457,7 @@
     }
   },
   "houseworkAssignSwipeNextLabel": "次へ",
+  "houseworkAssignSwipeExitButton": "割り当てを中断する",
   "houseworkAssignSwipeFinishedMessage": "お疲れさまでした！",
   "houseworkAssignAssigneeUnassigned": "未割当",
   "houseworkAssignUnassignedBadge": "未",

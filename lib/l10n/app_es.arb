@@ -457,6 +457,7 @@
     }
   },
   "houseworkAssignSwipeNextLabel": "Siguiente",
+  "houseworkAssignSwipeExitButton": "Detener asignación",
   "houseworkAssignSwipeFinishedMessage": "¡Terminado!",
   "houseworkAssignAssigneeUnassigned": "Sin asignar",
   "houseworkAssignUnassignedBadge": "Sin",
