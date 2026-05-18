@@ -133,6 +133,27 @@ class _ListModePage extends ConsumerWidget {
               ],
             ),
           ),
+
+          // スワイプモード起動ボタン
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: ElevatedButton(
+              onPressed: unassignedForSwipe.isEmpty
+                  ? null
+                  : () => notifier.startSwipeMode(SwipeTarget.unassigned),
+              child: Text(l10n.houseworkAssignStartSwipeUnassigned),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: ElevatedButton(
+              onPressed: othersForSwipe.isEmpty
+                  ? null
+                  : () => notifier.startSwipeMode(SwipeTarget.others),
+              child: Text(l10n.houseworkAssignStartSwipeOthers),
+            ),
+          ),
+          const SizedBox(height: 8),
           const Divider(height: 1),
 
           // フィルタ
@@ -171,33 +192,6 @@ class _ListModePage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // スワイプモード起動ボタン
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: unassignedForSwipe.isEmpty
-                        ? null
-                        : () => notifier.startSwipeMode(SwipeTarget.unassigned),
-                    child: Text(l10n.houseworkAssignStartSwipeUnassigned),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: othersForSwipe.isEmpty
-                        ? null
-                        : () => notifier.startSwipeMode(SwipeTarget.others),
-                    child: Text(l10n.houseworkAssignStartSwipeOthers),
-                  ),
-                ),
-                const SizedBox(height: 24),
               ],
             ),
           ),
