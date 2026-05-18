@@ -6,6 +6,7 @@ import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_color_scheme.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/ui/app_snack_bar.dart';
+import '../../../core/ui/main_app_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import 'shopping_list_notifier.dart';
 import 'shopping_list_state.dart';
@@ -31,7 +32,7 @@ class ShoppingListPage extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.shoppingListTitle)),
+      appBar: MainAppBar(title: l10n.shoppingListTitle),
       body: shoppingAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorBody(

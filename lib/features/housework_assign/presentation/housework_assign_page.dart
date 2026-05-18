@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
+import 'package:hw_hub_mobile/core/ui/main_app_bar.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import '../data/housework_assign_repository.dart';
 import 'housework_assign_notifier.dart';
@@ -23,14 +24,14 @@ class HouseworkAssignPage extends ConsumerWidget {
     final async = ref.watch(houseworkAssignNotifierProvider);
     return async.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context).houseworkAssignTitle),
+        appBar: MainAppBar(
+          title: AppLocalizations.of(context).houseworkAssignTitle,
         ),
         body: const Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context).houseworkAssignTitle),
+        appBar: MainAppBar(
+          title: AppLocalizations.of(context).houseworkAssignTitle,
         ),
         body: Center(child: Text(e.toString())),
       ),
@@ -83,7 +84,7 @@ class _ListModePage extends ConsumerWidget {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.houseworkAssignTitle)),
+      appBar: MainAppBar(title: l10n.houseworkAssignTitle),
       body: Column(
         children: [
           // メンバーサマリ

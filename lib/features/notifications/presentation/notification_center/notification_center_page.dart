@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/notification_link_type.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
+import '../../../../core/ui/main_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../notification_global_notifier.dart';
 import '../widgets/notification_link_navigator.dart';
@@ -37,17 +38,7 @@ class NotificationCenterPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: AppBar(
-        backgroundColor: colors.surfaceCard,
-        elevation: 0,
-        title: Text(
-          l10n.notificationsCenterTitle,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: colors.textHeading,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      appBar: MainAppBar(title: l10n.notificationsCenterTitle),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
