@@ -474,5 +474,98 @@
     }
   },
   "houseworkAssignErrorAssign": "Error al cambiar el asignado",
-  "houseworkAssignErrorBulkSkip": "Error al omitir en bloque"
+  "houseworkAssignErrorBulkSkip": "Error al omitir en bloque",
+
+  "notificationsBellTitle": "Centro de notificaciones",
+  "notificationsViewAll": "Ver todo",
+  "notificationsEmpty": "Sin notificaciones",
+  "notificationsCenterTitle": "Centro de notificaciones",
+  "notificationsCenterSubtitle": "Últimas notificaciones",
+  "notificationsReload": "Recargar",
+
+  "notificationsAcceptInvitationTitle": "Un miembro invitado se ha unido al hogar.",
+  "notificationsAcceptInvitationBody": "{memberName} se ha unido al hogar [{householdName}].",
+  "@notificationsAcceptInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsDeclineInvitationTitle": "Invitación rechazada.",
+  "notificationsDeclineInvitationBody": "{memberName} ha rechazado la invitación al hogar [{householdName}].",
+  "@notificationsDeclineInvitationBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsRemovedFromHouseholdTitle": "Eliminado del hogar.",
+  "notificationsRemovedFromHouseholdBody": "Has sido eliminado del hogar [{householdName}].",
+  "@notificationsRemovedFromHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsLeftHouseholdTitle": "Un miembro ha abandonado el hogar.",
+  "notificationsLeftHouseholdBody": "{memberName} ha abandonado el hogar [{householdName}]. Las tareas asignadas a {memberName} han sido actualizadas a sin asignar.",
+  "@notificationsLeftHouseholdBody": {
+    "placeholders": {
+      "householdName": { "type": "String" },
+      "memberName": { "type": "String" }
+    }
+  },
+  "notificationsAssigned2OwnerTitle": "Establecido como PROPIETARIO del hogar.",
+  "notificationsAssigned2OwnerBody": "Has sido establecido como PROPIETARIO del hogar [{householdName}].",
+  "@notificationsAssigned2OwnerBody": {
+    "placeholders": {
+      "householdName": { "type": "String" }
+    }
+  },
+  "notificationsTaskAssignedTitle": "Tarea asignada",
+  "notificationsTaskAssignedBody": "Una tarea ha sido asignada por {actorName}. Hogar: {household}, Fecha: {date}, Tareas: {count}",
+  "@notificationsTaskAssignedBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsBeDumpedTasksTitle": "Tarea solicitada por otro miembro",
+  "notificationsBeDumpedTasksBody": "Una tarea ha sido solicitada por {actorName}. Hogar: {household}, Fecha: {date}, Tareas: {count}",
+  "@notificationsBeDumpedTasksBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsYourTaskWasTakenTitle": "Otro miembro tomó tu tarea",
+  "notificationsYourTaskWasTakenBody": "{actorName} tomó tu tarea. Hogar: {household}, Fecha: {date}, Tareas: {count}",
+  "@notificationsYourTaskWasTakenBody": {
+    "placeholders": {
+      "actorName": { "type": "String" },
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsGenericTitle": "Tarea asignada",
+  "notificationsGenericBody": "Una tarea ha sido asignada. Hogar: {household}, Fecha: {date}, Tareas: {count}",
+  "@notificationsGenericBody": {
+    "placeholders": {
+      "household": { "type": "String" },
+      "date": { "type": "String" },
+      "count": { "type": "String" }
+    }
+  },
+  "notificationsInquiryRepliedTitle": "Se ha recibido una respuesta a tu consulta",
+  "notificationsInquiryRepliedBody": "Se recibió una respuesta para #{inquiryId} \"{title}\". Por favor revise los detalles.",
+  "@notificationsInquiryRepliedBody": {
+    "placeholders": {
+      "inquiryId": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  }
 }

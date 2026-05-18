@@ -19,6 +19,7 @@ import 'features/shopping/presentation/shopping_item_detail/shopping_item_detail
 import 'features/shopping/presentation/shopping_item_new/shopping_item_new_page.dart';
 import 'features/shopping/presentation/shopping_list_page.dart';
 import 'features/housework_assign/presentation/housework_assign_page.dart';
+import 'features/notifications/presentation/notification_center/notification_center_page.dart';
 import 'features/tasks/presentation/my_tasks_page.dart';
 
 // ログイン不要なパス（前方一致）
@@ -232,7 +233,10 @@ final _routes = <RouteBase>[
   ),
 
   // ─── 認証済み（シェル外・全画面）────────────────────────
-  GoRoute(path: AppRoutes.notifications, builder: (_, _) => const _P('通知センター')),
+  GoRoute(
+    path: AppRoutes.notifications,
+    builder: (_, _) => const NotificationCenterPage(),
+  ),
 ];
 
 abstract final class AppRoutes {
