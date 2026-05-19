@@ -33,8 +33,8 @@ void main() {
 
   group('HouseholdNotifier.build()', () {
     test('API呼び出し成功時: 世帯リストを返し先頭をselectedとして設定する', () async {
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson(const [
@@ -55,8 +55,8 @@ void main() {
 
     test('SharedPreferencesに選択IDが保存済みの場合: 保存済みの世帯を復元する', () async {
       SharedPreferences.setMockInitialValues({'selected_household_id': 2});
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson(const [
@@ -75,8 +75,8 @@ void main() {
 
     test('保存済みIDが現在の所属世帯にない場合: 先頭にフォールバック', () async {
       SharedPreferences.setMockInitialValues({'selected_household_id': 999});
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson(const [Household(id: 1, name: '山田家')]),
@@ -90,8 +90,8 @@ void main() {
     });
 
     test('世帯リストが空の場合: selectedHouseholdはnull', () async {
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: <dynamic>[],
@@ -106,7 +106,7 @@ void main() {
     });
 
     test('APIがDioExceptionを投げた場合: AsyncErrorになる', () async {
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenThrow(
         DioException(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           type: DioExceptionType.connectionError,
@@ -129,8 +129,8 @@ void main() {
       const h1 = Household(id: 1, name: '山田家');
       const h2 = Household(id: 2, name: '田中家');
 
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson(const [h1, h2]),
@@ -149,8 +149,8 @@ void main() {
     test('select()でSharedPreferencesにIDが保存される（int値）', () async {
       const h = Household(id: 42, name: 'テスト家');
 
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson(const [h]),

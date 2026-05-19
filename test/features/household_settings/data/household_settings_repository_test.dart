@@ -192,9 +192,9 @@ void main() {
   group('revokeInvitation()', () {
     test('成功時: 例外なく完了する', () async {
       when(
-        mockDio.post<dynamic>('/api/household-invitations/test-token/revoke'),
+        mockDio.post<void>('/api/household-invitations/test-token/revoke'),
       ).thenAnswer(
-        (_) async => Response(
+        (_) async => Response<void>(
           requestOptions: _req('/api/household-invitations/test-token/revoke'),
           statusCode: 204,
         ),
@@ -205,7 +205,7 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.post<dynamic>('/api/household-invitations/test-token/revoke'),
+        mockDio.post<void>('/api/household-invitations/test-token/revoke'),
       ).thenThrow(
         DioException(
           requestOptions: _req('/api/household-invitations/test-token/revoke'),
@@ -418,9 +418,12 @@ void main() {
   group('createHousehold()', () {
     test('成功時: 作成された世帯DTOを返す', () async {
       when(
-        mockDio.post<dynamic>('/api/households', data: anyNamed('data')),
+        mockDio.post<Map<String, dynamic>>(
+          '/api/households',
+          data: anyNamed('data'),
+        ),
       ).thenAnswer(
-        (_) async => Response(
+        (_) async => Response<Map<String, dynamic>>(
           requestOptions: _req('/api/households'),
           statusCode: 200,
           data: {'householdId': 99, 'name': '新しいおうち', 'ownerUserId': 1},
@@ -434,7 +437,10 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.post<dynamic>('/api/households', data: anyNamed('data')),
+        mockDio.post<Map<String, dynamic>>(
+          '/api/households',
+          data: anyNamed('data'),
+        ),
       ).thenThrow(
         DioException(
           requestOptions: _req('/api/households'),

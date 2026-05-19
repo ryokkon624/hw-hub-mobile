@@ -129,7 +129,7 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
   @override
   Future<void> revokeInvitation({required String token}) async {
     try {
-      await _dio.post<dynamic>('/api/household-invitations/$token/revoke');
+      await _dio.post<void>('/api/household-invitations/$token/revoke');
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');
@@ -212,13 +212,11 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
   @override
   Future<HouseholdSettingsDto> createHousehold({required String name}) async {
     try {
-      final response = await _dio.post<dynamic>(
+      final response = await _dio.post<Map<String, dynamic>>(
         '/api/households',
         data: {'name': name},
       );
-      return HouseholdSettingsDto.fromJson(
-        response.data as Map<String, dynamic>,
-      );
+      return HouseholdSettingsDto.fromJson(response.data!);
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');

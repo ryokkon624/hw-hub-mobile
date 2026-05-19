@@ -13,9 +13,8 @@ class HouseholdNotifier extends AsyncNotifier<HouseholdState> {
   Future<HouseholdState> build() async {
     final dio = ref.read(dioProvider);
     try {
-      final response = await dio.get<dynamic>('/api/users/me/households');
-      final data = response.data as List<dynamic>;
-      final households = data
+      final response = await dio.get<List<dynamic>>('/api/users/me/households');
+      final households = response.data!
           .map(
             (e) => Household(
               id: (e as Map<String, dynamic>)['householdId'] as int,
