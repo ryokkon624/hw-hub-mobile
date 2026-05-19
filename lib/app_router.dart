@@ -23,6 +23,7 @@ import 'features/shopping/presentation/shopping_list_page.dart';
 import 'features/housework_assign/presentation/housework_assign_page.dart';
 import 'features/notifications/presentation/notification_center/notification_center_page.dart';
 import 'features/tasks/presentation/my_tasks_page.dart';
+import 'features/household_settings/presentation/household_settings/household_settings_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -185,7 +186,7 @@ final _routes = <RouteBase>[
               ),
               GoRoute(
                 path: AppRoutes._settingsHouseholdRelative,
-                builder: (_, _) => const _P('世帯設定'),
+                builder: (_, _) => const HouseholdSettingsPage(),
               ),
               GoRoute(
                 path: AppRoutes._settingsHouseworkRelative,

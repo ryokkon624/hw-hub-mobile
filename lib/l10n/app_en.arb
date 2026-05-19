@@ -629,5 +629,88 @@
   "accountSettingsDeleteAccountConfirmTitle": "Delete your account?",
   "accountSettingsDeleteAccountConfirmBody": "This action cannot be undone. Your account and all data will be deleted.",
   "accountSettingsDeleteAccountConfirmButton": "Delete",
-  "accountSettingsDeleteAccountCancelButton": "Cancel"
+  "accountSettingsDeleteAccountCancelButton": "Cancel",
+
+  "householdSettingsTitle": "Household Settings",
+  "householdSettingsHouseholdsSection": "Your households",
+  "householdSettingsCurrentBadge": "Current",
+  "householdSettingsSwitchBadge": "Switch",
+  "householdSettingsAddHousehold": "Add new household",
+  "householdSettingsHouseholdInfoSection": "Household info",
+  "householdSettingsHouseholdNameLabel": "Household name",
+  "householdSettingsHouseholdNameHint": "Enter household name",
+  "householdSettingsNicknameSection": "Your settings in this household",
+  "householdSettingsNicknameLabel": "Nickname",
+  "householdSettingsNicknameHint": "Enter nickname (max 50 characters)",
+  "householdSettingsMembersSection": "Members",
+  "householdSettingsMemberStatusActive": "Member",
+  "householdSettingsMemberStatusInvited": "Invited",
+  "householdSettingsMemberStatusLeft": "Left",
+  "householdSettingsMemberStatusOwner": "OWNER",
+  "householdSettingsMemberBadgeYou": "You",
+  "householdSettingsRemoveMemberButton": "Remove",
+  "householdSettingsTransferOwnerButton": "Make Owner",
+  "householdSettingsLeaveButton": "Leave this household",
+  "householdSettingsRemoveMemberConfirmTitle": "Remove member?",
+  "householdSettingsRemoveMemberConfirmBody": "Remove {name} from this household. This action cannot be undone.",
+  "@householdSettingsRemoveMemberConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsTransferOwnerConfirmTitle": "Transfer ownership?",
+  "householdSettingsTransferOwnerConfirmBody": "Transfer ownership of this household to {name}. You will become a regular member.",
+  "@householdSettingsTransferOwnerConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsLeaveConfirmTitle": "Leave household?",
+  "householdSettingsLeaveConfirmBody": "You will leave this household. You'll need a new invitation to rejoin.",
+  "householdSettingsInvitationSection": "Invite members",
+  "householdSettingsInviteEmailHint": "Email address to invite",
+  "householdSettingsInviteButton": "Invite",
+  "householdSettingsSentInvitations": "Sent invitations",
+  "householdSettingsInvitationStatusPending": "Pending",
+  "householdSettingsInvitationStatusAccepted": "Accepted",
+  "householdSettingsInvitationStatusDeclined": "Declined",
+  "householdSettingsInvitationStatusRevoked": "Revoked",
+  "householdSettingsInvitationStatusExpired": "Expired",
+  "householdSettingsCopyLinkButton": "Copy",
+  "householdSettingsRevokeInvitationButton": "Revoke",
+  "householdSettingsRevokeConfirmTitle": "Revoke invitation?",
+  "householdSettingsRevokeConfirmBody": "Revoke the invitation to {email}.",
+  "@householdSettingsRevokeConfirmBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "householdSettingsDangerZoneSection": "Danger Zone",
+  "householdSettingsDeleteHouseholdButton": "Delete household",
+  "householdSettingsDeleteHouseholdConfirmTitle": "Delete household?",
+  "householdSettingsDeleteHouseholdConfirmBody": "This action cannot be undone. All housework ({houseworkCount}) and shopping items ({shoppingCount}) in this household will be deleted.",
+  "@householdSettingsDeleteHouseholdConfirmBody": {
+    "placeholders": {
+      "houseworkCount": { "type": "int" },
+      "shoppingCount": { "type": "int" }
+    }
+  },
+  "householdSettingsDeleteHouseholdDisabledNote": "Cannot delete: active members exist",
+  "householdSettingsCreateHouseholdTitle": "Create new household",
+  "householdSettingsCreateHouseholdNameHint": "Household name",
+  "householdSettingsCreateHouseholdButton": "Create",
+  "householdSettingsSaveSuccess": "Saved",
+  "householdSettingsCreateSuccess": "Household created",
+  "householdSettingsInviteSuccess": "Invitation sent",
+  "householdSettingsRevokeSuccess": "Invitation revoked",
+  "householdSettingsLeaveSuccess": "You left the household",
+  "householdSettingsRemoveMemberSuccess": "Member removed",
+  "householdSettingsTransferOwnerSuccess": "Ownership transferred",
+  "householdSettingsDeleteSuccess": "Household deleted",
+  "householdSettingsInviteExpiresAt": "Expires: {date}",
+  "@householdSettingsInviteExpiresAt": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  }
 }

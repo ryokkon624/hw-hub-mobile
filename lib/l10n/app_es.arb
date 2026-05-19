@@ -629,5 +629,88 @@
   "accountSettingsDeleteAccountConfirmTitle": "¿Eliminar su cuenta?",
   "accountSettingsDeleteAccountConfirmBody": "Esta acción no se puede deshacer. Su cuenta y todos los datos serán eliminados.",
   "accountSettingsDeleteAccountConfirmButton": "Eliminar",
-  "accountSettingsDeleteAccountCancelButton": "Cancelar"
+  "accountSettingsDeleteAccountCancelButton": "Cancelar",
+
+  "householdSettingsTitle": "Configuración del hogar",
+  "householdSettingsHouseholdsSection": "Sus hogares",
+  "householdSettingsCurrentBadge": "Actual",
+  "householdSettingsSwitchBadge": "Cambiar",
+  "householdSettingsAddHousehold": "Agregar nuevo hogar",
+  "householdSettingsHouseholdInfoSection": "Información del hogar",
+  "householdSettingsHouseholdNameLabel": "Nombre del hogar",
+  "householdSettingsHouseholdNameHint": "Ingrese el nombre del hogar",
+  "householdSettingsNicknameSection": "Su configuración en este hogar",
+  "householdSettingsNicknameLabel": "Apodo",
+  "householdSettingsNicknameHint": "Ingrese apodo (máx. 50 caracteres)",
+  "householdSettingsMembersSection": "Miembros",
+  "householdSettingsMemberStatusActive": "Miembro",
+  "householdSettingsMemberStatusInvited": "Invitado",
+  "householdSettingsMemberStatusLeft": "Salió",
+  "householdSettingsMemberStatusOwner": "OWNER",
+  "householdSettingsMemberBadgeYou": "Tú",
+  "householdSettingsRemoveMemberButton": "Eliminar",
+  "householdSettingsTransferOwnerButton": "Hacer propietario",
+  "householdSettingsLeaveButton": "Salir de este hogar",
+  "householdSettingsRemoveMemberConfirmTitle": "¿Eliminar miembro?",
+  "householdSettingsRemoveMemberConfirmBody": "Eliminar a {name} de este hogar. Esta acción no se puede deshacer.",
+  "@householdSettingsRemoveMemberConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsTransferOwnerConfirmTitle": "¿Transferir propiedad?",
+  "householdSettingsTransferOwnerConfirmBody": "Transferir la propiedad de este hogar a {name}. Usted se convertirá en miembro regular.",
+  "@householdSettingsTransferOwnerConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsLeaveConfirmTitle": "¿Salir del hogar?",
+  "householdSettingsLeaveConfirmBody": "Saldrá de este hogar. Necesitará una nueva invitación para volver a unirse.",
+  "householdSettingsInvitationSection": "Invitar miembros",
+  "householdSettingsInviteEmailHint": "Dirección de correo para invitar",
+  "householdSettingsInviteButton": "Invitar",
+  "householdSettingsSentInvitations": "Invitaciones enviadas",
+  "householdSettingsInvitationStatusPending": "Pendiente",
+  "householdSettingsInvitationStatusAccepted": "Aceptado",
+  "householdSettingsInvitationStatusDeclined": "Rechazado",
+  "householdSettingsInvitationStatusRevoked": "Revocado",
+  "householdSettingsInvitationStatusExpired": "Expirado",
+  "householdSettingsCopyLinkButton": "Copiar",
+  "householdSettingsRevokeInvitationButton": "Revocar",
+  "householdSettingsRevokeConfirmTitle": "¿Revocar invitación?",
+  "householdSettingsRevokeConfirmBody": "Revocar la invitación a {email}.",
+  "@householdSettingsRevokeConfirmBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "householdSettingsDangerZoneSection": "Zona de peligro",
+  "householdSettingsDeleteHouseholdButton": "Eliminar hogar",
+  "householdSettingsDeleteHouseholdConfirmTitle": "¿Eliminar hogar?",
+  "householdSettingsDeleteHouseholdConfirmBody": "Esta acción no se puede deshacer. Todas las tareas del hogar ({houseworkCount}) y artículos de compras ({shoppingCount}) serán eliminados.",
+  "@householdSettingsDeleteHouseholdConfirmBody": {
+    "placeholders": {
+      "houseworkCount": { "type": "int" },
+      "shoppingCount": { "type": "int" }
+    }
+  },
+  "householdSettingsDeleteHouseholdDisabledNote": "No se puede eliminar: existen miembros activos",
+  "householdSettingsCreateHouseholdTitle": "Crear nuevo hogar",
+  "householdSettingsCreateHouseholdNameHint": "Nombre del hogar",
+  "householdSettingsCreateHouseholdButton": "Crear",
+  "householdSettingsSaveSuccess": "Guardado",
+  "householdSettingsCreateSuccess": "Hogar creado",
+  "householdSettingsInviteSuccess": "Invitación enviada",
+  "householdSettingsRevokeSuccess": "Invitación revocada",
+  "householdSettingsLeaveSuccess": "Salió del hogar",
+  "householdSettingsRemoveMemberSuccess": "Miembro eliminado",
+  "householdSettingsTransferOwnerSuccess": "Propiedad transferida",
+  "householdSettingsDeleteSuccess": "Hogar eliminado",
+  "householdSettingsInviteExpiresAt": "Expira: {date}",
+  "@householdSettingsInviteExpiresAt": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  }
 }
