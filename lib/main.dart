@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_router.dart';
+import 'core/locale/locale_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/ui/app_snack_bar.dart';
 import 'features/notifications/presentation/notification_global_notifier.dart';
@@ -50,6 +51,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
+    final localeAsync = ref.watch(localeNotifierProvider);
+    final locale = localeAsync.valueOrNull;
     return MaterialApp.router(
       title: 'HwHub',
       theme: AppTheme.light,
@@ -57,6 +60,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       themeMode: ThemeMode.system,
       scaffoldMessengerKey: AppSnackBar.messengerKey,
       routerConfig: router,
+      locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
