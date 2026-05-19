@@ -244,7 +244,9 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
         '/api/houseworks',
         queryParameters: {'householdId': householdId},
       );
-      return (response.data as List<dynamic>).length;
+      // リストを受け取ったら即カウントして破棄（メモリに保持しない）
+      final count = (response.data as List<dynamic>).length;
+      return count;
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');
@@ -259,7 +261,9 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
         queryParameters: <String, dynamic>{},
       );
       final data = response.data as Map<String, dynamic>;
-      return (data['items'] as List<dynamic>).length;
+      // リストを受け取ったら即カウントして破棄（メモリに保持しない）
+      final count = (data['items'] as List<dynamic>).length;
+      return count;
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');

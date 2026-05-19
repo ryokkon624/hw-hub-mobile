@@ -202,8 +202,10 @@ class HouseholdSettingsNotifier
       final repo = ref.read(householdSettingsRepositoryProvider);
       await repo.removeMember(householdId: householdId, userId: userId);
 
-      // メンバーリストを再取得
-      final updatedMembers = await repo.fetchMembers(householdId: householdId);
+      // ローカルリストから対象メンバーを除外（全件再取得不要）
+      final updatedMembers = current.members
+          .where((m) => m.userId != userId)
+          .toList();
       state = AsyncData(
         current.copyWith(
           members: updatedMembers,
@@ -236,8 +238,13 @@ class HouseholdSettingsNotifier
         newOwnerUserId: newOwnerUserId,
       );
 
-      // メンバーリストを再取得（roleが変わるため）
-      final updatedMembers = await repo.fetchMembers(householdId: householdId);
+      // ローカルリストのroleを差分更新（全件再取得不要）
+      // 旧OWNER → MEMBER、新OWNER → OWNER に変更
+      final updatedMembers = current.members.map((m) {
+        if (m.role == 'OWNER') return m.copyWith(role: 'MEMBER');
+        if (m.userId == newOwnerUserId) return m.copyWith(role: 'OWNER');
+        return m;
+      }).toList();
       state = AsyncData(
         current.copyWith(
           members: updatedMembers,
