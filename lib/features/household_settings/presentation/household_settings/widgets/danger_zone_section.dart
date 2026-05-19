@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/models/household_member_status.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../household_settings_notifier.dart';
+
+/// 危険ゾーンセクション（AC10）。OWNERかつ自分以外のACTIVEメンバーがいない場合のみ表示。
+class DangerZoneSection extends ConsumerWidget {
+  const DangerZoneSection({super.key, required this.loginUserId});
+
+  final int loginUserId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final notifierState = ref.watch(householdSettingsNotifierProvider);
+
+    return notifierState.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (state) {
+        // OWNERかどうか判定
+        final isOwner = state.members.any(
+          (m) => m.userId == loginUserId && m.role == 'OWNER',
+        );
+        if (!isOwner) return const SizedBox.shrink();
+
+        // 自分以外のACTIVEメンバーが存在するか判定
+        final hasOtherActiveMembers = state.members.any(
+          (m) =>
+              m.userId != loginUserId &&
+              HouseholdMemberStatus.fromCode(m.status) ==
+                  HouseholdMemberStatus.active,
+        );
+
+        return Card(
+          key: const Key('dangerZoneSection'),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Colors.red, width: 1),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.householdSettingsDangerZoneSection,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                if (hasOtherActiveMembers)
+                  Text(
+                    l10n.householdSettingsDeleteHouseholdDisabledNote,
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  )
+                else
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      key: const Key('deleteHouseholdButton'),
+                      onPressed: state.isLoadingDeleteCounts
+                          ? null
+                          : () => _onDeletePressed(
+                              context,
+                              ref,
+                              l10n,
+                              state.houseworkCount,
+                              state.shoppingCount,
+                            ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
+                      child: Text(l10n.householdSettingsDeleteHouseholdButton),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onDeletePressed(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    int? houseworkCount,
+    int? shoppingCount,
+  ) async {
+    // 件数がまだ取得されていない場合はAPIで取得してから再表示
+    if (houseworkCount == null || shoppingCount == null) {
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .fetchDeleteCounts();
+      // build が再実行されて最新件数が表示される
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.householdSettingsDeleteHouseholdConfirmTitle),
+        content: Text(
+          l10n.householdSettingsDeleteHouseholdConfirmBody(
+            houseworkCount,
+            shoppingCount,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await ref
+                  .read(householdSettingsNotifierProvider.notifier)
+                  .deleteHousehold();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(l10n.householdSettingsDeleteHouseholdButton),
+          ),
+        ],
+      ),
+    );
+  }
+}

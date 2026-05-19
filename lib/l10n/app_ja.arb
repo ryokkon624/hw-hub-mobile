@@ -629,5 +629,88 @@
   "accountSettingsDeleteAccountConfirmTitle": "アカウントを削除しますか？",
   "accountSettingsDeleteAccountConfirmBody": "この操作は取り消せません。アカウントとすべてのデータが削除されます。",
   "accountSettingsDeleteAccountConfirmButton": "削除する",
-  "accountSettingsDeleteAccountCancelButton": "キャンセル"
+  "accountSettingsDeleteAccountCancelButton": "キャンセル",
+
+  "householdSettingsTitle": "おうち設定",
+  "householdSettingsHouseholdsSection": "所属しているおうち",
+  "householdSettingsCurrentBadge": "現在",
+  "householdSettingsSwitchBadge": "切替",
+  "householdSettingsAddHousehold": "新しいおうちを追加",
+  "householdSettingsHouseholdInfoSection": "おうちの情報",
+  "householdSettingsHouseholdNameLabel": "おうちの名前",
+  "householdSettingsHouseholdNameHint": "おうちの名前を入力",
+  "householdSettingsNicknameSection": "この世帯でのあなたの設定",
+  "householdSettingsNicknameLabel": "ニックネーム",
+  "householdSettingsNicknameHint": "ニックネームを入力（最大50文字）",
+  "householdSettingsMembersSection": "メンバー一覧",
+  "householdSettingsMemberStatusActive": "メンバー",
+  "householdSettingsMemberStatusInvited": "招待中",
+  "householdSettingsMemberStatusLeft": "離脱済み",
+  "householdSettingsMemberStatusOwner": "OWNER",
+  "householdSettingsMemberBadgeYou": "あなた",
+  "householdSettingsRemoveMemberButton": "外す",
+  "householdSettingsTransferOwnerButton": "OWNERに譲渡",
+  "householdSettingsLeaveButton": "この世帯から離脱",
+  "householdSettingsRemoveMemberConfirmTitle": "メンバーを外しますか？",
+  "householdSettingsRemoveMemberConfirmBody": "{name}をこの世帯から除外します。この操作は取り消せません。",
+  "@householdSettingsRemoveMemberConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsTransferOwnerConfirmTitle": "OWNERを譲渡しますか？",
+  "householdSettingsTransferOwnerConfirmBody": "{name}にこの世帯のOWNERを譲渡します。あなたは一般メンバーになります。",
+  "@householdSettingsTransferOwnerConfirmBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdSettingsLeaveConfirmTitle": "世帯から離脱しますか？",
+  "householdSettingsLeaveConfirmBody": "この世帯から離脱します。再参加するには招待が必要です。",
+  "householdSettingsInvitationSection": "メンバー招待",
+  "householdSettingsInviteEmailHint": "招待するメールアドレス",
+  "householdSettingsInviteButton": "招待",
+  "householdSettingsSentInvitations": "送信済み招待",
+  "householdSettingsInvitationStatusPending": "招待中",
+  "householdSettingsInvitationStatusAccepted": "参加済み",
+  "householdSettingsInvitationStatusDeclined": "辞退",
+  "householdSettingsInvitationStatusRevoked": "取消済み",
+  "householdSettingsInvitationStatusExpired": "期限切れ",
+  "householdSettingsCopyLinkButton": "コピー",
+  "householdSettingsRevokeInvitationButton": "取消",
+  "householdSettingsRevokeConfirmTitle": "招待を取り消しますか？",
+  "householdSettingsRevokeConfirmBody": "{email}への招待を取り消します。",
+  "@householdSettingsRevokeConfirmBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "householdSettingsDangerZoneSection": "危険ゾーン",
+  "householdSettingsDeleteHouseholdButton": "おうちを削除する",
+  "householdSettingsDeleteHouseholdConfirmTitle": "おうちを削除しますか？",
+  "householdSettingsDeleteHouseholdConfirmBody": "この操作は取り消せません。この世帯の家事（{houseworkCount}件）と買い物リスト（{shoppingCount}件）がすべて削除されます。",
+  "@householdSettingsDeleteHouseholdConfirmBody": {
+    "placeholders": {
+      "houseworkCount": { "type": "int" },
+      "shoppingCount": { "type": "int" }
+    }
+  },
+  "householdSettingsDeleteHouseholdDisabledNote": "有効なメンバーが存在するため削除できません",
+  "householdSettingsCreateHouseholdTitle": "新しいおうちを作成",
+  "householdSettingsCreateHouseholdNameHint": "おうちの名前",
+  "householdSettingsCreateHouseholdButton": "作成",
+  "householdSettingsSaveSuccess": "保存しました",
+  "householdSettingsCreateSuccess": "おうちを作成しました",
+  "householdSettingsInviteSuccess": "招待を送信しました",
+  "householdSettingsRevokeSuccess": "招待を取り消しました",
+  "householdSettingsLeaveSuccess": "世帯から離脱しました",
+  "householdSettingsRemoveMemberSuccess": "メンバーを外しました",
+  "householdSettingsTransferOwnerSuccess": "OWNERを譲渡しました",
+  "householdSettingsDeleteSuccess": "おうちを削除しました",
+  "householdSettingsInviteExpiresAt": "有効期限: {date}",
+  "@householdSettingsInviteExpiresAt": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  }
 }

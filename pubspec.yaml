@@ -66,6 +66,9 @@ dependencies:
   # Google Sign-In（AC6: Googleアカウント連携のモバイル用）
   google_sign_in: ^6.2.2
 
+  # Share（AC9: 招待リンク共有）
+  share_plus: ^10.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
