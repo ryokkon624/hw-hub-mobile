@@ -6,6 +6,8 @@ class HouseholdSettingsState {
   const HouseholdSettingsState({
     this.members = const [],
     this.invitations = const [],
+    this.isCurrentUserOwner = false,
+    this.hasOtherActiveMembers = false,
     this.isSavingName = false,
     this.isSavingNickname = false,
     this.isCreatingInvite = false,
@@ -21,6 +23,12 @@ class HouseholdSettingsState {
 
   /// 招待一覧
   final List<HouseholdInvitationDto> invitations;
+
+  /// ログインユーザーがOWNERかどうか（Notifier側で事前計算）
+  final bool isCurrentUserOwner;
+
+  /// 自分以外のACTIVEメンバーが存在するかどうか（Notifier側で事前計算）
+  final bool hasOtherActiveMembers;
 
   /// 世帯名保存中フラグ
   final bool isSavingName;
@@ -46,6 +54,8 @@ class HouseholdSettingsState {
   HouseholdSettingsState copyWith({
     List<HouseholdSettingsMemberDto>? members,
     List<HouseholdInvitationDto>? invitations,
+    bool? isCurrentUserOwner,
+    bool? hasOtherActiveMembers,
     bool? isSavingName,
     bool? isSavingNickname,
     bool? isCreatingInvite,
@@ -61,6 +71,9 @@ class HouseholdSettingsState {
     return HouseholdSettingsState(
       members: members ?? this.members,
       invitations: invitations ?? this.invitations,
+      isCurrentUserOwner: isCurrentUserOwner ?? this.isCurrentUserOwner,
+      hasOtherActiveMembers:
+          hasOtherActiveMembers ?? this.hasOtherActiveMembers,
       isSavingName: isSavingName ?? this.isSavingName,
       isSavingNickname: isSavingNickname ?? this.isSavingNickname,
       isCreatingInvite: isCreatingInvite ?? this.isCreatingInvite,

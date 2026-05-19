@@ -27,14 +27,22 @@ class HouseholdSettingsMemberDto {
 
   Map<String, dynamic> toJson() => _$HouseholdSettingsMemberDtoToJson(this);
 
-  HouseholdSettingsMemberDto copyWith({String? role}) {
+  HouseholdSettingsMemberDto copyWith({
+    int? householdId,
+    int? userId,
+    String? displayName,
+    String? iconUrl,
+    String? nickname,
+    String? status,
+    String? role,
+  }) {
     return HouseholdSettingsMemberDto(
-      householdId: householdId,
-      userId: userId,
-      displayName: displayName,
-      iconUrl: iconUrl,
-      nickname: nickname,
-      status: status,
+      householdId: householdId ?? this.householdId,
+      userId: userId ?? this.userId,
+      displayName: displayName ?? this.displayName,
+      iconUrl: iconUrl ?? this.iconUrl,
+      nickname: nickname ?? this.nickname,
+      status: status ?? this.status,
       role: role ?? this.role,
     );
   }

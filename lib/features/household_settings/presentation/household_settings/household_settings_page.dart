@@ -71,9 +71,8 @@ class HouseholdSettingsPage extends ConsumerWidget {
             if (loginUserId != null) MembersSection(loginUserId: loginUserId),
             // AC8 / AC9: 招待
             const InvitationSection(),
-            // AC10: 危険ゾーン（OWNERのみ表示）
-            if (loginUserId != null)
-              DangerZoneSection(loginUserId: loginUserId),
+            // AC10: 危険ゾーン（OWNERのみ表示 - State.isCurrentUserOwnerで判定）
+            const DangerZoneSection(),
             const SizedBox(height: 32),
           ],
         ),

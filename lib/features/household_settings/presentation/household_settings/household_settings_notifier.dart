@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/auth/auth_state.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/models/household_member_status.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../data/models/household_invitation_dto.dart';
 import '../../data/models/household_member_dto.dart';
@@ -17,20 +19,58 @@ class HouseholdSettingsNotifier
       return const HouseholdSettingsState();
     }
 
+    final authState = ref.read(authNotifierProvider).valueOrNull;
+    final loginUserId = authState is AuthAuthenticated
+        ? authState.user.userId
+        : null;
+
     final repo = ref.read(householdSettingsRepositoryProvider);
     final results = await Future.wait([
       repo.fetchMembers(householdId: householdId),
       repo.fetchInvitations(householdId: householdId),
     ]);
 
+    final members = results[0] as List<HouseholdSettingsMemberDto>;
+    final invitations = results[1] as List<HouseholdInvitationDto>;
+
     return HouseholdSettingsState(
-      members: results[0] as List<HouseholdSettingsMemberDto>,
-      invitations: results[1] as List<HouseholdInvitationDto>,
+      members: members,
+      invitations: invitations,
+      isCurrentUserOwner: _computeIsOwner(members, loginUserId),
+      hasOtherActiveMembers: _computeHasOtherActive(members, loginUserId),
     );
   }
 
   int? get _householdId =>
       ref.read(householdNotifierProvider).valueOrNull?.selectedHousehold?.id;
+
+  int? get _loginUserId {
+    final authState = ref.read(authNotifierProvider).valueOrNull;
+    return authState is AuthAuthenticated ? authState.user.userId : null;
+  }
+
+  /// メンバーリストからOWNER判定を事前計算する。
+  bool _computeIsOwner(
+    List<HouseholdSettingsMemberDto> members,
+    int? loginUserId,
+  ) {
+    if (loginUserId == null) return false;
+    return members.any((m) => m.userId == loginUserId && m.role == 'OWNER');
+  }
+
+  /// メンバーリストから「自分以外のACTIVEメンバー存在」を事前計算する。
+  bool _computeHasOtherActive(
+    List<HouseholdSettingsMemberDto> members,
+    int? loginUserId,
+  ) {
+    if (loginUserId == null) return false;
+    return members.any(
+      (m) =>
+          m.userId != loginUserId &&
+          HouseholdMemberStatus.fromCode(m.status) ==
+              HouseholdMemberStatus.active,
+    );
+  }
 
   /// 招待を送信する。
   Future<void> sendInvitation({required String email}) async {
@@ -206,9 +246,15 @@ class HouseholdSettingsNotifier
       final updatedMembers = current.members
           .where((m) => m.userId != userId)
           .toList();
+      final loginUserId = _loginUserId;
       state = AsyncData(
         current.copyWith(
           members: updatedMembers,
+          isCurrentUserOwner: _computeIsOwner(updatedMembers, loginUserId),
+          hasOtherActiveMembers: _computeHasOtherActive(
+            updatedMembers,
+            loginUserId,
+          ),
           successMessage: 'householdSettingsRemoveMemberSuccess',
           clearError: true,
         ),
@@ -245,9 +291,15 @@ class HouseholdSettingsNotifier
         if (m.userId == newOwnerUserId) return m.copyWith(role: 'OWNER');
         return m;
       }).toList();
+      final loginUserId = _loginUserId;
       state = AsyncData(
         current.copyWith(
           members: updatedMembers,
+          isCurrentUserOwner: _computeIsOwner(updatedMembers, loginUserId),
+          hasOtherActiveMembers: _computeHasOtherActive(
+            updatedMembers,
+            loginUserId,
+          ),
           successMessage: 'householdSettingsTransferOwnerSuccess',
           clearError: true,
         ),

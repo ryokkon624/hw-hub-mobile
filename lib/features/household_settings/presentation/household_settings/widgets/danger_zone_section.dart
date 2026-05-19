@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/models/household_member_status.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../household_settings_notifier.dart';
 
 /// 危険ゾーンセクション（AC10）。OWNERかつ自分以外のACTIVEメンバーがいない場合のみ表示。
 class DangerZoneSection extends ConsumerWidget {
-  const DangerZoneSection({super.key, required this.loginUserId});
-
-  final int loginUserId;
+  const DangerZoneSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,19 +16,8 @@ class DangerZoneSection extends ConsumerWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
       data: (state) {
-        // OWNERかどうか判定
-        final isOwner = state.members.any(
-          (m) => m.userId == loginUserId && m.role == 'OWNER',
-        );
-        if (!isOwner) return const SizedBox.shrink();
-
-        // 自分以外のACTIVEメンバーが存在するか判定
-        final hasOtherActiveMembers = state.members.any(
-          (m) =>
-              m.userId != loginUserId &&
-              HouseholdMemberStatus.fromCode(m.status) ==
-                  HouseholdMemberStatus.active,
-        );
+        // isCurrentUserOwner / hasOtherActiveMembers は Notifier 側で事前計算済み（O(1)参照）
+        if (!state.isCurrentUserOwner) return const SizedBox.shrink();
 
         return Card(
           key: const Key('dangerZoneSection'),
@@ -53,7 +39,7 @@ class DangerZoneSection extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (hasOtherActiveMembers)
+                if (state.hasOtherActiveMembers)
                   Text(
                     l10n.householdSettingsDeleteHouseholdDisabledNote,
                     style: const TextStyle(color: Colors.grey, fontSize: 13),

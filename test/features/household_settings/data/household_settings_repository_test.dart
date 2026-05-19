@@ -53,8 +53,8 @@ void main() {
 
   group('fetchMembers()', () {
     test('成功時: メンバーリストを返す', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: _req('/api/households/1/members'),
           statusCode: 200,
           data: [_memberJson(userId: 10), _memberJson(userId: 20)],
@@ -67,7 +67,7 @@ void main() {
     });
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/members'),
           type: DioExceptionType.connectionError,
@@ -81,7 +81,7 @@ void main() {
     });
 
     test('DioExceptionのerrorがAppExceptionの場合: そのままrethrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/members'),
           error: const UnauthorizedException('認証失敗'),
@@ -101,8 +101,10 @@ void main() {
 
   group('fetchInvitations()', () {
     test('成功時: 招待リストを返す', () async {
-      when(mockDio.get<dynamic>('/api/households/1/invitations')).thenAnswer(
-        (_) async => Response(
+      when(
+        mockDio.get<List<dynamic>>('/api/households/1/invitations'),
+      ).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: _req('/api/households/1/invitations'),
           statusCode: 200,
           data: [
@@ -118,7 +120,9 @@ void main() {
     });
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/invitations')).thenThrow(
+      when(
+        mockDio.get<List<dynamic>>('/api/households/1/invitations'),
+      ).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/invitations'),
           type: DioExceptionType.connectionError,
@@ -139,12 +143,12 @@ void main() {
   group('createInvitation()', () {
     test('成功時: 作成された招待DTOを返す', () async {
       when(
-        mockDio.post<dynamic>(
+        mockDio.post<Map<String, dynamic>>(
           '/api/households/1/invitations',
           data: anyNamed('data'),
         ),
       ).thenAnswer(
-        (_) async => Response(
+        (_) async => Response<Map<String, dynamic>>(
           requestOptions: _req('/api/households/1/invitations'),
           statusCode: 200,
           data: _invitationJson(),
@@ -160,7 +164,7 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.post<dynamic>(
+        mockDio.post<Map<String, dynamic>>(
           '/api/households/1/invitations',
           data: anyNamed('data'),
         ),
@@ -483,12 +487,12 @@ void main() {
   group('fetchHouseworkCount()', () {
     test('成功時: 家事件数を返す', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/houseworks',
           queryParameters: anyNamed('queryParameters'),
         ),
       ).thenAnswer(
-        (_) async => Response(
+        (_) async => Response<List<dynamic>>(
           requestOptions: _req('/api/houseworks'),
           statusCode: 200,
           data: [
@@ -504,7 +508,7 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/houseworks',
           queryParameters: anyNamed('queryParameters'),
         ),
@@ -529,12 +533,12 @@ void main() {
   group('fetchShoppingCount()', () {
     test('成功時: 買い物件数を返す', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<Map<String, dynamic>>(
           '/api/households/1/shopping-items',
           queryParameters: anyNamed('queryParameters'),
         ),
       ).thenAnswer(
-        (_) async => Response(
+        (_) async => Response<Map<String, dynamic>>(
           requestOptions: _req('/api/households/1/shopping-items'),
           statusCode: 200,
           data: {
@@ -553,7 +557,7 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<Map<String, dynamic>>(
           '/api/households/1/shopping-items',
           queryParameters: anyNamed('queryParameters'),
         ),

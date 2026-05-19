@@ -21,10 +21,7 @@ class MembersSection extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => const SizedBox.shrink(),
       data: (state) {
-        final isOwner = state.members.any(
-          (m) => m.userId == loginUserId && m.role == 'OWNER',
-        );
-
+        // isCurrentUserOwner は Notifier 側で事前計算済み（O(1)参照）
         return Card(
           key: const Key('membersSection'),
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -45,7 +42,7 @@ class MembersSection extends ConsumerWidget {
                     key: ValueKey('member_${m.userId}'),
                     member: m,
                     loginUserId: loginUserId,
-                    isCurrentUserOwner: isOwner,
+                    isCurrentUserOwner: state.isCurrentUserOwner,
                     onRemove: () => _confirmRemove(context, ref, l10n, m),
                     onTransferOwner: () =>
                         _confirmTransfer(context, ref, l10n, m),

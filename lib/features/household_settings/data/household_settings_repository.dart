@@ -75,10 +75,10 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
     required int householdId,
   }) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/households/$householdId/members',
       );
-      return (response.data as List<dynamic>)
+      return response.data!
           .map(
             (e) =>
                 HouseholdSettingsMemberDto.fromJson(e as Map<String, dynamic>),
@@ -95,10 +95,10 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
     required int householdId,
   }) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/households/$householdId/invitations',
       );
-      return (response.data as List<dynamic>)
+      return response.data!
           .map(
             (e) => HouseholdInvitationDto.fromJson(e as Map<String, dynamic>),
           )
@@ -115,13 +115,11 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
     required String invitedEmail,
   }) async {
     try {
-      final response = await _dio.post<dynamic>(
+      final response = await _dio.post<Map<String, dynamic>>(
         '/api/households/$householdId/invitations',
         data: {'invitedEmail': invitedEmail},
       );
-      return HouseholdInvitationDto.fromJson(
-        response.data as Map<String, dynamic>,
-      );
+      return HouseholdInvitationDto.fromJson(response.data!);
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');
@@ -240,12 +238,12 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
   @override
   Future<int> fetchHouseworkCount({required int householdId}) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/houseworks',
         queryParameters: {'householdId': householdId},
       );
       // リストを受け取ったら即カウントして破棄（メモリに保持しない）
-      final count = (response.data as List<dynamic>).length;
+      final count = response.data!.length;
       return count;
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
@@ -256,13 +254,12 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
   @override
   Future<int> fetchShoppingCount({required int householdId}) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<Map<String, dynamic>>(
         '/api/households/$householdId/shopping-items',
         queryParameters: <String, dynamic>{},
       );
-      final data = response.data as Map<String, dynamic>;
       // リストを受け取ったら即カウントして破棄（メモリに保持しない）
-      final count = (data['items'] as List<dynamic>).length;
+      final count = (response.data!['items'] as List<dynamic>).length;
       return count;
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;

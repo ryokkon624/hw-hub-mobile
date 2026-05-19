@@ -77,6 +77,9 @@ class _FakeOwnerNotifier extends HouseholdSettingsNotifier {
         status: '0',
       ),
     ],
+    // Notifier側で事前計算するフラグをテスト用に直接設定
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: true,
   );
 }
 
@@ -94,6 +97,9 @@ class _FakeMemberNotifier extends HouseholdSettingsNotifier {
       ),
     ],
     invitations: [],
+    // 非OWNERの場合はfalse
+    isCurrentUserOwner: false,
+    hasOtherActiveMembers: false,
   );
 }
 
