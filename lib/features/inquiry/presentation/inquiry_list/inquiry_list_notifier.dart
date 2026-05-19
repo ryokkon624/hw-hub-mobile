@@ -1,0 +1,62 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/app_exception.dart';
+import '../../inquiry_providers.dart';
+import '../../data/inquiry_repository.dart';
+
+class InquiryListState {
+  const InquiryListState({
+    this.inquiries = const [],
+    this.isLoading = true,
+    this.errorMessage,
+  });
+
+  final List<InquirySummaryDto> inquiries;
+  final bool isLoading;
+  final String? errorMessage;
+
+  InquiryListState copyWith({
+    List<InquirySummaryDto>? inquiries,
+    bool? isLoading,
+    Object? errorMessage = _sentinel,
+  }) {
+    return InquiryListState(
+      inquiries: inquiries ?? this.inquiries,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
+    );
+  }
+}
+
+const _sentinel = Object();
+
+class InquiryListNotifier extends AutoDisposeNotifier<InquiryListState> {
+  @override
+  InquiryListState build() {
+    Future.microtask(_fetchInquiries);
+    return const InquiryListState();
+  }
+
+  Future<void> _fetchInquiries() async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final repo = ref.read(inquiryRepositoryProvider);
+      final inquiries = await repo.fetchInquiries();
+      state = state.copyWith(inquiries: inquiries, isLoading: false);
+    } on AppException catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
+    } catch (_) {
+      state = state.copyWith(isLoading: false, errorMessage: 'errorUnexpected');
+    }
+  }
+
+  Future<void> reload() async {
+    await _fetchInquiries();
+  }
+}
+
+final inquiryListNotifierProvider =
+    NotifierProvider.autoDispose<InquiryListNotifier, InquiryListState>(
+      InquiryListNotifier.new,
+    );
