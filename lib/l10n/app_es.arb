@@ -712,5 +712,112 @@
     "placeholders": {
       "date": { "type": "String" }
     }
-  }
+  },
+
+  "houseworkSettingsTitle": "Configuración de tareas",
+  "houseworkSettingsAddButton": "Agregar tarea",
+  "houseworkSettingsListTitle": "Lista maestra de tareas",
+  "houseworkSettingsFilterAll": "Todos",
+  "houseworkSettingsFilterClean": "Limpieza",
+  "houseworkSettingsFilterKitchen": "Cocina",
+  "houseworkSettingsFilterGarden": "Jardín",
+  "houseworkSettingsFilterGarbage": "Basura",
+  "houseworkSettingsFilterPet": "Mascota",
+  "houseworkSettingsFilterOther": "Otro",
+  "houseworkSettingsTotalCount": "Total {count}",
+  "@houseworkSettingsTotalCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkSettingsPageInfo": "{current} / {total}",
+  "@houseworkSettingsPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkSettingsAssigneeLabel": "Asignado: {name}",
+  "@houseworkSettingsAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkSettingsAssigneeNone": "Asignado: Ninguno",
+  "houseworkSettingsRecurrenceWeekly": "Semanal {days}",
+  "@houseworkSettingsRecurrenceWeekly": {
+    "placeholders": {
+      "days": { "type": "String" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthly": "Mensual día {day}",
+  "@houseworkSettingsRecurrenceMonthly": {
+    "placeholders": {
+      "day": { "type": "int" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthlyEnd": "Último día del mes",
+  "houseworkSettingsRecurrenceNthWeekday": "{nth} {weekday} del mes",
+  "@houseworkSettingsRecurrenceNthWeekday": {
+    "placeholders": {
+      "nth": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "houseworkCreateTitle": "Nueva tarea",
+  "houseworkCreateTemplateButton": "Seleccionar plantilla",
+  "houseworkCreateBasicInfoSection": "Información básica",
+  "houseworkCreateRecurrenceSection": "Recurrencia",
+  "houseworkCreateAssigneeSection": "Asignado y período",
+  "houseworkCreateNameLabel": "Nombre *",
+  "houseworkCreateNameHint": "Ingrese nombre de tarea",
+  "houseworkCreateDescriptionLabel": "Descripción",
+  "houseworkCreateDescriptionHint": "Ingrese descripción (opcional)",
+  "houseworkCreateCategoryLabel": "Categoría",
+  "houseworkCreateRecurrenceTypeLabel": "Tipo de recurrencia",
+  "houseworkCreateWeeklyDaysLabel": "Días de la semana",
+  "houseworkCreateMonthlyDayLabel": "Día del mes",
+  "houseworkCreateNthWeekLabel": "Enésima semana",
+  "houseworkCreateNthWeekdayLabel": "Día de la semana",
+  "houseworkCreateAssigneeLabel": "Asignado predeterminado",
+  "houseworkCreateAssigneeNone": "(Ninguno)",
+  "houseworkCreateStartDateLabel": "Fecha de inicio",
+  "houseworkCreateEndDateLabel": "Fecha de fin",
+  "houseworkCreateSaveSuccess": "Tarea guardada",
+  "houseworkCreateErrorNameRequired": "El nombre es obligatorio",
+  "houseworkCreateErrorNameTooLong": "El nombre debe tener 100 caracteres o menos",
+  "houseworkCreateErrorWeeklyDaysRequired": "Seleccione al menos un día",
+  "houseworkCreateErrorMonthlyDayRequired": "Seleccione un día",
+  "houseworkCreateErrorNthWeekRequired": "Seleccione la semana",
+  "houseworkCreateErrorNthWeekdayRequired": "Seleccione un día",
+  "houseworkCreateErrorStartDateRequired": "La fecha de inicio es obligatoria",
+  "houseworkCreateErrorEndDateRequired": "La fecha de fin es obligatoria",
+  "houseworkCreateErrorEndDateBeforeStart": "La fecha de fin debe ser posterior a la de inicio",
+  "houseworkEditTitle": "Editar tarea",
+  "houseworkEditSaveSuccess": "Tarea actualizada",
+  "houseworkTemplateModalTitle": "Seleccionar plantilla",
+  "houseworkTemplateFilterAll": "Todos",
+  "houseworkTemplateCategoryClean": "Limpieza",
+  "houseworkTemplateCategoryKitchen": "Cocina",
+  "houseworkTemplateCategoryGarden": "Jardín",
+  "houseworkTemplateCategoryGarbage": "Basura",
+  "houseworkTemplateCategoryPet": "Mascota",
+  "houseworkTemplateCategoryOther": "Otro",
+  "houseworkRecurrenceTypeWeekly": "Semanal",
+  "houseworkRecurrenceTypeMonthly": "Mensual",
+  "houseworkRecurrenceTypeNthWeekday": "Día N de semana",
+  "houseworkWeekdaySun": "Dom",
+  "houseworkWeekdayMon": "Lun",
+  "houseworkWeekdayTue": "Mar",
+  "houseworkWeekdayWed": "Mié",
+  "houseworkWeekdayThu": "Jue",
+  "houseworkWeekdayFri": "Vie",
+  "houseworkWeekdaySat": "Sáb",
+  "houseworkMonthEndDay": "Último",
+  "houseworkCategoryClean": "Limpieza",
+  "houseworkCategoryKitchen": "Cocina",
+  "houseworkCategoryGarden": "Jardín",
+  "houseworkCategoryGarbage": "Basura",
+  "houseworkCategoryPet": "Mascota",
+  "houseworkCategoryOther": "Otro"
 }
