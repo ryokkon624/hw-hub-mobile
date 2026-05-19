@@ -27,6 +27,9 @@ import 'features/household_settings/presentation/household_settings/household_se
 import 'features/housework_settings/presentation/housework_list/housework_list_page.dart';
 import 'features/housework_settings/presentation/housework_create/housework_create_page.dart';
 import 'features/housework_settings/presentation/housework_edit/housework_edit_page.dart';
+import 'features/inquiry/presentation/inquiry_list/inquiry_list_page.dart';
+import 'features/inquiry/presentation/inquiry_create/inquiry_create_page.dart';
+import 'features/inquiry/presentation/inquiry_detail/inquiry_detail_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -209,15 +212,17 @@ final _routes = <RouteBase>[
               ),
               GoRoute(
                 path: AppRoutes._settingsInquiriesRelative,
-                builder: (_, _) => const _P('問い合わせ一覧'),
+                builder: (_, _) => const InquiryListPage(),
                 routes: [
                   GoRoute(
                     path: AppRoutes._settingsInquiriesNewRelative,
-                    builder: (_, _) => const _P('問い合わせ新規作成'),
+                    builder: (_, _) => const InquiryCreatePage(),
                   ),
                   GoRoute(
                     path: AppRoutes._settingsInquiryDetailRelative,
-                    builder: (_, s) => _P('問い合わせ詳細 ${s.pathParameters['id']}'),
+                    builder: (_, s) => InquiryDetailPage(
+                      inquiryId: int.parse(s.pathParameters['id']!),
+                    ),
                   ),
                 ],
               ),
