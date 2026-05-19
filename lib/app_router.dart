@@ -30,6 +30,9 @@ import 'features/housework_settings/presentation/housework_edit/housework_edit_p
 import 'features/inquiry/presentation/inquiry_list/inquiry_list_page.dart';
 import 'features/inquiry/presentation/inquiry_create/inquiry_create_page.dart';
 import 'features/inquiry/presentation/inquiry_detail/inquiry_detail_page.dart';
+import 'features/app_info/presentation/app_info_page.dart';
+import 'features/app_info/presentation/terms_page.dart';
+import 'features/app_info/presentation/privacy_policy_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -228,15 +231,15 @@ final _routes = <RouteBase>[
               ),
               GoRoute(
                 path: AppRoutes._settingsAppInfoRelative,
-                builder: (_, _) => const _P('アプリ情報'),
+                builder: (_, _) => const AppInfoPage(),
               ),
               GoRoute(
                 path: AppRoutes._settingsTermsRelative,
-                builder: (_, _) => const _P('利用規約'),
+                builder: (_, _) => const TermsPage(),
               ),
               GoRoute(
                 path: AppRoutes._settingsPrivacyRelative,
-                builder: (_, _) => const _P('プライバシーポリシー'),
+                builder: (_, _) => const PrivacyPolicyPage(),
               ),
             ],
           ),
