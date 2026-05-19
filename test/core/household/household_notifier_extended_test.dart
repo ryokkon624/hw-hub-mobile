@@ -105,8 +105,8 @@ void main() {
   });
 
   void _setupHouseholdsApi(MockDio dio, List<Household> households) {
-    when(dio.get<dynamic>('/api/users/me/households')).thenAnswer(
-      (_) async => Response(
+    when(dio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+      (_) async => Response<List<dynamic>>(
         requestOptions: RequestOptions(path: '/api/users/me/households'),
         statusCode: 200,
         data: _householdsJson(households),
@@ -122,8 +122,8 @@ void main() {
       await container.read(householdNotifierProvider.future);
 
       // 2回目の呼び出しで新しいデータを返す
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson([
@@ -147,8 +147,8 @@ void main() {
       await container.read(householdNotifierProvider.future);
 
       // 再取得時に新しいリストを返す
-      when(mockDio.get<dynamic>('/api/users/me/households')).thenAnswer(
-        (_) async => Response(
+      when(mockDio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
+        (_) async => Response<List<dynamic>>(
           requestOptions: RequestOptions(path: '/api/users/me/households'),
           statusCode: 200,
           data: _householdsJson([
