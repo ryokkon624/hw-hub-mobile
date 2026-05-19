@@ -712,5 +712,112 @@
     "placeholders": {
       "date": { "type": "String" }
     }
-  }
+  },
+
+  "houseworkSettingsTitle": "家事設定",
+  "houseworkSettingsAddButton": "家事を追加する",
+  "houseworkSettingsListTitle": "家事マスタ一覧",
+  "houseworkSettingsFilterAll": "すべて",
+  "houseworkSettingsFilterClean": "掃除",
+  "houseworkSettingsFilterKitchen": "キッチン",
+  "houseworkSettingsFilterGarden": "ガーデン",
+  "houseworkSettingsFilterGarbage": "ゴミ",
+  "houseworkSettingsFilterPet": "ペット",
+  "houseworkSettingsFilterOther": "その他",
+  "houseworkSettingsTotalCount": "全 {count} 件",
+  "@houseworkSettingsTotalCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkSettingsPageInfo": "{current} / {total}",
+  "@houseworkSettingsPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkSettingsAssigneeLabel": "担当: {name}",
+  "@houseworkSettingsAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkSettingsAssigneeNone": "担当: なし",
+  "houseworkSettingsRecurrenceWeekly": "毎週 {days}",
+  "@houseworkSettingsRecurrenceWeekly": {
+    "placeholders": {
+      "days": { "type": "String" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthly": "毎月 {day} 日",
+  "@houseworkSettingsRecurrenceMonthly": {
+    "placeholders": {
+      "day": { "type": "int" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthlyEnd": "毎月末日",
+  "houseworkSettingsRecurrenceNthWeekday": "第{nth} {weekday}曜日",
+  "@houseworkSettingsRecurrenceNthWeekday": {
+    "placeholders": {
+      "nth": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "houseworkCreateTitle": "家事新規作成",
+  "houseworkCreateTemplateButton": "テンプレートから選択",
+  "houseworkCreateBasicInfoSection": "基本情報",
+  "houseworkCreateRecurrenceSection": "周期設定",
+  "houseworkCreateAssigneeSection": "担当者・有効期間",
+  "houseworkCreateNameLabel": "家事名 *",
+  "houseworkCreateNameHint": "家事名を入力",
+  "houseworkCreateDescriptionLabel": "説明",
+  "houseworkCreateDescriptionHint": "説明を入力（任意）",
+  "houseworkCreateCategoryLabel": "カテゴリ",
+  "houseworkCreateRecurrenceTypeLabel": "周期タイプ",
+  "houseworkCreateWeeklyDaysLabel": "曜日",
+  "houseworkCreateMonthlyDayLabel": "月の日付",
+  "houseworkCreateNthWeekLabel": "第n週",
+  "houseworkCreateNthWeekdayLabel": "曜日",
+  "houseworkCreateAssigneeLabel": "デフォルト担当者",
+  "houseworkCreateAssigneeNone": "（なし）",
+  "houseworkCreateStartDateLabel": "開始日",
+  "houseworkCreateEndDateLabel": "終了日",
+  "houseworkCreateSaveSuccess": "家事を保存しました",
+  "houseworkCreateErrorNameRequired": "家事名は必須です",
+  "houseworkCreateErrorNameTooLong": "家事名は100文字以内で入力してください",
+  "houseworkCreateErrorWeeklyDaysRequired": "曜日を1つ以上選択してください",
+  "houseworkCreateErrorMonthlyDayRequired": "日付を選択してください",
+  "houseworkCreateErrorNthWeekRequired": "第n週を選択してください",
+  "houseworkCreateErrorNthWeekdayRequired": "曜日を選択してください",
+  "houseworkCreateErrorStartDateRequired": "開始日は必須です",
+  "houseworkCreateErrorEndDateRequired": "終了日は必須です",
+  "houseworkCreateErrorEndDateBeforeStart": "終了日は開始日以降を指定してください",
+  "houseworkEditTitle": "家事編集",
+  "houseworkEditSaveSuccess": "家事を更新しました",
+  "houseworkTemplateModalTitle": "テンプレートから選択",
+  "houseworkTemplateFilterAll": "すべて",
+  "houseworkTemplateCategoryClean": "掃除",
+  "houseworkTemplateCategoryKitchen": "キッチン",
+  "houseworkTemplateCategoryGarden": "ガーデン",
+  "houseworkTemplateCategoryGarbage": "ゴミ",
+  "houseworkTemplateCategoryPet": "ペット",
+  "houseworkTemplateCategoryOther": "その他",
+  "houseworkRecurrenceTypeWeekly": "毎週",
+  "houseworkRecurrenceTypeMonthly": "毎月",
+  "houseworkRecurrenceTypeNthWeekday": "第n週曜日",
+  "houseworkWeekdaySun": "日",
+  "houseworkWeekdayMon": "月",
+  "houseworkWeekdayTue": "火",
+  "houseworkWeekdayWed": "水",
+  "houseworkWeekdayThu": "木",
+  "houseworkWeekdayFri": "金",
+  "houseworkWeekdaySat": "土",
+  "houseworkMonthEndDay": "月末",
+  "houseworkCategoryClean": "掃除",
+  "houseworkCategoryKitchen": "キッチン",
+  "houseworkCategoryGarden": "ガーデン",
+  "houseworkCategoryGarbage": "ゴミ",
+  "houseworkCategoryPet": "ペット",
+  "houseworkCategoryOther": "その他"
 }

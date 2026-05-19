@@ -24,6 +24,9 @@ import 'features/housework_assign/presentation/housework_assign_page.dart';
 import 'features/notifications/presentation/notification_center/notification_center_page.dart';
 import 'features/tasks/presentation/my_tasks_page.dart';
 import 'features/household_settings/presentation/household_settings/household_settings_page.dart';
+import 'features/housework_settings/presentation/housework_list/housework_list_page.dart';
+import 'features/housework_settings/presentation/housework_create/housework_create_page.dart';
+import 'features/housework_settings/presentation/housework_edit/housework_edit_page.dart';
 
 // ログイン不要なパス（前方一致）
 const _publicPrefixes = [
@@ -190,15 +193,17 @@ final _routes = <RouteBase>[
               ),
               GoRoute(
                 path: AppRoutes._settingsHouseworkRelative,
-                builder: (_, _) => const _P('家事設定一覧'),
+                builder: (_, _) => const HouseworkListPage(),
                 routes: [
                   GoRoute(
                     path: AppRoutes._settingsHouseworkNewRelative,
-                    builder: (_, _) => const _P('家事新規作成'),
+                    builder: (_, _) => const HouseworkCreatePage(),
                   ),
                   GoRoute(
                     path: AppRoutes._settingsHouseworkDetailRelative,
-                    builder: (_, s) => _P('家事編集 ${s.pathParameters['id']}'),
+                    builder: (_, s) => HouseworkEditPage(
+                      houseworkId: int.parse(s.pathParameters['id']!),
+                    ),
                   ),
                 ],
               ),

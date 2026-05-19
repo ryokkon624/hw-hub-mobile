@@ -712,5 +712,112 @@
     "placeholders": {
       "date": { "type": "String" }
     }
-  }
+  },
+
+  "houseworkSettingsTitle": "Housework Settings",
+  "houseworkSettingsAddButton": "Add Housework",
+  "houseworkSettingsListTitle": "Housework Master List",
+  "houseworkSettingsFilterAll": "All",
+  "houseworkSettingsFilterClean": "Clean",
+  "houseworkSettingsFilterKitchen": "Kitchen",
+  "houseworkSettingsFilterGarden": "Garden",
+  "houseworkSettingsFilterGarbage": "Garbage",
+  "houseworkSettingsFilterPet": "Pet",
+  "houseworkSettingsFilterOther": "Other",
+  "houseworkSettingsTotalCount": "Total {count}",
+  "@houseworkSettingsTotalCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "houseworkSettingsPageInfo": "{current} / {total}",
+  "@houseworkSettingsPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "houseworkSettingsAssigneeLabel": "Assignee: {name}",
+  "@houseworkSettingsAssigneeLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "houseworkSettingsAssigneeNone": "Assignee: None",
+  "houseworkSettingsRecurrenceWeekly": "Weekly {days}",
+  "@houseworkSettingsRecurrenceWeekly": {
+    "placeholders": {
+      "days": { "type": "String" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthly": "Monthly {day}th",
+  "@houseworkSettingsRecurrenceMonthly": {
+    "placeholders": {
+      "day": { "type": "int" }
+    }
+  },
+  "houseworkSettingsRecurrenceMonthlyEnd": "Last day of month",
+  "houseworkSettingsRecurrenceNthWeekday": "{nth}{weekday} of month",
+  "@houseworkSettingsRecurrenceNthWeekday": {
+    "placeholders": {
+      "nth": { "type": "int" },
+      "weekday": { "type": "String" }
+    }
+  },
+  "houseworkCreateTitle": "New Housework",
+  "houseworkCreateTemplateButton": "Select from Template",
+  "houseworkCreateBasicInfoSection": "Basic Info",
+  "houseworkCreateRecurrenceSection": "Recurrence",
+  "houseworkCreateAssigneeSection": "Assignee & Period",
+  "houseworkCreateNameLabel": "Name *",
+  "houseworkCreateNameHint": "Enter housework name",
+  "houseworkCreateDescriptionLabel": "Description",
+  "houseworkCreateDescriptionHint": "Enter description (optional)",
+  "houseworkCreateCategoryLabel": "Category",
+  "houseworkCreateRecurrenceTypeLabel": "Recurrence Type",
+  "houseworkCreateWeeklyDaysLabel": "Days of Week",
+  "houseworkCreateMonthlyDayLabel": "Day of Month",
+  "houseworkCreateNthWeekLabel": "Nth Week",
+  "houseworkCreateNthWeekdayLabel": "Day of Week",
+  "houseworkCreateAssigneeLabel": "Default Assignee",
+  "houseworkCreateAssigneeNone": "(None)",
+  "houseworkCreateStartDateLabel": "Start Date",
+  "houseworkCreateEndDateLabel": "End Date",
+  "houseworkCreateSaveSuccess": "Housework saved",
+  "houseworkCreateErrorNameRequired": "Name is required",
+  "houseworkCreateErrorNameTooLong": "Name must be 100 characters or less",
+  "houseworkCreateErrorWeeklyDaysRequired": "Select at least one day",
+  "houseworkCreateErrorMonthlyDayRequired": "Select a day",
+  "houseworkCreateErrorNthWeekRequired": "Select nth week",
+  "houseworkCreateErrorNthWeekdayRequired": "Select a day",
+  "houseworkCreateErrorStartDateRequired": "Start date is required",
+  "houseworkCreateErrorEndDateRequired": "End date is required",
+  "houseworkCreateErrorEndDateBeforeStart": "End date must be on or after start date",
+  "houseworkEditTitle": "Edit Housework",
+  "houseworkEditSaveSuccess": "Housework updated",
+  "houseworkTemplateModalTitle": "Select from Template",
+  "houseworkTemplateFilterAll": "All",
+  "houseworkTemplateCategoryClean": "Clean",
+  "houseworkTemplateCategoryKitchen": "Kitchen",
+  "houseworkTemplateCategoryGarden": "Garden",
+  "houseworkTemplateCategoryGarbage": "Garbage",
+  "houseworkTemplateCategoryPet": "Pet",
+  "houseworkTemplateCategoryOther": "Other",
+  "houseworkRecurrenceTypeWeekly": "Weekly",
+  "houseworkRecurrenceTypeMonthly": "Monthly",
+  "houseworkRecurrenceTypeNthWeekday": "Nth Weekday",
+  "houseworkWeekdaySun": "Sun",
+  "houseworkWeekdayMon": "Mon",
+  "houseworkWeekdayTue": "Tue",
+  "houseworkWeekdayWed": "Wed",
+  "houseworkWeekdayThu": "Thu",
+  "houseworkWeekdayFri": "Fri",
+  "houseworkWeekdaySat": "Sat",
+  "houseworkMonthEndDay": "Last",
+  "houseworkCategoryClean": "Clean",
+  "houseworkCategoryKitchen": "Kitchen",
+  "houseworkCategoryGarden": "Garden",
+  "houseworkCategoryGarbage": "Garbage",
+  "houseworkCategoryPet": "Pet",
+  "houseworkCategoryOther": "Other"
 }
