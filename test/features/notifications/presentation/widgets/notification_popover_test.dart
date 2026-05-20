@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/notifications/data/notification_repository.dart';
 import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
 import 'package:hw_hub_mobile/features/notifications/presentation/notification_global_notifier.dart';
@@ -57,13 +58,25 @@ class _TwoItemsRepository implements NotificationRepository {
   Future<int> fetchUnreadCount() async => 2;
 }
 
-/// エラーを返す FakeRepository
+/// 汎用エラーを返す FakeRepository
 class _ErrorRepository implements NotificationRepository {
   @override
   Future<List<NotificationDto>> fetchNotifications({
     required int limit,
     required bool markRead,
   }) async => throw Exception('テストエラー');
+
+  @override
+  Future<int> fetchUnreadCount() async => 0;
+}
+
+/// AppException を返す FakeRepository
+class _AppExceptionRepository implements NotificationRepository {
+  @override
+  Future<List<NotificationDto>> fetchNotifications({
+    required int limit,
+    required bool markRead,
+  }) async => throw const ServerException(message: 'サーバーエラー');
 
   @override
   Future<int> fetchUnreadCount() async => 0;
@@ -116,6 +129,48 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
       // 空状態メッセージ
       expect(find.byKey(const Key('notificationEmpty')), findsOneWidget);
+    });
+
+    testWidgets('AppException: エラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(body: NotificationPopover()),
+          overrides: [
+            notificationRepositoryProvider.overrideWithValue(
+              _AppExceptionRepository(),
+            ),
+            notificationGlobalNotifierProvider.overrideWith(
+              () => _ZeroUnreadNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text('サーバーエラー'), findsOneWidget);
+    });
+
+    testWidgets('予期しない例外: エラー後にCircularProgressIndicatorが消える', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(body: NotificationPopover()),
+          overrides: [
+            notificationRepositoryProvider.overrideWithValue(
+              _ErrorRepository(),
+            ),
+            notificationGlobalNotifierProvider.overrideWith(
+              () => _ZeroUnreadNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // 汎用エラー時はSnackBarで通知（_errorMessage=null）
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('通知2件: NotificationListItem が2件表示される', (tester) async {

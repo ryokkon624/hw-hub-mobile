@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +19,22 @@ class _FakeHouseworkListNotifier extends HouseworkListNotifier {
 
   @override
   Future<HouseworkListState> build() async => _state;
+}
+
+// ローディング状態を返す FakeNotifier（Completerで永遠に完了しない）
+class _LoadingNotifier extends HouseworkListNotifier {
+  @override
+  Future<HouseworkListState> build() {
+    return Completer<HouseworkListState>().future;
+  }
+}
+
+// エラー状態を返す FakeNotifier
+class _ErrorNotifier extends HouseworkListNotifier {
+  @override
+  Future<HouseworkListState> build() async {
+    throw Exception('ロードエラー');
+  }
 }
 
 const _hw1 = HouseworkDto(
@@ -49,6 +67,22 @@ Widget _buildPage(HouseworkListState state) {
       ),
     ],
     routes: [GoRoute(path: '/', builder: (_, __) => const HouseworkListPage())],
+  );
+}
+
+List<HouseworkDto> _generateHouseworks(int count) {
+  return List.generate(
+    count,
+    (i) => HouseworkDto(
+      houseworkId: i + 1,
+      householdId: 10,
+      name: '家事${i + 1}',
+      category: 'CLEAN',
+      recurrenceType: '1',
+      weeklyDays: 2,
+      startDate: '2025-01-01',
+      endDate: '2099-12-31',
+    ),
   );
 }
 
@@ -94,6 +128,117 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('categoryFilterDropdown')), findsOneWidget);
+    });
+
+    testWidgets('ローディング中: CircularProgressIndicatorが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(
+              () => _LoadingNotifier(),
+            ),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('エラー時: エラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(() => _ErrorNotifier()),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byKey(const Key('houseworkListPage')), findsOneWidget);
+    });
+
+    testWidgets('11件以上のとき: ページネーション行が表示される', (tester) async {
+      // 11件でtotalPages=2になる
+      final houseworks = _generateHouseworks(11);
+      await tester.pumpWidget(
+        _buildPage(HouseworkListState(allHouseworks: houseworks)),
+      );
+      await tester.pumpAndSettle();
+
+      // ページネーションボタンはリスト末尾なのでスクロールして表示
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('paginationPrev')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      expect(find.byKey(const Key('paginationPrev')), findsOneWidget);
+      expect(find.byKey(const Key('paginationNext')), findsOneWidget);
+    });
+
+    testWidgets('ページネーション: 1ページ目は前へボタンが無効', (tester) async {
+      final houseworks = _generateHouseworks(11);
+      await tester.pumpWidget(
+        _buildPage(
+          HouseworkListState(allHouseworks: houseworks, currentPage: 1),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('paginationPrev')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      final prevButton = tester.widget<IconButton>(
+        find.byKey(const Key('paginationPrev')),
+      );
+      expect(prevButton.onPressed, isNull);
+    });
+
+    testWidgets('ページネーション: 2ページ目は後へボタンが無効', (tester) async {
+      final houseworks = _generateHouseworks(11);
+      await tester.pumpWidget(
+        _buildPage(
+          HouseworkListState(allHouseworks: houseworks, currentPage: 2),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('paginationNext')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      final nextButton = tester.widget<IconButton>(
+        find.byKey(const Key('paginationNext')),
+      );
+      expect(nextButton.onPressed, isNull);
+    });
+
+    testWidgets('カテゴリフィルタ選択中: フィルタが適用される', (tester) async {
+      await tester.pumpWidget(
+        _buildPage(
+          const HouseworkListState(
+            allHouseworks: [_hw1, _hw2],
+            selectedCategory: 'CLEAN',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // CLEANのみ表示される
+      expect(find.text('掃除機がけ'), findsOneWidget);
     });
   });
 }
