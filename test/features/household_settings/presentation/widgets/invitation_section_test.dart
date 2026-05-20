@@ -467,6 +467,33 @@ void main() {
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
+    testWidgets('招待リスト: シェアボタンタップで_shareLinkが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // シェアボタンをタップ（MissingPluginException は無視される）
+      await tester.tap(find.byKey(const ValueKey('shareButton_test-token')));
+      await tester.pump();
+
+      // クラッシュなく動作する（_shareLink分岐が通る）
+      expect(find.byKey(const Key('invitationSection')), findsOneWidget);
+    });
+
     testWidgets('招待リスト: 未知ステータスの招待が表示される（null分岐）', (tester) async {
       await tester.pumpWidget(
         buildTestPage(

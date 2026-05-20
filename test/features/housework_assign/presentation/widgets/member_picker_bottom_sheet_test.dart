@@ -99,5 +99,41 @@ void main() {
       expect(find.byIcon(Icons.person_off), findsOneWidget);
       expect(find.byIcon(Icons.person), findsNothing);
     });
+
+    testWidgets('show()でモーダルが表示される（static showメソッド分岐）', (tester) async {
+      int? selectedUserId;
+      await tester.pumpWidget(
+        buildTestPage(
+          Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => MemberPickerBottomSheet.show(
+                  context,
+                  members: [_member1, _member2],
+                  onSelected: (userId, _) => selectedUserId = userId,
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      // モーダルが表示される
+      expect(find.text('山田太郎'), findsOneWidget);
+      expect(find.text('佐藤花子'), findsOneWidget);
+
+      // メンバーをタップするとモーダルが閉じてonSelectedが呼ばれる
+      await tester.tap(find.byKey(const ValueKey(1)));
+      await tester.pumpAndSettle();
+
+      expect(selectedUserId, 1);
+      // モーダルが閉じた
+      expect(find.text('山田太郎'), findsNothing);
+    });
   });
 }

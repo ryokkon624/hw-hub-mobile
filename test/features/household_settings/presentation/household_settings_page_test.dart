@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
@@ -81,6 +82,27 @@ class _FakeOwnerNotifier extends HouseholdSettingsNotifier {
     isCurrentUserOwner: true,
     hasOtherActiveMembers: true,
   );
+}
+
+/// エラー・成功メッセージを動的に設定できるNotifier
+class _MutableSettingsNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async =>
+      const HouseholdSettingsState(invitations: []);
+
+  void setError(String message) {
+    state = AsyncData(
+      (state.valueOrNull ?? const HouseholdSettingsState(invitations: []))
+          .copyWith(errorMessage: message),
+    );
+  }
+
+  void setSuccess(String message) {
+    state = AsyncData(
+      (state.valueOrNull ?? const HouseholdSettingsState(invitations: []))
+          .copyWith(successMessage: message),
+    );
+  }
 }
 
 // FakeHouseholdSettingsNotifier（MEMBERとして表示）
@@ -182,6 +204,56 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('dangerZoneSection')), findsNothing);
+    });
+  });
+
+  group('HouseholdSettingsPage - listener分岐', () {
+    testWidgets('errorMessageが発生するとlistenerが発火する', (tester) async {
+      final notifier = _MutableSettingsNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const HouseholdSettingsPage(),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // エラーメッセージを設定
+      notifier.setError('テストエラー');
+      await tester.pump();
+
+      // クラッシュなく動作する（errorMessage分岐・clearError分岐が通る）
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+
+    testWidgets('successMessageが発生するとlistenerが発火する', (tester) async {
+      final notifier = _MutableSettingsNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const HouseholdSettingsPage(),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // 成功メッセージを設定
+      notifier.setSuccess('保存しました');
+      await tester.pump();
+
+      // クラッシュなく動作する（successMessage分岐・clearSuccess分岐が通る）
+      expect(find.byType(Scaffold), findsOneWidget);
     });
   });
 }

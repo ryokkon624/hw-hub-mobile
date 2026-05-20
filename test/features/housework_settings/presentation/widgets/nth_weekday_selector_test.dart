@@ -54,5 +54,43 @@ void main() {
       // 7つの曜日DropdownMenuItemが存在する
       expect(find.byType(DropdownMenuItem<int>), findsAtLeastNWidgets(7));
     });
+
+    testWidgets('nthWeekSelectorで値を変更するとonNthChangedが呼ばれる', (tester) async {
+      int? changed;
+      await tester.pumpWidget(
+        _buildSelector(nthWeek: 1, onNthChanged: (v) => changed = v),
+      );
+      await tester.pump();
+
+      // Dropdownを開く
+      await tester.tap(find.byKey(const Key('nthWeekSelector')));
+      await tester.pumpAndSettle();
+
+      // 第3を選択
+      await tester.tap(find.text('第3').last);
+      await tester.pumpAndSettle();
+
+      expect(changed, 3);
+    });
+
+    testWidgets('nthWeekdaySelectorで値を変更するとonWeekdayChangedが呼ばれる', (
+      tester,
+    ) async {
+      int? changed;
+      await tester.pumpWidget(
+        _buildSelector(weekday: 1, onWeekdayChanged: (v) => changed = v),
+      );
+      await tester.pump();
+
+      // Dropdownを開く
+      await tester.tap(find.byKey(const Key('nthWeekdaySelector')));
+      await tester.pumpAndSettle();
+
+      // 土曜日（weekday=6）を選択
+      await tester.tap(find.text('土').last);
+      await tester.pumpAndSettle();
+
+      expect(changed, 6);
+    });
   });
 }

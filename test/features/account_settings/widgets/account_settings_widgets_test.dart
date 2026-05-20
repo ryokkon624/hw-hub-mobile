@@ -193,6 +193,34 @@ void main() {
         expect(tf.controller?.text ?? '', isEmpty);
       }
     });
+
+    testWidgets('onSaveが例外をスローするとエラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: PasswordChangeSection(
+                onSave: (_, __) async {
+                  throw Exception('パスワード変更に失敗しました');
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField).at(0), 'currentpass');
+      await tester.enterText(find.byType(TextField).at(1), 'newpass123');
+      await tester.enterText(find.byType(TextField).at(2), 'newpass123');
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton).first);
+      await tester.pumpAndSettle();
+
+      // エラーメッセージが表示される（_errorMessage != null 分岐）
+      expect(find.textContaining('パスワード変更に失敗しました'), findsOneWidget);
+    });
   });
 
   group('GoogleLinkSection', () {

@@ -120,5 +120,66 @@ void main() {
       final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(button.onPressed, isNotNull);
     });
+
+    testWidgets('didUpdateWidget: 親からprofileが変わるとコントローラが更新される', (tester) async {
+      const profile1 = UserProfileDto(
+        userId: 1,
+        email: 'test@example.com',
+        authProvider: 'LOCAL',
+        displayName: '初期名前',
+        locale: 'ja',
+        iconUrl: null,
+      );
+      const profile2 = UserProfileDto(
+        userId: 1,
+        email: 'test@example.com',
+        authProvider: 'LOCAL',
+        displayName: '更新後の名前',
+        locale: 'en',
+        iconUrl: null,
+      );
+
+      UserProfileDto currentProfile = profile1;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => buildTestPage(
+            Scaffold(
+              body: Column(
+                children: [
+                  TextButton(
+                    onPressed: () => setState(() => currentProfile = profile2),
+                    child: const Text('change'),
+                  ),
+                  SingleChildScrollView(
+                    child: ProfileSection(
+                      profile: currentProfile,
+                      onSave: (_, __) async {},
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // 初期状態確認
+      expect(
+        (tester.widget<TextField>(find.byType(TextField))).controller?.text,
+        '初期名前',
+      );
+
+      // profile2 に変更
+      await tester.tap(find.text('change'));
+      await tester.pump();
+
+      // didUpdateWidget が呼ばれコントローラが更新される
+      expect(
+        (tester.widget<TextField>(find.byType(TextField))).controller?.text,
+        '更新後の名前',
+      );
+    });
   });
 }

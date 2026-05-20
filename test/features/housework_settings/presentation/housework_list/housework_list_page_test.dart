@@ -357,5 +357,85 @@ void main() {
       // クラッシュなく動作する（AppSnackBar分岐が通る）
       expect(find.byKey(const Key('houseworkListPage')), findsOneWidget);
     });
+
+    testWidgets('家事追加ボタンタップで/settings/housework/newに遷移する', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(
+              () => _FakeHouseworkListNotifier(const HouseworkListState()),
+            ),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(
+              path: '/settings/housework/new',
+              builder: (_, __) =>
+                  const Scaffold(body: Text('housework-new-page')),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('houseworkAddButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('housework-new-page'), findsOneWidget);
+    });
+
+    testWidgets('カテゴリDropdown変更でfilterByCategoryが呼ばれる', (tester) async {
+      final notifier = _RecordingNotifier(
+        const HouseworkListState(allHouseworks: [_hw1, _hw2]),
+      );
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(() => notifier),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('categoryFilterDropdown')));
+      await tester.pumpAndSettle();
+
+      // 「掃除」(=CLEAN) を選ぶ（ja ロケール）
+      await tester.tap(find.text('掃除').last);
+      await tester.pumpAndSettle();
+
+      expect(notifier.lastCategory, 'CLEAN');
+    });
+
+    testWidgets('家事カードタップで/settings/housework/:idに遷移する', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(
+              () => _FakeHouseworkListNotifier(
+                const HouseworkListState(allHouseworks: [_hw1]),
+              ),
+            ),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(
+              path: '/settings/housework/:id',
+              builder: (_, __) =>
+                  const Scaffold(body: Text('housework-detail-page')),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey(1)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('housework-detail-page'), findsOneWidget);
+    });
   });
 }

@@ -245,5 +245,20 @@ void main() {
         );
       });
     });
+
+    group('getMyProfile', () {
+      test('成功時にAuthUserを返す', () async {
+        const user = AuthUser(userId: 1, email: 'a@b.com', displayName: 'A');
+        when(mockApi.getMyProfile()).thenAnswer((_) async => user);
+
+        expect(await sut.getMyProfile(), user);
+      });
+
+      test('DioException → NetworkException', () {
+        when(mockApi.getMyProfile()).thenThrow(_dioErr());
+
+        expect(() => sut.getMyProfile(), throwsA(isA<NetworkException>()));
+      });
+    });
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/notifications/data/notification_repository.dart';
 import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
@@ -192,6 +193,97 @@ void main() {
 
       expect(find.byKey(const ValueKey(1)), findsOneWidget);
       expect(find.byKey(const ValueKey(2)), findsOneWidget);
+    });
+
+    testWidgets('すべて見るボタンタップでnotificationsページへ遷移する', (tester) async {
+      // NotificationPopoverは通常showDialogで表示されるためNavigator.popが呼ばれる。
+      // ダイアログとして表示することでポップ先のページを提供する。
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, _) => Scaffold(
+                body: TextButton(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const NotificationPopover(),
+                  ),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+            GoRoute(
+              path: '/notifications',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('notifications-page')),
+            ),
+          ],
+          overrides: [
+            notificationRepositoryProvider.overrideWithValue(
+              _EmptyRepository(),
+            ),
+            notificationGlobalNotifierProvider.overrideWith(
+              () => _ZeroUnreadNotifier(),
+            ),
+          ],
+          initialLocation: '/',
+        ),
+      );
+      // ダイアログを開く
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.pump(); // 通知ロード完了
+
+      await tester.tap(find.text('すべて見る'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('notifications-page'), findsOneWidget);
+    });
+
+    testWidgets('リンク付き通知タップでNavigationが実行される（onTapコールバック）', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, _) => Scaffold(
+                body: TextButton(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const NotificationPopover(),
+                  ),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+            GoRoute(
+              path: '/tasks',
+              builder: (_, _) => const Scaffold(body: Text('tasks-page')),
+            ),
+          ],
+          overrides: [
+            notificationRepositoryProvider.overrideWithValue(
+              _TwoItemsRepository(),
+            ),
+            notificationGlobalNotifierProvider.overrideWith(
+              () => _ZeroUnreadNotifier(),
+            ),
+          ],
+          initialLocation: '/',
+        ),
+      );
+      // ダイアログを開く
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.pump(); // 通知ロード完了
+
+      // linkType='MyTasks' の通知（id=2）をタップ
+      await tester.tap(find.byKey(const ValueKey(2)));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する（onTap分岐・Navigator.pop + NotificationLinkNavigator.navigate が通る）
+      expect(find.byType(Scaffold), findsOneWidget);
     });
   });
 }

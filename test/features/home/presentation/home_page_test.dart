@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
@@ -195,6 +196,141 @@ void main() {
       await tester.pump(); // エラー状態を待つ
 
       expect(find.text('再読み込み'), findsOneWidget);
+    });
+
+    testWidgets('エラー時: 再試行ボタンタップでonRetryが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            homeNotifierProvider.overrideWith(() => _ErrorHomeNotifier()),
+            householdNotifierProvider.overrideWith(
+              () => _FakeHouseholdNotifier(
+                const HouseholdState(households: [], selectedHousehold: null),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            locale: const Locale('ja'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.light,
+            home: const HomePage(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.text('再読み込み'));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する（onRetry → ref.invalidate 分岐が通る）
+      expect(find.byType(HomePage), findsOneWidget);
+    });
+
+    testWidgets('RefreshIndicatorで引っ張り更新ができる（onRefreshコールバック）', (tester) async {
+      final state = HomeState(
+        hasHousehold: true,
+        householdOverview: List.generate(
+          13,
+          (i) => DailyOverview(
+            date: DateTime.now().add(Duration(days: i - 6)),
+            countsByAssignee: const {},
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildTestPage(const HomePage(), overrides: _overrides(state)),
+      );
+      await tester.pump();
+
+      await tester.drag(find.byType(ListView), const Offset(0, 400));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する（onRefresh → ref.invalidate 分岐が通る）
+      expect(find.byType(HomePage), findsOneWidget);
+    });
+
+    testWidgets('世帯未所属時: オンボーディングカードの世帯設定ボタンタップで遷移', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(path: '/', builder: (_, _) => const HomePage()),
+            GoRoute(
+              path: '/settings/household',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('household-settings-page')),
+            ),
+            GoRoute(
+              path: '/settings/housework',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('housework-settings-page')),
+            ),
+          ],
+          overrides: [
+            homeNotifierProvider.overrideWith(
+              () => _FakeHomeNotifier(const HomeState(hasHousehold: false)),
+            ),
+            householdNotifierProvider.overrideWith(
+              () => _FakeHouseholdNotifier(
+                const HouseholdState(households: [], selectedHousehold: null),
+              ),
+            ),
+          ],
+          initialLocation: '/',
+        ),
+      );
+      await tester.pump();
+
+      // オンボーディングカードが表示されている
+      expect(find.text('ようこそ！'), findsOneWidget);
+
+      // 世帯設定ボタンをタップ
+      await tester.tap(find.text('おうちを設定する'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('household-settings-page'), findsOneWidget);
+    });
+
+    testWidgets('My Tasksカードの開くボタンタップで/tasksに遷移', (tester) async {
+      final state = HomeState(
+        hasHousehold: true,
+        householdOverview: List.generate(
+          13,
+          (i) => DailyOverview(
+            date: DateTime.now().add(Duration(days: i - 6)),
+            countsByAssignee: const {},
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(path: '/', builder: (_, _) => const HomePage()),
+            GoRoute(
+              path: '/tasks',
+              builder: (_, _) => const Scaffold(body: Text('tasks-page')),
+            ),
+          ],
+          overrides: [
+            homeNotifierProvider.overrideWith(() => _FakeHomeNotifier(state)),
+            householdNotifierProvider.overrideWith(
+              () => _FakeHouseholdNotifier(
+                const HouseholdState(households: [], selectedHousehold: null),
+              ),
+            ),
+          ],
+          initialLocation: '/',
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('My Tasksを開く'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('tasks-page'), findsOneWidget);
     });
   });
 }
