@@ -37,6 +37,22 @@ class _SavingSettingsNotifier extends HouseholdSettingsNotifier {
   );
 }
 
+class _RecordingSettingsNotifier extends HouseholdSettingsNotifier {
+  String? savedName;
+
+  @override
+  Future<HouseholdSettingsState> build() async => const HouseholdSettingsState(
+    invitations: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+  );
+
+  @override
+  Future<void> saveHouseholdName({required String name}) async {
+    savedName = name;
+  }
+}
+
 Widget _buildSection({bool isSaving = false}) => buildTestPage(
   const Scaffold(body: SingleChildScrollView(child: HouseholdNameSection())),
   overrides: [
@@ -126,6 +142,32 @@ void main() {
         find.byKey(const Key('saveHouseholdNameButton')),
       );
       expect(button.onPressed, isNull);
+    });
+
+    testWidgets('保存ボタンをタップするとsaveHouseholdNameが呼ばれ、_originalNameが更新される', (
+      tester,
+    ) async {
+      final notifier = _RecordingSettingsNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdNameSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), '新しい世帯名');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('saveHouseholdNameButton')));
+      await tester.pump();
+
+      expect(notifier.savedName, '新しい世帯名');
     });
   });
 }

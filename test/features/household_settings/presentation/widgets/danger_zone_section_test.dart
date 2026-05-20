@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,6 +72,59 @@ class _FakeMemberNotifier extends HouseholdSettingsNotifier {
     isCurrentUserOwner: false,
     hasOtherActiveMembers: false,
   );
+}
+
+/// エラー状態
+class _FakeErrorNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async {
+    throw Exception('エラー');
+  }
+}
+
+/// OWNERで件数未取得（null）→ fetchDeleteCounts が呼ばれる
+class _FakeOwnerNullCountsNotifier extends HouseholdSettingsNotifier {
+  bool fetchDeleteCountsCalled = false;
+
+  @override
+  Future<HouseholdSettingsState> build() async => const HouseholdSettingsState(
+    members: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+    houseworkCount: null,
+    shoppingCount: null,
+  );
+
+  @override
+  Future<void> fetchDeleteCounts() async {
+    fetchDeleteCountsCalled = true;
+  }
+}
+
+/// OWNERで件数あり・deleteHousehold を記録する
+class _FakeOwnerDeleteableNotifier extends HouseholdSettingsNotifier {
+  bool deleteHouseholdCalled = false;
+
+  @override
+  Future<HouseholdSettingsState> build() async => const HouseholdSettingsState(
+    members: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+    houseworkCount: 5,
+    shoppingCount: 3,
+  );
+
+  @override
+  Future<void> deleteHousehold() async {
+    deleteHouseholdCalled = true;
+  }
+}
+
+/// ローディング状態
+class _FakeLoadingNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() =>
+      Completer<HouseholdSettingsState>().future;
 }
 
 List<Override> _ownerOverrides(HouseholdSettingsNotifier notifier) => [
@@ -156,6 +211,87 @@ void main() {
 
       // 確認ダイアログが表示される
       expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('エラー状態では dangerZoneSection が表示されない', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: DangerZoneSection()),
+          ),
+          overrides: _ownerOverrides(_FakeErrorNotifier()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('dangerZoneSection')), findsNothing);
+    });
+
+    testWidgets('件数がnullのとき削除ボタンタップでfetchDeleteCountsが呼ばれる', (tester) async {
+      final notifier = _FakeOwnerNullCountsNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: DangerZoneSection()),
+          ),
+          overrides: _ownerOverrides(notifier),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('deleteHouseholdButton')));
+      await tester.pump();
+
+      expect(notifier.fetchDeleteCountsCalled, isTrue);
+      // ダイアログは表示されない（fetchDeleteCountsして即return）
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('確認ダイアログのキャンセルボタンでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: DangerZoneSection()),
+          ),
+          overrides: _ownerOverrides(_FakeOwnerNoOtherMembersNotifier()),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('deleteHouseholdButton')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      final cancelButton = find.byType(TextButton).first;
+      await tester.tap(cancelButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('確認ダイアログの削除ボタンでdeleteHouseholdが呼ばれる', (tester) async {
+      final notifier = _FakeOwnerDeleteableNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: DangerZoneSection()),
+          ),
+          overrides: _ownerOverrides(notifier),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('deleteHouseholdButton')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(notifier.deleteHouseholdCalled, isTrue);
     });
   });
 }

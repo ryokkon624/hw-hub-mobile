@@ -7,6 +7,7 @@ import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
+import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/housework_assign/data/housework_assign_repository.dart';
 import 'package:hw_hub_mobile/features/housework_assign/housework_assign_providers.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_notifier.dart';
@@ -420,6 +421,177 @@ void main() {
 
       final state = container.read(houseworkAssignNotifierProvider).value!;
       // 全カード消化でリストモードに戻る
+      expect(state.mode, AssignMode.list);
+    });
+
+    test('swipeNext: 全カード消化で_reloadAndExitSwipeが呼ばれリストモードになる', () async {
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1, assigneeUserId: null)]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .startSwipeMode(SwipeTarget.unassigned);
+
+      // _reloadAndExitSwipe で再ロードされるため stub を用意
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1, assigneeUserId: 10)]);
+
+      // swipeIndex=0 で未割当1枚 → swipeNext で全消化
+      await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .swipeNext();
+
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      expect(state.mode, AssignMode.list);
+    });
+
+    test('startSwipeMode(others): assignedタスクのみが対象になる', () async {
+      when(mockRepo.fetchTasks(householdId: 1)).thenAnswer(
+        (_) async => [
+          _task(id: 1, assigneeUserId: null), // unassigned
+          _task(id: 2, assigneeUserId: 10), // assigned
+        ],
+      );
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .startSwipeMode(SwipeTarget.others);
+
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      // SwipeTarget.othersなのでassigned=1枚がswipeTaskCount
+      expect(state.swipeTarget, SwipeTarget.others);
+      expect(state.swipeTaskCount, 1);
+    });
+  });
+
+  group('HouseworkAssignNotifier AppException キャッチ', () {
+    test('assignToMe: AppExceptionでerrorMessageがセットされる', () async {
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1)]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+      when(
+        mockRepo.updateAssignee(taskId: 1, assigneeUserId: 10),
+      ).thenThrow(const ApiException('API Error'));
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      final result = await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .assignToMe(taskId: 1);
+
+      expect(result, isFalse);
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      expect(state.errorMessage, 'API Error');
+    });
+
+    test('assignToMember: AppExceptionでerrorMessageがセットされる', () async {
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1)]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+      when(
+        mockRepo.updateAssignee(taskId: 1, assigneeUserId: 20),
+      ).thenThrow(const ApiException('Assign Error'));
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      final result = await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .assignToMember(taskId: 1, assigneeUserId: 20);
+
+      expect(result, isFalse);
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      expect(state.errorMessage, 'Assign Error');
+    });
+
+    test('assignToMember: 一般例外でerrorMessageがセットされる', () async {
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1)]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+      when(
+        mockRepo.updateAssignee(taskId: 1, assigneeUserId: 20),
+      ).thenThrow(Exception('Generic Error'));
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      final result = await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .assignToMember(taskId: 1, assigneeUserId: 20);
+
+      expect(result, isFalse);
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      expect(state.errorMessage, isNotNull);
+    });
+
+    test('bulkSkipPastUnassigned: AppExceptionでerrorMessageがセットされる', () async {
+      final pastUnassigned = _task(
+        id: 1,
+        targetDate: _daysFromNow(-1),
+        assigneeUserId: null,
+      );
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [pastUnassigned]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+      when(
+        mockRepo.bulkSkipPastUnassigned(taskIds: [1]),
+      ).thenThrow(const ApiException('Bulk Skip Error'));
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .bulkSkipPastUnassigned();
+
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      expect(state.errorMessage, 'Bulk Skip Error');
+    });
+  });
+
+  group('HouseworkAssignNotifier _reloadAndExitSwipe エラー', () {
+    test('_reloadAndExitSwipe: _loadが失敗してもmodeがlistに戻る', () async {
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenAnswer((_) async => [_task(id: 1, assigneeUserId: null)]);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+      when(
+        mockRepo.updateAssignee(taskId: 1, assigneeUserId: 10),
+      ).thenAnswer((_) async {});
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .startSwipeMode(SwipeTarget.unassigned);
+
+      // _reloadAndExitSwipe の _load を失敗させる
+      when(
+        mockRepo.fetchTasks(householdId: 1),
+      ).thenThrow(Exception('Reload Error'));
+
+      await container
+          .read(houseworkAssignNotifierProvider.notifier)
+          .swipeNext(); // 1枚で全消化 → _reloadAndExitSwipe
+
+      final state = container.read(houseworkAssignNotifierProvider).value!;
+      // エラーでもリストモードに戻る
       expect(state.mode, AssignMode.list);
     });
   });
