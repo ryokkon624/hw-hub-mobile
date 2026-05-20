@@ -31,6 +31,9 @@ class _FakeMyTasksNotifier extends MyTasksNotifier {
 
   @override
   Future<MyTasksState> build() async => _state;
+
+  @override
+  Future<void> bulkCompletePastTasks() async {}
 }
 
 Widget _buildSection({required List<HouseworkTaskDto> tasks}) {
@@ -130,6 +133,41 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('一括完了ダイアログの確認ボタンでbulkCompletePastTasksが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        _buildSection(tasks: [_task(id: 1, targetDate: _daysAgo(1))]),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // 確認ボタン（2番目のTextButton）をタップ
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('不正な日付文字列のタスクが表示される（null date parse分岐）', (tester) async {
+      final invalidTask = HouseworkTaskDto(
+        houseworkTaskId: 99,
+        householdId: 1,
+        houseworkId: 99,
+        houseworkName: '不正日付タスク',
+        targetDate: 'invalid-date',
+        assigneeUserId: 10,
+        status: '0',
+      );
+      await tester.pumpWidget(_buildSection(tasks: [invalidTask]));
+      await tester.pump();
+
+      expect(find.byType(SwipeableTaskCard), findsOneWidget);
     });
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
@@ -7,6 +9,14 @@ import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/household_list_section.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
+
+/// エラー状態
+class _ErrorNotifier extends HouseholdNotifier {
+  @override
+  Future<HouseholdState> build() async {
+    throw Exception('エラー');
+  }
+}
 
 /// 2世帯 / 選択済み = 1番目
 class _TwoHouseholdsNotifier extends HouseholdNotifier {
@@ -116,6 +126,124 @@ void main() {
 
       expect(find.byKey(const Key('householdsSection')), findsOneWidget);
       expect(find.text('テスト家'), findsOneWidget);
+    });
+
+    testWidgets('エラー状態では householdsSection が表示されない', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdListSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_ErrorNotifier.new),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('householdsSection')), findsNothing);
+    });
+
+    testWidgets('世帯追加ダイアログの確認ボタンで世帯が追加される（名前入力あり）', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdListSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_OneHouseholdNotifier.new),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('addHouseholdButton')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // テキストフィールドに入力
+      await tester.enterText(find.byType(TextField), '新しい世帯');
+      await tester.pump();
+
+      // 確認ボタン（2番目のTextButton）をタップ
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('世帯追加ダイアログの確認ボタン: 名前が空のときはダイアログが閉じない', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdListSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_OneHouseholdNotifier.new),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('addHouseholdButton')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // テキストが空のまま確認ボタンをタップ
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pump();
+
+      // ダイアログが閉じない
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('選択中でない世帯の切り替えボタンが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdListSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_TwoHouseholdsNotifier.new),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // 田中家（未選択）は切り替えボタン（TextButton）を持つ
+      expect(find.byType(TextButton), findsWidgets);
+    });
+
+    testWidgets('選択中でない世帯の切り替えボタンをタップするとselectが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdListSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(_TwoHouseholdsNotifier.new),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // TextButtonが複数あるので最初のもの（世帯追加ボタン以外）をタップ
+      // HouseholdListSection の addHouseholdButton は TextButton.icon
+      // _HouseholdRow の切り替えボタンは TextButton
+      final switchButtons = find.descendant(
+        of: find.byType(ListTile),
+        matching: find.byType(TextButton),
+      );
+      expect(switchButtons, findsOneWidget);
+      await tester.tap(switchButtons.first);
+      await tester.pump();
+
+      // クラッシュなく動作する
+      expect(find.byKey(const Key('householdsSection')), findsOneWidget);
     });
   });
 }

@@ -483,6 +483,100 @@ void main() {
       expect(find.byKey(const Key('membersSection')), findsOneWidget);
     });
 
+    testWidgets('OWNERとして表示: 削除確認ダイアログの実行ボタンでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 1)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeOwnerWithMembersNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('removeButton_2')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // 実行ボタン（2番目のTextButton）をタップ
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('OWNERとして表示: OWNER譲渡確認ダイアログの実行ボタンでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 1)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeOwnerWithMembersNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('transferOwnerButton_2')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('MEMBERとして表示: 離脱確認ダイアログの実行ボタンでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 99)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_memberUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeMemberOnlyNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('leaveButton')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
     testWidgets('LEFTステータスのメンバーが表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(

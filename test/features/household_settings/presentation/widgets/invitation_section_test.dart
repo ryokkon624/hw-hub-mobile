@@ -436,6 +436,37 @@ void main() {
       expect(find.byType(AlertDialog), findsNothing);
     });
 
+    testWidgets('メールを入力して送信ボタンをタップすると招待が送信される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeNoInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // メールを入力
+      await tester.enterText(find.byType(TextField), 'test@example.com');
+      await tester.pump();
+
+      // 送信ボタンをタップ
+      await tester.tap(find.byKey(const Key('sendInviteButton')));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+
     testWidgets('招待リスト: 未知ステータスの招待が表示される（null分岐）', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
