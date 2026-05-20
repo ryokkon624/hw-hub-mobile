@@ -64,10 +64,12 @@ class HeaderUserIcon extends ConsumerWidget {
       position: relativeRect,
       items: [
         PopupMenuItem(
+          key: const Key('menuItemSettings'),
           value: _MenuAction.settings,
           child: Text(l10n.headerUserIconMenuSettings),
         ),
         PopupMenuItem(
+          key: const Key('menuItemLogout'),
           value: _MenuAction.logout,
           child: Text(l10n.headerUserIconMenuLogout),
         ),
@@ -94,14 +96,17 @@ class HeaderUserIcon extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        key: const Key('logoutConfirmDialog'),
         title: Text(l10n.headerUserIconLogoutConfirmTitle),
         content: Text(l10n.headerUserIconLogoutConfirmMessage),
         actions: [
           TextButton(
+            key: const Key('logoutCancelButton'),
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(l10n.commonCancel),
           ),
           TextButton(
+            key: const Key('logoutConfirmButton'),
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(l10n.commonYes),
           ),
