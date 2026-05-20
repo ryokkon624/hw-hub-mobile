@@ -45,10 +45,46 @@ class _FakeWithInvitationNotifier extends HouseholdSettingsNotifier {
         invitationToken: 'test-token',
         invitedEmail: 'invited@example.com',
         status: '0', // PENDING
+        expiresAt: '2026-06-01T00:00:00',
       ),
     ],
     isCurrentUserOwner: true,
     hasOtherActiveMembers: true,
+  );
+}
+
+/// 招待（ACCEPTEDとDECLINED）がある状態
+class _FakeWithVariousStatusNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async => HouseholdSettingsState(
+    invitations: [
+      const HouseholdInvitationDto(
+        householdId: 1,
+        invitationToken: 'token-accepted',
+        invitedEmail: 'accepted@example.com',
+        status: '1', // ACCEPTED
+      ),
+      const HouseholdInvitationDto(
+        householdId: 1,
+        invitationToken: 'token-declined',
+        invitedEmail: 'declined@example.com',
+        status: '7', // DECLINED
+      ),
+      const HouseholdInvitationDto(
+        householdId: 1,
+        invitationToken: 'token-revoked',
+        invitedEmail: 'revoked@example.com',
+        status: '8', // REVOKED
+      ),
+      const HouseholdInvitationDto(
+        householdId: 1,
+        invitationToken: 'token-expired',
+        invitedEmail: 'expired@example.com',
+        status: '9', // EXPIRED
+      ),
+    ],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
   );
 }
 
@@ -156,6 +192,135 @@ void main() {
       await tester.pump();
 
       expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('招待リスト: ダイアログのキャンセルでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('revokeButton_test-token')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // キャンセルボタンをタップ
+      final cancelButtons = find.byType(TextButton);
+      await tester.tap(cancelButtons.first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('招待リスト: PENDINGはシェアボタンと取消ボタンが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('shareButton_test-token')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('revokeButton_test-token')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('招待リスト: ACCEPTED/DECLINED/REVOKEDはシェア・取消ボタンが非表示', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithVariousStatusNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // ACCEPTED/DECLINED/REVOKED は isPending=false なのでボタン非表示
+      expect(
+        find.byKey(const ValueKey('shareButton_token-accepted')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('revokeButton_token-accepted')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('メールを入力すると送信ボタンが有効になる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeNoInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // メール未入力の状態では送信ボタンが無効
+      final buttonBefore = tester.widget<ElevatedButton>(
+        find.byKey(const Key('sendInviteButton')),
+      );
+      expect(buttonBefore.onPressed, isNull);
+
+      // メールを入力する
+      await tester.enterText(find.byType(TextField), 'test@example.com');
+      await tester.pump();
+
+      // 送信ボタンが有効になる
+      final buttonAfter = tester.widget<ElevatedButton>(
+        find.byKey(const Key('sendInviteButton')),
+      );
+      expect(buttonAfter.onPressed, isNotNull);
     });
   });
 }
