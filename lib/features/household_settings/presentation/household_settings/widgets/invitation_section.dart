@@ -216,9 +216,11 @@ class _InvitationRow extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.15),
+                        color: statusColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: statusColor.withOpacity(0.5)),
+                        border: Border.all(
+                          color: statusColor.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: Text(
                         statusLabel,

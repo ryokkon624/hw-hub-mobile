@@ -4,7 +4,6 @@ import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
 import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_notifier.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_state.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
