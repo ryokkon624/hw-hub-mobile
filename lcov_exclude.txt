@@ -1,12 +1,16 @@
 # lcov_exclude.txt - exclusion patterns for coverage filtering
 # Referenced by coverage.ps1 and GitHub Actions
 # Lines starting with # are comments; blank lines are ignored
+#
+# Pattern matching: PowerShell -like operator
+#   * matches zero or more of any character (including path separators)
+#   Paths in lcov.info are relative, using forward slashes (e.g. lib/features/auth/auth_api.dart)
 
 # Entry points / routing (no logic)
 lib/main.dart
 lib/app_router.dart
 
-# Generated files
+# Generated files (json_serializable, Retrofit, Mockito)
 lib/l10n/*
 */*.g.dart
 */*.mocks.dart
@@ -23,11 +27,14 @@ lib/core/network/dio_client.dart
 lib/core/network/app_exception.dart
 lib/core/network/auth_interceptor.dart
 
-# DI wiring
-lib/features/auth/auth_providers.dart
+# DI wiring for all features (no business logic)
+lib/features/*_providers.dart
 
-# Data models (fromJson only)
-lib/features/auth/data/models/*
+# Data models: fromJson/toJson delegation to generated code only
+lib/features/*/data/models/*.dart
+
+# Presentation-layer VO models: pure data classes, no logic
+lib/features/*/presentation/models/*.dart
 
 # UI widgets (navigation shell)
 lib/features/shell/*
