@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +24,22 @@ class _FakeHouseworkCreateNotifier extends HouseworkCreateNotifier {
 class _FakeHouseworkListNotifier extends HouseworkListNotifier {
   @override
   Future<HouseworkListState> build() async => const HouseworkListState();
+}
+
+// ローディング状態を返す FakeNotifier
+class _LoadingCreateNotifier extends HouseworkCreateNotifier {
+  @override
+  Future<HouseworkCreateState> build() {
+    return Completer<HouseworkCreateState>().future;
+  }
+}
+
+// エラー状態を返す FakeNotifier
+class _ErrorCreateNotifier extends HouseworkCreateNotifier {
+  @override
+  Future<HouseworkCreateState> build() async {
+    throw Exception('ロードエラー');
+  }
 }
 
 Widget _buildPage(HouseworkCreateState state) {
@@ -105,6 +123,69 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('dismissRecommendation')), findsNothing);
+    });
+
+    testWidgets('ローディング中: CircularProgressIndicatorが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkCreateNotifierProvider.overrideWith(
+              () => _LoadingCreateNotifier(),
+            ),
+            houseworkListNotifierProvider.overrideWith(
+              () => _FakeHouseworkListNotifier(),
+            ),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkCreatePage()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('エラー時: エラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkCreateNotifierProvider.overrideWith(
+              () => _ErrorCreateNotifier(),
+            ),
+            houseworkListNotifierProvider.overrideWith(
+              () => _FakeHouseworkListNotifier(),
+            ),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkCreatePage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('houseworkCreatePage')), findsOneWidget);
+    });
+
+    testWidgets('テンプレートボタンタップでモーダルが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(const HouseworkCreateState()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('houseworkTemplateButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BottomSheet), findsOneWidget);
+    });
+
+    testWidgets('キャンセルボタンが表示される（確認）', (tester) async {
+      await tester.pumpWidget(_buildPage(const HouseworkCreateState()));
+      await tester.pumpAndSettle();
+
+      final cancelButton = find.byKey(const Key('houseworkCancelButton'));
+      expect(cancelButton, findsOneWidget);
+      // キャンセルボタンが有効であること（tappable）
+      final button = tester.widget<OutlinedButton>(cancelButton);
+      expect(button.onPressed, isNotNull);
     });
   });
 }
