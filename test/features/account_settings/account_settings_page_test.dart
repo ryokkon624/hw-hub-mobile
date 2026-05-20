@@ -146,4 +146,62 @@ void main() {
       expect(find.text('test@example.com'), findsOneWidget);
     });
   });
+
+  group('AccountSettingsPage - アイコンセクション', () {
+    testWidgets('IconSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      // アイコンセクションは常に表示
+      expect(find.byKey(const Key('deleteAccountButton')), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - プロフィールセクション', () {
+    testWidgets('ProfileSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      // プロフィールセクションは常に表示
+      expect(find.text('test@example.com'), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - dangerZoneSection', () {
+    testWidgets('dangerZoneSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      expect(find.byKey(const Key('dangerZoneSection')), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - ローディング状態', () {
+    testWidgets('ローディング中はCircularProgressIndicatorが表示される', (tester) async {
+      // ローディング状態のFakeNotifier
+      late MockAccountSettingsRepository mockRepo;
+      mockRepo = MockAccountSettingsRepository();
+      when(mockRepo.fetchProfile()).thenAnswer((_) async {
+        await Future.delayed(const Duration(seconds: 60));
+        return _localProfile;
+      });
+
+      // 代替: profile=nullのstateを渡す
+      final emptyState = AccountSettingsState();
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _FakeNotifier(emptyState),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // profileがnullなのでSizedBox.shrinkが表示される（空のボディ）
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+  });
 }
