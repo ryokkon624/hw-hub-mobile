@@ -50,6 +50,76 @@ const _nthWeekdayHousework = HouseworkDto(
   endDate: '2099-12-31',
 );
 
+const _petHousework = HouseworkDto(
+  houseworkId: 5,
+  householdId: 10,
+  name: 'ペット世話',
+  category: 'PET',
+  recurrenceType: '1',
+  weeklyDays: 2,
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
+const _otherHousework = HouseworkDto(
+  houseworkId: 6,
+  householdId: 10,
+  name: 'その他作業',
+  category: 'OTHER',
+  recurrenceType: '1',
+  weeklyDays: 2,
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
+const _unknownCategoryHousework = HouseworkDto(
+  houseworkId: 7,
+  householdId: 10,
+  name: '不明カテゴリ',
+  category: 'UNKNOWN_XYZ',
+  recurrenceType: '1',
+  weeklyDays: 2,
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
+const _unknownRecurrenceHousework = HouseworkDto(
+  houseworkId: 8,
+  householdId: 10,
+  name: '不明周期',
+  category: 'CLEAN',
+  recurrenceType: '9',
+  weeklyDays: 0,
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
+// nthWeekday with weekday=0 (Sun)
+const _nthSunHousework = HouseworkDto(
+  houseworkId: 9,
+  householdId: 10,
+  name: '日曜家事',
+  category: 'CLEAN',
+  recurrenceType: '3',
+  nthWeek: 1,
+  weekday: 0, // 日曜
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
+// nthWeekday with weekday=5 (Fri)
+const _nthFriHousework = HouseworkDto(
+  houseworkId: 10,
+  householdId: 10,
+  name: '金曜家事',
+  category: 'CLEAN',
+  recurrenceType: '3',
+  nthWeek: 1,
+  weekday: 5, // 金曜
+  startDate: '2025-01-01',
+  endDate: '2099-12-31',
+);
+
 Widget _buildCard({
   required HouseworkDto housework,
   String? assigneeName,
@@ -153,6 +223,56 @@ void main() {
       await tester.pump();
 
       expect(find.textContaining('2025-01-01'), findsOneWidget);
+    });
+
+    testWidgets('PETカテゴリの家事が表示される', (tester) async {
+      await tester.pumpWidget(_buildCard(housework: _petHousework));
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('ペット世話'), findsOneWidget);
+    });
+
+    testWidgets('OTHERカテゴリの家事が表示される', (tester) async {
+      await tester.pumpWidget(_buildCard(housework: _otherHousework));
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('その他作業'), findsOneWidget);
+    });
+
+    testWidgets('未知カテゴリの家事が表示される（default分岐）', (tester) async {
+      await tester.pumpWidget(_buildCard(housework: _unknownCategoryHousework));
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('不明カテゴリ'), findsOneWidget);
+    });
+
+    testWidgets('未知周期タイプの家事が表示される（fallback分岐）', (tester) async {
+      await tester.pumpWidget(
+        _buildCard(housework: _unknownRecurrenceHousework),
+      );
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('不明周期'), findsOneWidget);
+    });
+
+    testWidgets('第n週・日曜タイプ(weekday=0)の家事が表示される', (tester) async {
+      await tester.pumpWidget(_buildCard(housework: _nthSunHousework));
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('日曜家事'), findsOneWidget);
+    });
+
+    testWidgets('第n週・金曜タイプ(weekday=5)の家事が表示される', (tester) async {
+      await tester.pumpWidget(_buildCard(housework: _nthFriHousework));
+      await tester.pump();
+
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('金曜家事'), findsOneWidget);
     });
   });
 }
