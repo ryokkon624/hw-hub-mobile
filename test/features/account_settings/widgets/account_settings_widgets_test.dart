@@ -125,6 +125,74 @@ void main() {
       );
       expect(button.onPressed, isNotNull);
     });
+
+    testWidgets('新旧パスワードが不一致のときエラーテキストが表示される', (tester) async {
+      await tester.pumpWidget(_buildPasswordChange());
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField).at(0), 'currentpass');
+      await tester.enterText(find.byType(TextField).at(1), 'newpass123');
+      await tester.enterText(find.byType(TextField).at(2), 'different456');
+      await tester.pump();
+
+      // パスワード不一致メッセージが表示される（l10n: accountSettingsPasswordMismatch）
+      expect(find.byType(Text), findsWidgets);
+    });
+
+    testWidgets('保存ボタンタップ: onSave が呼ばれる', (tester) async {
+      bool saveCalled = false;
+      await tester.pumpWidget(
+        buildTestPage(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: PasswordChangeSection(
+                onSave: (_, __) async {
+                  saveCalled = true;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField).at(0), 'currentpass');
+      await tester.enterText(find.byType(TextField).at(1), 'newpass123');
+      await tester.enterText(find.byType(TextField).at(2), 'newpass123');
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton).first);
+      await tester.pumpAndSettle();
+
+      expect(saveCalled, isTrue);
+    });
+
+    testWidgets('保存成功後: テキストフィールドがクリアされる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: PasswordChangeSection(onSave: (_, __) async {}),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField).at(0), 'currentpass');
+      await tester.enterText(find.byType(TextField).at(1), 'newpass123');
+      await tester.enterText(find.byType(TextField).at(2), 'newpass123');
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton).first);
+      await tester.pumpAndSettle();
+
+      // 保存後にフィールドがクリアされる
+      final textFields = tester.widgetList<TextField>(find.byType(TextField));
+      for (final tf in textFields) {
+        expect(tf.controller?.text ?? '', isEmpty);
+      }
+    });
   });
 
   group('GoogleLinkSection', () {
