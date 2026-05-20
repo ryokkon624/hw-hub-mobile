@@ -478,4 +478,120 @@ void main() {
       expect(after.successMessage, isNull);
     });
   });
+
+  group('AccountSettingsNotifier - 予期しない例外の catch(_) ブランチ', () {
+    test('updateProfile: 予期しない例外でも errorUnexpected がセットされる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.updateProfile(
+          displayName: anyNamed('displayName'),
+          locale: anyNamed('locale'),
+        ),
+      ).thenThrow(Exception('unexpected'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .updateProfile(displayName: '名前', locale: 'ja');
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('changePassword: 予期しない例外でも errorUnexpected がセットされる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.changePassword(
+          currentPassword: anyNamed('currentPassword'),
+          newPassword: anyNamed('newPassword'),
+        ),
+      ).thenThrow(Exception('unexpected'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .changePassword(currentPassword: 'old', newPassword: 'new');
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test(
+      'toggleGlobalNotification: 予期しない例外でも errorUnexpected がセットされる',
+      () async {
+        _stubInitialLoad(mockRepo);
+        when(
+          mockRepo.updateNotificationSettings(any),
+        ).thenThrow(Exception('unexpected'));
+
+        final container = _makeContainer(mockRepo);
+        await container.read(accountSettingsNotifierProvider.future);
+
+        await container
+            .read(accountSettingsNotifierProvider.notifier)
+            .toggleGlobalNotification(enabled: false);
+
+        final state = container.read(accountSettingsNotifierProvider).value!;
+        expect(state.errorMessage, 'errorUnexpected');
+      },
+    );
+
+    test(
+      'toggleGroupNotification: 予期しない例外でも errorUnexpected がセットされる',
+      () async {
+        _stubInitialLoad(mockRepo);
+        when(
+          mockRepo.updateNotificationSettings(any),
+        ).thenThrow(Exception('unexpected'));
+
+        final container = _makeContainer(mockRepo);
+        await container.read(accountSettingsNotifierProvider.future);
+
+        await container
+            .read(accountSettingsNotifierProvider.notifier)
+            .toggleGroupNotification(groupCode: '100', enabled: false);
+
+        final state = container.read(accountSettingsNotifierProvider).value!;
+        expect(state.errorMessage, 'errorUnexpected');
+      },
+    );
+
+    test('linkGoogleAccount: 予期しない例外でも errorUnexpected がセットされる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.linkGoogleAccount(idToken: anyNamed('idToken')),
+      ).thenThrow(Exception('unexpected'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .linkGoogleAccount(idToken: 'bad-token');
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+      expect(state.isLinkingGoogle, isFalse);
+    });
+
+    test('deleteAccount: 予期しない例外でも errorUnexpected がセットされる', () async {
+      _stubInitialLoad(mockRepo);
+      when(mockRepo.deleteAccount()).thenThrow(Exception('unexpected'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .deleteAccount();
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+      expect(state.isDeletingAccount, isFalse);
+    });
+  });
 }
