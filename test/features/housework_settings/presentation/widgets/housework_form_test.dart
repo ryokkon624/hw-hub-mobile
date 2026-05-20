@@ -213,4 +213,187 @@ void main() {
       expect(find.byKey(const Key('houseworkNameField')), findsOneWidget);
     });
   });
+
+  group('HouseworkForm コールバック', () {
+    testWidgets('カテゴリDropdownの変更でonCategoryChangedが呼ばれる', (tester) async {
+      String? changedCategory;
+      await tester.pumpWidget(
+        _buildForm(
+          form: const HouseworkFormState(category: 'CLEAN'),
+          onCategoryChanged: (val) => changedCategory = val,
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('houseworkCategoryDropdown')));
+      await tester.pumpAndSettle();
+
+      // KITCHENを選択
+      await tester.tap(find.text('キッチン').last);
+      await tester.pumpAndSettle();
+
+      expect(changedCategory, isNotNull);
+    });
+
+    testWidgets('周期タイプDropdownの変更でonRecurrenceTypeChangedが呼ばれる', (
+      tester,
+    ) async {
+      String? changedType;
+      await tester.pumpWidget(
+        _buildForm(
+          form: const HouseworkFormState(recurrenceType: '1'),
+          onRecurrenceTypeChanged: (val) => changedType = val,
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(
+        find.byKey(const Key('houseworkRecurrenceTypeDropdown')),
+      );
+      await tester.pumpAndSettle();
+
+      // 毎月を選択
+      await tester.tap(find.text('毎月').last);
+      await tester.pumpAndSettle();
+
+      expect(changedType, isNotNull);
+    });
+  });
+
+  group('HouseworkForm startDate/endDate エラー表示', () {
+    testWidgets('startDateErrorがあるときエラーテキストが表示される', (tester) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            startDateError: 'houseworkCreateErrorStartDateRequired',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkStartDateField')), findsOneWidget);
+    });
+
+    testWidgets('endDateErrorがあるときエラーテキストが表示される', (tester) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            endDateError: 'houseworkCreateErrorEndDateBeforeStart',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkEndDateField')), findsOneWidget);
+    });
+  });
+
+  group('HouseworkForm _errorText switch分岐', () {
+    testWidgets('houseworkCreateErrorNameTooLong エラーが表示される', (tester) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            nameError: 'houseworkCreateErrorNameTooLong',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkNameField')), findsOneWidget);
+    });
+
+    testWidgets(
+      'houseworkCreateErrorMonthlyDayRequired エラーが表示される（startDate経由）',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildForm(
+            errors: const HouseworkFormErrors(
+              startDateError: 'houseworkCreateErrorMonthlyDayRequired',
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.byKey(const Key('houseworkStartDateField')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('houseworkCreateErrorNthWeekRequired エラーが表示される（startDate経由）', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            startDateError: 'houseworkCreateErrorNthWeekRequired',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkStartDateField')), findsOneWidget);
+    });
+
+    testWidgets(
+      'houseworkCreateErrorNthWeekdayRequired エラーが表示される（startDate経由）',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildForm(
+            errors: const HouseworkFormErrors(
+              startDateError: 'houseworkCreateErrorNthWeekdayRequired',
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.byKey(const Key('houseworkStartDateField')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('houseworkCreateErrorEndDateRequired エラーが表示される（endDate経由）', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            endDateError: 'houseworkCreateErrorEndDateRequired',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkEndDateField')), findsOneWidget);
+    });
+
+    testWidgets('houseworkCreateErrorEndDateBeforeStart エラーが表示される（endDate経由）', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(
+            endDateError: 'houseworkCreateErrorEndDateBeforeStart',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkEndDateField')), findsOneWidget);
+    });
+
+    testWidgets('default分岐: 未知エラーキーはそのまま表示される（startDate経由）', (tester) async {
+      await tester.pumpWidget(
+        _buildForm(
+          errors: const HouseworkFormErrors(startDateError: 'unknownErrorKey'),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('houseworkStartDateField')), findsOneWidget);
+    });
+  });
 }
