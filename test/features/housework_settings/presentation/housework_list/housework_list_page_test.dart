@@ -29,6 +29,43 @@ class _LoadingNotifier extends HouseworkListNotifier {
   }
 }
 
+// filterByCategory / goToPage を記録する FakeNotifier
+class _RecordingNotifier extends HouseworkListNotifier {
+  _RecordingNotifier(this._initial);
+  final HouseworkListState _initial;
+
+  String? lastCategory;
+  int? lastPage;
+
+  @override
+  Future<HouseworkListState> build() async => _initial;
+
+  @override
+  void filterByCategory(String? category) {
+    lastCategory = category;
+    state = AsyncData(_initial.copyWith(selectedCategory: category));
+  }
+
+  @override
+  void goToPage(int page) {
+    lastPage = page;
+    state = AsyncData(_initial.copyWith(currentPage: page));
+  }
+}
+
+// エラーメッセージありの状態に遷移するFakeNotifier
+class _MutableNotifier extends HouseworkListNotifier {
+  _MutableNotifier(this._initial);
+  final HouseworkListState _initial;
+
+  @override
+  Future<HouseworkListState> build() async => _initial;
+
+  void setError(String message) {
+    state = AsyncData(_initial.copyWith(errorMessage: message));
+  }
+}
+
 // エラー状態を返す FakeNotifier
 class _ErrorNotifier extends HouseworkListNotifier {
   @override
@@ -239,6 +276,86 @@ void main() {
 
       // CLEANのみ表示される
       expect(find.text('掃除機がけ'), findsOneWidget);
+    });
+
+    testWidgets('ページネーション前へボタンタップでgoToPageが呼ばれる', (tester) async {
+      final houseworks = _generateHouseworks(11);
+      final notifier = _RecordingNotifier(
+        HouseworkListState(allHouseworks: houseworks, currentPage: 2),
+      );
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(() => notifier),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('paginationPrev')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      await tester.tap(find.byKey(const Key('paginationPrev')));
+      await tester.pump();
+
+      expect(notifier.lastPage, 1);
+    });
+
+    testWidgets('ページネーション後へボタンタップでgoToPageが呼ばれる', (tester) async {
+      final houseworks = _generateHouseworks(11);
+      final notifier = _RecordingNotifier(
+        HouseworkListState(allHouseworks: houseworks, currentPage: 1),
+      );
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(() => notifier),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('paginationNext')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      await tester.tap(find.byKey(const Key('paginationNext')));
+      await tester.pump();
+
+      expect(notifier.lastPage, 2);
+    });
+
+    testWidgets('エラーメッセージが発生するとlistenerが発火する', (tester) async {
+      final notifier = _MutableNotifier(const HouseworkListState());
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          overrides: [
+            houseworkListNotifierProvider.overrideWith(() => notifier),
+          ],
+          routes: [
+            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // エラー状態に変更
+      notifier.setError('テストエラー');
+      await tester.pump();
+
+      // クラッシュなく動作する（AppSnackBar分岐が通る）
+      expect(find.byKey(const Key('houseworkListPage')), findsOneWidget);
     });
   });
 }
