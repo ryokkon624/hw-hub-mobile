@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
@@ -93,6 +95,39 @@ class _FakeNoInvitationNotifier extends HouseholdSettingsNotifier {
   @override
   Future<HouseholdSettingsState> build() async => const HouseholdSettingsState(
     invitations: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+  );
+}
+
+/// エラー状態
+class _FakeErrorNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async {
+    throw Exception('エラー');
+  }
+}
+
+/// ローディング中
+class _FakeLoadingNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() {
+    return Completer<HouseholdSettingsState>().future;
+  }
+}
+
+/// 未知ステータスの招待がある状態
+class _FakeWithUnknownStatusNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async => HouseholdSettingsState(
+    invitations: [
+      const HouseholdInvitationDto(
+        householdId: 1,
+        invitationToken: 'token-unknown',
+        invitedEmail: 'unknown@example.com',
+        status: 'UNKNOWN_XYZ',
+      ),
+    ],
     isCurrentUserOwner: true,
     hasOtherActiveMembers: false,
   );
@@ -321,6 +356,110 @@ void main() {
         find.byKey(const Key('sendInviteButton')),
       );
       expect(buttonAfter.onPressed, isNotNull);
+    });
+
+    testWidgets('エラー状態では SizedBox.shrink が表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeErrorNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // エラー時は invitationSection が表示されない
+      expect(find.byKey(const Key('invitationSection')), findsNothing);
+    });
+
+    testWidgets('ローディング中は invitationSection が表示されない', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeLoadingNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('invitationSection')), findsNothing);
+    });
+
+    testWidgets('招待リスト: 取消確認ダイアログの実行ボタンでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithInvitationNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('revokeButton_test-token')));
+      await tester.pump();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // 実行ボタン（2番目のTextButton）をタップ
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      // ダイアログが閉じる
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('招待リスト: 未知ステータスの招待が表示される（null分岐）', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: InvitationSection()),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithUnknownStatusNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // 未知ステータスでも招待行が表示される
+      expect(
+        find.byKey(const ValueKey('invitation_token-unknown')),
+        findsOneWidget,
+      );
     });
   });
 }

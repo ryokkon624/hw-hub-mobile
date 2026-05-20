@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
@@ -38,6 +40,14 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
     households: [Household(id: 1, name: '山田家')],
     selectedHousehold: Household(id: 1, name: '山田家'),
   );
+}
+
+/// ローディング中（永久に完了しない）
+class _LoadingNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() {
+    return Completer<HouseholdSettingsState>().future;
+  }
 }
 
 /// OWNERとして2名のメンバー（自分+他1名ACTIVE）が表示される状態
@@ -85,8 +95,82 @@ class _FakeMemberOnlyNotifier extends HouseholdSettingsNotifier {
   );
 }
 
+/// INVITEDステータスのメンバー（status='0'）
+class _FakeWithInvitedMemberNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async => HouseholdSettingsState(
+    members: [
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 1,
+        displayName: '山田太郎',
+        status: '1',
+        role: 'OWNER',
+      ),
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 3,
+        displayName: '招待中メンバー',
+        status: '0', // INVITED
+        role: 'MEMBER',
+      ),
+    ],
+    invitations: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+  );
+}
+
+/// LEFTステータスのメンバー（status='2'）
+class _FakeWithLeftMemberNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async => HouseholdSettingsState(
+    members: [
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 1,
+        displayName: '山田太郎',
+        status: '1',
+        role: 'OWNER',
+      ),
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 4,
+        displayName: '退出済みメンバー',
+        status: '9', // LEFT
+        role: 'MEMBER',
+      ),
+    ],
+    invitations: [],
+    isCurrentUserOwner: true,
+    hasOtherActiveMembers: false,
+  );
+}
+
 void main() {
   group('MembersSection', () {
+    testWidgets('ローディング中はCircularProgressIndicatorが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 1)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _LoadingNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
     testWidgets('OWNERとして表示: メンバー一覧が表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
@@ -375,6 +459,50 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('INVITEDステータスのメンバーが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 1)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithInvitedMemberNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('membersSection')), findsOneWidget);
+    });
+
+    testWidgets('LEFTステータスのメンバーが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: MembersSection(loginUserId: 1)),
+          ),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(const AuthAuthenticated(_ownerUser)),
+            ),
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeWithLeftMemberNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('membersSection')), findsOneWidget);
     });
   });
 }
