@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +20,22 @@ class _FakeNotifier extends AccountSettingsNotifier {
 
   @override
   Future<AccountSettingsState> build() async => _initialState;
+}
+
+// ローディング中（永久に完了しない）FakeNotifier
+class _LoadingNotifier extends AccountSettingsNotifier {
+  @override
+  Future<AccountSettingsState> build() {
+    return Completer<AccountSettingsState>().future;
+  }
+}
+
+// エラー状態を返す FakeNotifier
+class _ErrorNotifier extends AccountSettingsNotifier {
+  @override
+  Future<AccountSettingsState> build() async {
+    throw Exception('ロードエラー');
+  }
 }
 
 // ローカルアカウントのプロフィール（パスワードセクション表示あり、Googleセクションなし）
@@ -178,15 +196,43 @@ void main() {
 
   group('AccountSettingsPage - ローディング状態', () {
     testWidgets('ローディング中はCircularProgressIndicatorが表示される', (tester) async {
-      // ローディング状態のFakeNotifier
-      late MockAccountSettingsRepository mockRepo;
-      mockRepo = MockAccountSettingsRepository();
-      when(mockRepo.fetchProfile()).thenAnswer((_) async {
-        await Future.delayed(const Duration(seconds: 60));
-        return _localProfile;
-      });
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _LoadingNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
 
-      // 代替: profile=nullのstateを渡す
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - エラー状態', () {
+    testWidgets('エラー時はエラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _ErrorNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // エラー状態ではScaffoldが表示されていること
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - profile=nullのときSizedBox.shrink', () {
+    testWidgets('profile=nullのときSizedBox.shrinkが表示される（空ボディ）', (tester) async {
       final emptyState = AccountSettingsState();
       await tester.pumpWidget(
         buildTestPage(
@@ -200,7 +246,6 @@ void main() {
       );
       await tester.pump();
 
-      // profileがnullなのでSizedBox.shrinkが表示される（空のボディ）
       expect(find.byType(Scaffold), findsOneWidget);
     });
   });

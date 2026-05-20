@@ -26,10 +26,21 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
 class _MockRepo implements HouseholdSettingsRepository {
   final bool shouldFail;
   final String? failMethod;
+  final bool throwUnexpected;
+  final String? unexpectedMethod;
 
-  const _MockRepo({this.shouldFail = false, this.failMethod});
+  const _MockRepo({
+    this.shouldFail = false,
+    this.failMethod,
+    this.throwUnexpected = false,
+    this.unexpectedMethod,
+  });
 
   void _maybeThrow([String? method]) {
+    if (throwUnexpected) throw Exception('unexpected');
+    if (unexpectedMethod != null && method == unexpectedMethod) {
+      throw Exception('unexpected');
+    }
     if (shouldFail) throw const ServerException(message: 'サーバーエラー');
     if (failMethod != null && method == failMethod) {
       throw const ServerException(message: 'サーバーエラー');
@@ -161,13 +172,20 @@ class _MockRepo implements HouseholdSettingsRepository {
 ProviderContainer _makeContainer({
   bool shouldFail = false,
   String? failMethod,
+  bool throwUnexpected = false,
+  String? unexpectedMethod,
 }) {
   SharedPreferences.setMockInitialValues({});
   final container = ProviderContainer(
     overrides: [
       householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
       householdSettingsRepositoryProvider.overrideWithValue(
-        _MockRepo(shouldFail: shouldFail, failMethod: failMethod),
+        _MockRepo(
+          shouldFail: shouldFail,
+          failMethod: failMethod,
+          throwUnexpected: throwUnexpected,
+          unexpectedMethod: unexpectedMethod,
+        ),
       ),
     ],
   );
@@ -505,6 +523,116 @@ void main() {
       final state = container.read(householdSettingsNotifierProvider).value!;
       expect(state.errorMessage, isNotNull);
       expect(state.isLoadingDeleteCounts, isFalse);
+    });
+  });
+
+  group('HouseholdSettingsNotifier - 予期しない例外の catch(_) ブランチ', () {
+    test('sendInvitation: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'createInvitation');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .sendInvitation(email: 'fail@example.com');
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('revokeInvitation: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'revokeInvitation');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .revokeInvitation(token: 'token-1');
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('saveHouseholdName: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'updateHouseholdName');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .saveHouseholdName(name: '失敗する名前');
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('saveNickname: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'updateNickname');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .saveNickname(nickname: '失敗');
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('removeMember: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'removeMember');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .removeMember(userId: 2);
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('transferOwner: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'transferOwner');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .transferOwner(newOwnerUserId: 2);
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('leaveHousehold: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'leaveHousehold');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .leaveHousehold();
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('deleteHousehold: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'deleteHousehold');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .deleteHousehold();
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
+    });
+
+    test('fetchDeleteCounts: 予期しない例外でerrorMessage=errorUnexpected', () async {
+      final container = _makeContainer(unexpectedMethod: 'fetchHouseworkCount');
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container
+          .read(householdSettingsNotifierProvider.notifier)
+          .fetchDeleteCounts();
+
+      final state = container.read(householdSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'errorUnexpected');
     });
   });
 
