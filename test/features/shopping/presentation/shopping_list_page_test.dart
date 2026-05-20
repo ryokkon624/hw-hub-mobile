@@ -85,6 +85,22 @@ class _FakeErrorShoppingListNotifier extends ShoppingListNotifier {
   }
 }
 
+// エラーメッセージを変更できるNotifier（ref.listen分岐テスト用）
+class _MutableShoppingListNotifier extends ShoppingListNotifier {
+  _MutableShoppingListNotifier(this._items);
+  final List<ShoppingItemDto> _items;
+
+  @override
+  Future<ShoppingListState> build() async {
+    return ShoppingListState(items: List.unmodifiable(_items));
+  }
+
+  void setError(String message) {
+    final current = state.value!;
+    state = AsyncData(current.copyWith(errorMessage: message));
+  }
+}
+
 final _testUser = AuthUser(
   userId: 10,
   email: 'test@example.com',
@@ -1322,6 +1338,63 @@ void main() {
       await tester.pump();
 
       expect(find.text('これはメモです'), findsOneWidget);
+    });
+  });
+
+  group('ShoppingListPage - ref.listen / _resolveErrorMessage', () {
+    testWidgets('errorMessage状態に変化するとlistenerが発火する（errorUnexpected分岐）', (
+      tester,
+    ) async {
+      final notifier = _MutableShoppingListNotifier([]);
+      await tester.pumpWidget(
+        buildTestPage(
+          const ShoppingListPage(),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(AuthAuthenticated(_testUser)),
+            ),
+            householdNotifierProvider.overrideWith(
+              () => _FakeSingleHouseholdNotifier(_singleHouseholdState),
+            ),
+            shoppingListNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // errorUnexpected キーでエラー状態に変更してlistenerを発火
+      notifier.setError('errorUnexpected');
+      await tester.pump();
+
+      // クラッシュなく動作する（_resolveErrorMessage/AppSnackBar分岐が通る）
+      expect(find.byType(ShoppingListPage), findsOneWidget);
+    });
+
+    testWidgets('errorMessage状態に変化するとlistenerが発火する（直接メッセージ分岐）', (tester) async {
+      final notifier = _MutableShoppingListNotifier([]);
+      await tester.pumpWidget(
+        buildTestPage(
+          const ShoppingListPage(),
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(AuthAuthenticated(_testUser)),
+            ),
+            householdNotifierProvider.overrideWith(
+              () => _FakeSingleHouseholdNotifier(_singleHouseholdState),
+            ),
+            shoppingListNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // 直接メッセージでエラー状態に変更
+      notifier.setError('エラーが発生しました');
+      await tester.pump();
+
+      expect(find.byType(ShoppingListPage), findsOneWidget);
     });
   });
 }
