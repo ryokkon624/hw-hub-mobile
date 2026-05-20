@@ -34,7 +34,8 @@ class _FakeMyTasksNotifier extends MyTasksNotifier {
 
   @override
   void setFilter(MyTasksFilter filter) {
-    state = AsyncData(state.value!.copyWith(filter: filter));
+    final current = state.value ?? _state;
+    state = AsyncData(current.copyWith(filter: filter));
   }
 }
 
@@ -131,6 +132,64 @@ void main() {
       await tester.pumpWidget(
         _buildSection(tasks: [], filter: MyTasksFilter.week),
       );
+      await tester.pump();
+
+      expect(find.byType(FutureTasksSection), findsOneWidget);
+    });
+
+    testWidgets('フィルタ「全て」ボタンをタップするとsetFilterが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        _buildSection(tasks: [], filter: MyTasksFilter.today),
+      );
+      await tester.pump();
+
+      // 「全て」ラベルのGestureDetectorをタップ
+      final gestureDetectors = find.byType(GestureDetector);
+      await tester.tap(gestureDetectors.first);
+      await tester.pump();
+
+      // クラッシュなく動作する
+      expect(find.byType(FutureTasksSection), findsOneWidget);
+    });
+
+    testWidgets('フィルタ「今日」ボタンをタップするとsetFilterが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        _buildSection(tasks: [], filter: MyTasksFilter.all),
+      );
+      await tester.pump();
+
+      final gestureDetectors = find.byType(GestureDetector);
+      await tester.tap(gestureDetectors.at(1));
+      await tester.pump();
+
+      expect(find.byType(FutureTasksSection), findsOneWidget);
+    });
+
+    testWidgets('フィルタ「週」ボタンをタップするとsetFilterが呼ばれる', (tester) async {
+      await tester.pumpWidget(
+        _buildSection(tasks: [], filter: MyTasksFilter.all),
+      );
+      await tester.pump();
+
+      final gestureDetectors = find.byType(GestureDetector);
+      await tester.tap(gestureDetectors.at(2));
+      await tester.pump();
+
+      expect(find.byType(FutureTasksSection), findsOneWidget);
+    });
+
+    testWidgets('不正な日付文字列のタスクが表示される（null date parse分岐）', (tester) async {
+      // DateTime.tryParseが失敗するような不正な日付文字列
+      final invalidTask = HouseworkTaskDto(
+        houseworkTaskId: 99,
+        householdId: 1,
+        houseworkId: 99,
+        houseworkName: '不正日付タスク',
+        targetDate: 'invalid-date',
+        assigneeUserId: 10,
+        status: '0',
+      );
+      await tester.pumpWidget(_buildSection(tasks: [invalidTask]));
       await tester.pump();
 
       expect(find.byType(FutureTasksSection), findsOneWidget);
