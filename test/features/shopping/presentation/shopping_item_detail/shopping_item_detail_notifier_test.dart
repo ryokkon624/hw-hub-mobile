@@ -108,6 +108,26 @@ void main() {
       ).thenAnswer((_) async => []);
     });
 
+    test('setStoreType: editableStoreType を更新する', () async {
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .setStoreType('2');
+      expect(
+        container.read(shoppingItemDetailNotifierProvider(1)).currentStoreType,
+        '2',
+      );
+      sub.close();
+    });
+
     test('setName: editableName を更新する', () async {
       final container = makeContainer();
       final sub = container.listen(
@@ -252,6 +272,30 @@ void main() {
         container.read(shoppingItemDetailNotifierProvider(1)).isDeleted,
         true,
       );
+      sub.close();
+    });
+
+    test('失敗時: errorMessage がセットされる', () async {
+      when(
+        mockRepo.deleteItem(shoppingItemId: anyNamed('shoppingItemId')),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = makeContainer();
+      final sub = container.listen(
+        shoppingItemDetailNotifierProvider(1),
+        (_, _) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await container
+          .read(shoppingItemDetailNotifierProvider(1).notifier)
+          .deleteItem();
+
+      final state = container.read(shoppingItemDetailNotifierProvider(1));
+      expect(state.isDeleted, false);
+      expect(state.errorMessage, isNotNull);
       sub.close();
     });
   });
