@@ -310,6 +310,175 @@ void main() {
   });
 
   // ==================================
+  // その他の更新メソッド
+  // ==================================
+
+  group('その他更新メソッド', () {
+    test('updateDescription: 説明を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateDescription('毎日やること');
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.description, '毎日やること');
+    });
+
+    test('updateCategory: カテゴリを更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateCategory('COOK');
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.category, 'COOK');
+    });
+
+    test('updateDayOfMonth: 月次日を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateDayOfMonth(20);
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.dayOfMonth, 20);
+    });
+
+    test('updateNthWeek: 第n週を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container.read(houseworkCreateNotifierProvider.notifier).updateNthWeek(2);
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.nthWeek, 2);
+    });
+
+    test('updateWeekday: 曜日を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container.read(houseworkCreateNotifierProvider.notifier).updateWeekday(3);
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.weekday, 3);
+    });
+
+    test('updateStartDate: 開始日を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateStartDate('2026-07-01');
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.startDate, '2026-07-01');
+    });
+
+    test('updateEndDate: 終了日を更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateEndDate('2027-06-30');
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.endDate, '2027-06-30');
+    });
+
+    test('updateDefaultAssigneeUserId: 担当者IDを更新する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateDefaultAssigneeUserId(1);
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.defaultAssigneeUserId, 1);
+    });
+
+    test('updateDefaultAssigneeUserId(null): 担当者IDをクリアする', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateDefaultAssigneeUserId(1);
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateDefaultAssigneeUserId(null);
+
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(state.form.defaultAssigneeUserId, isNull);
+    });
+
+    test('dismissRecommendation: 推薦テキストをクリアする', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+      // テンプレート適用で推薦テキストを設定
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .applyTemplate(state.templates.first, 'ja');
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .dismissRecommendation();
+
+      final updated = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(updated.recommendationText, isNull);
+    });
+
+    test('applyTemplate: enロケールでテンプレートを適用する', () async {
+      final container = _makeContainer();
+      await container.read(houseworkCreateNotifierProvider.future);
+      final state = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .applyTemplate(state.templates.first, 'en');
+
+      final updated = container
+          .read(houseworkCreateNotifierProvider)
+          .valueOrNull!;
+      expect(updated.form.name, 'Template Clean');
+    });
+  });
+
+  // ==================================
   // save (create)
   // ==================================
 

@@ -147,4 +147,222 @@ void main() {
       '#42「テスト問い合わせ」に返信が届いています。内容をご確認ください。',
     );
   });
+
+  testWidgets('acceptInvitation キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('acceptInvitation', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('acceptInvitation', {
+                    'householdName': '山田家',
+                    'memberName': '太郎',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('declineInvitation キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('declineInvitation', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('declineInvitation', {
+                    'householdName': '山田家',
+                    'memberName': '花子',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('removedFromHousehold キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('removedFromHousehold', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('removedFromHousehold', {
+                    'householdName': '山田家',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('leftHousehold キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('leftHousehold', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('leftHousehold', {
+                    'householdName': '山田家',
+                    'memberName': '太郎',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('assigned2Owner キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('assigned2Owner', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('assigned2Owner', {
+                    'householdName': '山田家',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('beDumpedTasks キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('beDumpedTasks', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('beDumpedTasks', {
+                    'actorName': 'パパ',
+                    'household': '自宅',
+                    'date': '2026/05/01',
+                    'count': '3',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('generic キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle('generic', {}),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('generic', {
+                    'household': '自宅',
+                    'date': '2026/05/01',
+                    'count': '1',
+                  }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
 }

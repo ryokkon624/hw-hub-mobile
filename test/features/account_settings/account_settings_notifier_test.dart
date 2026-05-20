@@ -325,4 +325,157 @@ void main() {
       expect(state.isDeletingAccount, isFalse);
     });
   });
+
+  group('AccountSettingsNotifier.uploadIcon()', () {
+    test('5MB超: errorMessage accountSettingsIconTooLarge がセットされる', () async {
+      _stubInitialLoad(mockRepo);
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      // 5MB + 1バイト
+      final largeBytes = List<int>.filled(5 * 1024 * 1024 + 1, 0);
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .uploadIcon(
+            bytes: largeBytes,
+            fileName: 'icon.jpg',
+            mimeType: 'image/jpeg',
+          );
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, 'accountSettingsIconTooLarge');
+    });
+
+    test('成功時: successMessage がセットされ isUploadingIcon が false になる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.createIconUploadUrl(
+          fileName: anyNamed('fileName'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'uploadUrl': 'https://example.com/upload',
+          'fileKey': 'key/icon.jpg',
+        },
+      );
+      when(
+        mockRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        mockRepo.updateIcon(fileKey: anyNamed('fileKey')),
+      ).thenAnswer((_) async {});
+      when(mockRepo.fetchProfile()).thenAnswer(
+        (_) async => const UserProfileDto(
+          userId: 1,
+          email: 'test@example.com',
+          authProvider: 'LOCAL',
+          displayName: 'テスト太郎',
+          locale: 'ja',
+        ),
+      );
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      final smallBytes = [1, 2, 3];
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .uploadIcon(
+            bytes: smallBytes,
+            fileName: 'icon.jpg',
+            mimeType: 'image/jpeg',
+          );
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.successMessage, isNotNull);
+      expect(state.isUploadingIcon, isFalse);
+    });
+
+    test('失敗時: errorMessage がセットされ isUploadingIcon が false になる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.createIconUploadUrl(
+          fileName: anyNamed('fileName'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      final smallBytes = [1, 2, 3];
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .uploadIcon(
+            bytes: smallBytes,
+            fileName: 'icon.jpg',
+            mimeType: 'image/jpeg',
+          );
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      expect(state.errorMessage, isNotNull);
+      expect(state.isUploadingIcon, isFalse);
+    });
+  });
+
+  group('AccountSettingsNotifier.clearError() / clearSuccess()', () {
+    test('clearError: errorMessage が null になる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.updateProfile(
+          displayName: anyNamed('displayName'),
+          locale: anyNamed('locale'),
+        ),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .updateProfile(displayName: '名前', locale: 'ja');
+
+      final before = container.read(accountSettingsNotifierProvider).value!;
+      expect(before.errorMessage, isNotNull);
+
+      container.read(accountSettingsNotifierProvider.notifier).clearError();
+      final after = container.read(accountSettingsNotifierProvider).value!;
+      expect(after.errorMessage, isNull);
+    });
+
+    test('clearSuccess: successMessage が null になる', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.updateProfile(displayName: '新しい名前', locale: 'en'),
+      ).thenAnswer(
+        (_) async => const UserProfileDto(
+          userId: 1,
+          email: 'test@example.com',
+          authProvider: 'LOCAL',
+          displayName: '新しい名前',
+          locale: 'en',
+        ),
+      );
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .updateProfile(displayName: '新しい名前', locale: 'en');
+
+      final before = container.read(accountSettingsNotifierProvider).value!;
+      expect(before.successMessage, isNotNull);
+
+      container.read(accountSettingsNotifierProvider.notifier).clearSuccess();
+      final after = container.read(accountSettingsNotifierProvider).value!;
+      expect(after.successMessage, isNull);
+    });
+  });
 }

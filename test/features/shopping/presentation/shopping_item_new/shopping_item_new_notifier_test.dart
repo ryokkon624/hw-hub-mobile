@@ -85,6 +85,75 @@ void main() {
     });
   });
 
+  group('ShoppingItemNewNotifier fetchHistorySuggestions', () {
+    test('成功時: サジェスト一覧を返す', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchHistorySuggestions(householdId: anyNamed('householdId')),
+      ).thenAnswer(
+        (_) async => [
+          const ShoppingItemHistorySuggestionDto(name: '牛乳', purchaseCount: 3),
+        ],
+      );
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchHistorySuggestions(householdId: 100);
+
+      expect(result, hasLength(1));
+      expect(result.first.name, '牛乳');
+    });
+
+    test('失敗時: 空リストを返して errorMessage をセットする', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchHistorySuggestions(householdId: anyNamed('householdId')),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchHistorySuggestions(householdId: 100);
+
+      expect(result, isEmpty);
+      expect(
+        container.read(shoppingItemNewNotifierProvider).errorMessage,
+        isNotNull,
+      );
+    });
+  });
+
+  group('ShoppingItemNewNotifier fetchFavorites', () {
+    test('成功時: お気に入り一覧を返す', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchFavorites(householdId: anyNamed('householdId')),
+      ).thenAnswer((_) async => [_makeItem(id: 1)]);
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchFavorites(householdId: 100);
+
+      expect(result, hasLength(1));
+    });
+
+    test('失敗時: 空リストを返して errorMessage をセットする', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchFavorites(householdId: anyNamed('householdId')),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchFavorites(householdId: 100);
+
+      expect(result, isEmpty);
+      expect(
+        container.read(shoppingItemNewNotifierProvider).errorMessage,
+        isNotNull,
+      );
+    });
+  });
+
   group('ShoppingItemNewNotifier setFromHistory', () {
     test('履歴から選択すると name/storeType/sourceShoppingItemId をセットする', () {
       final container = makeContainer();
