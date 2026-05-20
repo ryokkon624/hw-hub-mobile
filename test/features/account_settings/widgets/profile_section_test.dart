@@ -83,5 +83,42 @@ void main() {
 
       expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
     });
+
+    testWidgets('保存ボタンをタップするとonSaveが呼ばれる', (tester) async {
+      bool saveCalled = false;
+      await tester.pumpWidget(
+        _buildSection(
+          onSave: (displayName, locale) async {
+            saveCalled = true;
+          },
+        ),
+      );
+      await tester.pump();
+
+      // 名前を変更して保存ボタンを有効にする
+      await tester.enterText(find.byType(TextField), '新しい名前');
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(saveCalled, isTrue);
+    });
+
+    testWidgets('言語Dropdownの変更で選択値が更新される', (tester) async {
+      await tester.pumpWidget(_buildSection());
+      await tester.pump();
+
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+
+      // 英語を選択（2番目）
+      await tester.tap(find.text('English').last);
+      await tester.pumpAndSettle();
+
+      // 保存ボタンが有効になる（locale変更でdirty）
+      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+      expect(button.onPressed, isNotNull);
+    });
   });
 }
