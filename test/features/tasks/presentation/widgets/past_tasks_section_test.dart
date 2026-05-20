@@ -36,6 +36,30 @@ class _FakeMyTasksNotifier extends MyTasksNotifier {
   Future<void> bulkCompletePastTasks() async {}
 }
 
+class _RecordingMyTasksNotifier extends MyTasksNotifier {
+  _RecordingMyTasksNotifier(this._state);
+  final MyTasksState _state;
+
+  int? completedTaskId;
+  int? skippedTaskId;
+
+  @override
+  Future<MyTasksState> build() async => _state;
+
+  @override
+  Future<void> bulkCompletePastTasks() async {}
+
+  @override
+  Future<void> completeTask(int taskId) async {
+    completedTaskId = taskId;
+  }
+
+  @override
+  Future<void> skipTask(int taskId) async {
+    skippedTaskId = taskId;
+  }
+}
+
 Widget _buildSection({required List<HouseworkTaskDto> tasks}) {
   final notifier = _FakeMyTasksNotifier(
     MyTasksState(futureTasks: [], pastTasks: tasks),
@@ -47,6 +71,16 @@ Widget _buildSection({required List<HouseworkTaskDto> tasks}) {
     overrides: [myTasksNotifierProvider.overrideWith(() => notifier)],
   );
 }
+
+Widget _buildSectionWithRecorder({
+  required List<HouseworkTaskDto> tasks,
+  required _RecordingMyTasksNotifier notifier,
+}) => buildTestPage(
+  Scaffold(
+    body: SingleChildScrollView(child: PastTasksSection(tasks: tasks)),
+  ),
+  overrides: [myTasksNotifierProvider.overrideWith(() => notifier)],
+);
 
 void main() {
   group('PastTasksSection', () {
@@ -168,6 +202,58 @@ void main() {
       await tester.pump();
 
       expect(find.byType(SwipeableTaskCard), findsOneWidget);
+    });
+
+    testWidgets('タスクを右スワイプするとonCompleteコールバックが呼ばれる', (tester) async {
+      final task = _task(id: 10, targetDate: _daysAgo(1));
+      final notifier = _RecordingMyTasksNotifier(
+        MyTasksState(futureTasks: [], pastTasks: [task]),
+      );
+      await tester.pumpWidget(
+        _buildSectionWithRecorder(tasks: [task], notifier: notifier),
+      );
+      await tester.pump();
+
+      await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+      await tester.pumpAndSettle();
+
+      expect(notifier.completedTaskId, 10);
+    });
+
+    testWidgets('タスクを左スワイプするとonSkipコールバックが呼ばれる', (tester) async {
+      final task = _task(id: 11, targetDate: _daysAgo(1));
+      final notifier = _RecordingMyTasksNotifier(
+        MyTasksState(futureTasks: [], pastTasks: [task]),
+      );
+      await tester.pumpWidget(
+        _buildSectionWithRecorder(tasks: [task], notifier: notifier),
+      );
+      await tester.pump();
+
+      await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+
+      expect(notifier.skippedTaskId, 11);
+    });
+
+    testWidgets('一括完了ダイアログの確認後にbulkCompletePastTasksが呼ばれる', (tester) async {
+      final task = _task(id: 5, targetDate: _daysAgo(1));
+      final notifier = _RecordingMyTasksNotifier(
+        MyTasksState(futureTasks: [], pastTasks: [task]),
+      );
+      await tester.pumpWidget(
+        _buildSectionWithRecorder(tasks: [task], notifier: notifier),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      final buttons = find.byType(TextButton);
+      await tester.tap(buttons.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
     });
   });
 }

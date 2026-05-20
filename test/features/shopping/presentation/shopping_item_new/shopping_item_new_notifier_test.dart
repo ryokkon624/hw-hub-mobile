@@ -104,11 +104,28 @@ void main() {
       expect(result.first.name, '牛乳');
     });
 
-    test('失敗時: 空リストを返して errorMessage をセットする', () async {
+    test('AppException 失敗時: 空リストを返して errorMessage をセットする', () async {
       final container = makeContainer();
       when(
         mockRepo.fetchHistorySuggestions(householdId: anyNamed('householdId')),
       ).thenThrow(const NetworkException('接続エラー'));
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchHistorySuggestions(householdId: 100);
+
+      expect(result, isEmpty);
+      expect(
+        container.read(shoppingItemNewNotifierProvider).errorMessage,
+        isNotNull,
+      );
+    });
+
+    test('予期しない例外: 空リストを返して errorMessage をセットする', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchHistorySuggestions(householdId: anyNamed('householdId')),
+      ).thenThrow(Exception('unexpected'));
 
       final result = await container
           .read(shoppingItemNewNotifierProvider.notifier)
@@ -136,11 +153,28 @@ void main() {
       expect(result, hasLength(1));
     });
 
-    test('失敗時: 空リストを返して errorMessage をセットする', () async {
+    test('AppException 失敗時: 空リストを返して errorMessage をセットする', () async {
       final container = makeContainer();
       when(
         mockRepo.fetchFavorites(householdId: anyNamed('householdId')),
       ).thenThrow(const NetworkException('接続エラー'));
+
+      final result = await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .fetchFavorites(householdId: 100);
+
+      expect(result, isEmpty);
+      expect(
+        container.read(shoppingItemNewNotifierProvider).errorMessage,
+        isNotNull,
+      );
+    });
+
+    test('予期しない例外: 空リストを返して errorMessage をセットする', () async {
+      final container = makeContainer();
+      when(
+        mockRepo.fetchFavorites(householdId: anyNamed('householdId')),
+      ).thenThrow(Exception('unexpected'));
 
       final result = await container
           .read(shoppingItemNewNotifierProvider.notifier)
@@ -390,7 +424,7 @@ void main() {
       );
     });
 
-    test('createItem が失敗した場合: errorMessage がセットされる', () async {
+    test('createItem が AppException で失敗した場合: errorMessage がセットされる', () async {
       final container = makeContainer();
       container.read(shoppingItemNewNotifierProvider.notifier).setName('牛乳');
       when(
@@ -407,6 +441,196 @@ void main() {
       final state = container.read(shoppingItemNewNotifierProvider);
       expect(state.errorMessage, isNotNull);
       expect(state.isSubmitting, false);
+    });
+
+    test('createItem が予期しない例外で失敗した場合: errorMessage がセットされる', () async {
+      final container = makeContainer();
+      container.read(shoppingItemNewNotifierProvider.notifier).setName('牛乳');
+      when(
+        mockRepo.createItem(
+          householdId: anyNamed('householdId'),
+          req: anyNamed('req'),
+        ),
+      ).thenThrow(Exception('unexpected'));
+
+      await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .submit(householdId: 100);
+
+      final state = container.read(shoppingItemNewNotifierProvider);
+      expect(state.errorMessage, isNotNull);
+      expect(state.isSubmitting, false);
+    });
+  });
+
+  group('ShoppingItemNewNotifier _mimeTypeFromFileName', () {
+    test('png 拡張子: image/png を返す', () async {
+      final container = makeContainer();
+      container.read(shoppingItemNewNotifierProvider.notifier).setName('牛乳');
+      final bytes = Uint8List.fromList([1, 2, 3]);
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setPickedImage(bytes, 'image.png');
+
+      when(
+        mockRepo.createItem(
+          householdId: anyNamed('householdId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async => _makeItem(id: 10));
+
+      when(
+        mockAttachRepo.createUploadUrl(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer(
+        (_) async => const CreateUploadUrlResponse(
+          uploadUrl: 'https://s3.example.com/upload',
+          fileKey: 'shopping/10/image.png',
+        ),
+      );
+
+      when(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer((_) async {});
+
+      when(
+        mockAttachRepo.createAttachment(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .submit(householdId: 100);
+
+      // mimeType 'image/png' が渡されていること
+      final captured = verify(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: captureAnyNamed('mimeType'),
+        ),
+      ).captured;
+      expect(captured.first, 'image/png');
+    });
+
+    test('webp 拡張子: image/webp を返す', () async {
+      final container = makeContainer();
+      container.read(shoppingItemNewNotifierProvider.notifier).setName('牛乳');
+      final bytes = Uint8List.fromList([1, 2, 3]);
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setPickedImage(bytes, 'image.webp');
+
+      when(
+        mockRepo.createItem(
+          householdId: anyNamed('householdId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async => _makeItem(id: 10));
+
+      when(
+        mockAttachRepo.createUploadUrl(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer(
+        (_) async => const CreateUploadUrlResponse(
+          uploadUrl: 'https://s3.example.com/upload',
+          fileKey: 'shopping/10/image.webp',
+        ),
+      );
+
+      when(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer((_) async {});
+
+      when(
+        mockAttachRepo.createAttachment(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .submit(householdId: 100);
+
+      final captured = verify(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: captureAnyNamed('mimeType'),
+        ),
+      ).captured;
+      expect(captured.first, 'image/webp');
+    });
+
+    test('不明な拡張子: image/jpeg を返す（default分岐）', () async {
+      final container = makeContainer();
+      container.read(shoppingItemNewNotifierProvider.notifier).setName('牛乳');
+      final bytes = Uint8List.fromList([1, 2, 3]);
+      container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .setPickedImage(bytes, 'image.bmp');
+
+      when(
+        mockRepo.createItem(
+          householdId: anyNamed('householdId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async => _makeItem(id: 10));
+
+      when(
+        mockAttachRepo.createUploadUrl(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer(
+        (_) async => const CreateUploadUrlResponse(
+          uploadUrl: 'https://s3.example.com/upload',
+          fileKey: 'shopping/10/image.bmp',
+        ),
+      );
+
+      when(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer((_) async {});
+
+      when(
+        mockAttachRepo.createAttachment(
+          itemId: anyNamed('itemId'),
+          req: anyNamed('req'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await container
+          .read(shoppingItemNewNotifierProvider.notifier)
+          .submit(householdId: 100);
+
+      final captured = verify(
+        mockAttachRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: captureAnyNamed('mimeType'),
+        ),
+      ).captured;
+      expect(captured.first, 'image/jpeg');
     });
   });
 }

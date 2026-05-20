@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
@@ -20,6 +23,110 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
       selectedHousehold: Household(id: 1, name: '山田家'),
     );
   }
+}
+
+/// selectedHousehold が null の世帯ノティファイア（build()のnull分岐用）
+class _NullHouseholdNotifier extends HouseholdNotifier {
+  @override
+  Future<HouseholdState> build() async {
+    return const HouseholdState(households: [], selectedHousehold: null);
+  }
+}
+
+/// 認証済みユーザーを返す FakeAuthNotifier（loginUserId非null用）
+class _FakeAuthNotifier extends AuthNotifier {
+  @override
+  Future<AuthState> build() async {
+    return const AuthAuthenticated(
+      AuthUser(userId: 1, email: 'test@example.com', displayName: '山田太郎'),
+    );
+  }
+}
+
+/// 正しい status コードを使うモックリポジトリ（loginUserId非null分岐用）
+class _MockRepoWithActiveStatus implements HouseholdSettingsRepository {
+  const _MockRepoWithActiveStatus();
+
+  @override
+  Future<List<HouseholdSettingsMemberDto>> fetchMembers({
+    required int householdId,
+  }) async {
+    return [
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 1,
+        displayName: '山田太郎',
+        status: '1', // active
+        role: 'OWNER',
+      ),
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 2,
+        displayName: '山田花子',
+        status: '1', // active
+        role: 'MEMBER',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<HouseholdInvitationDto>> fetchInvitations({
+    required int householdId,
+  }) async => [];
+
+  @override
+  Future<HouseholdInvitationDto> createInvitation({
+    required int householdId,
+    required String invitedEmail,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> revokeInvitation({required String token}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> updateHouseholdName({
+    required int householdId,
+    required String name,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> updateNickname({
+    required int householdId,
+    required String nickname,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> removeMember({
+    required int householdId,
+    required int userId,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> transferOwner({
+    required int householdId,
+    required int newOwnerUserId,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> leaveHousehold({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<HouseholdSettingsDto> createHousehold({required String name}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> deleteHousehold({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<int> fetchHouseworkCount({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<int> fetchShoppingCount({required int householdId}) async =>
+      throw UnimplementedError();
 }
 
 /// Mockリポジトリ（デフォルト成功）
@@ -187,6 +294,35 @@ ProviderContainer _makeContainer({
           unexpectedMethod: unexpectedMethod,
         ),
       ),
+    ],
+  );
+  addTearDown(container.dispose);
+  return container;
+}
+
+/// 認証済みユーザーID付きのコンテナ（_computeIsOwner/_computeHasOtherActive の非null分岐用）
+ProviderContainer _makeContainerWithAuth() {
+  SharedPreferences.setMockInitialValues({});
+  final container = ProviderContainer(
+    overrides: [
+      householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+      authNotifierProvider.overrideWith(_FakeAuthNotifier.new),
+      householdSettingsRepositoryProvider.overrideWithValue(
+        const _MockRepoWithActiveStatus(),
+      ),
+    ],
+  );
+  addTearDown(container.dispose);
+  return container;
+}
+
+/// selectedHousehold=nullのコンテナ（build()のnull分岐用）
+ProviderContainer _makeContainerNullHousehold() {
+  SharedPreferences.setMockInitialValues({});
+  final container = ProviderContainer(
+    overrides: [
+      householdNotifierProvider.overrideWith(_NullHouseholdNotifier.new),
+      householdSettingsRepositoryProvider.overrideWithValue(const _MockRepo()),
     ],
   );
   addTearDown(container.dispose);
@@ -680,5 +816,35 @@ void main() {
       expect(updated.isCreatingInvite, isTrue);
       expect(updated.isLoadingDeleteCounts, isTrue);
     });
+  });
+
+  group('HouseholdSettingsNotifier.build() - 追加分岐', () {
+    test('selectedHousehold=null のとき HouseholdSettingsState() が返る', () async {
+      final container = _makeContainerNullHousehold();
+      final state = await container.read(
+        householdSettingsNotifierProvider.future,
+      );
+
+      // selectedHousehold が null → 空状態を返す
+      expect(state.members, isEmpty);
+      expect(state.invitations, isEmpty);
+    });
+
+    test(
+      'loginUserId が非null のとき isCurrentUserOwner/hasOtherActiveMembers が計算される',
+      () async {
+        final container = _makeContainerWithAuth();
+        // auth notifierを先に解決しておく
+        await container.read(authNotifierProvider.future);
+        final state = await container.read(
+          householdSettingsNotifierProvider.future,
+        );
+
+        // userId=1 は OWNER なので isCurrentUserOwner=true
+        expect(state.isCurrentUserOwner, isTrue);
+        // userId=2 は MEMBER（ACTIVE）なので hasOtherActiveMembers=true
+        expect(state.hasOtherActiveMembers, isTrue);
+      },
+    );
   });
 }
