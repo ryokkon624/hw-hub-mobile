@@ -129,7 +129,9 @@ void main() {
           ..setPassword('password123');
         await container.read(loginNotifierProvider.notifier).submit();
 
-        expect(container.read(loginNotifierProvider).errorMessage, isNull);
+        final loginState = container.read(loginNotifierProvider);
+        expect(loginState.errorMessage, isNull);
+        expect(loginState.isLoading, false);
 
         // authNotifier が user を保持した AuthAuthenticated になること
         final authState = container.read(authNotifierProvider).value;
