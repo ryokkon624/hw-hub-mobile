@@ -18,6 +18,14 @@ class _NicknameSectionState extends ConsumerState<NicknameSection> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    // 初期表示: 既に State が利用可能な場合は currentNickname をセット
+    final currentNickname = ref
+        .read(householdSettingsNotifierProvider)
+        .valueOrNull
+        ?.currentNickname;
+    if (currentNickname != null) {
+      _controller.text = currentNickname;
+    }
   }
 
   @override
@@ -33,6 +41,17 @@ class _NicknameSectionState extends ConsumerState<NicknameSection> {
     final l10n = AppLocalizations.of(context);
     final notifierState = ref.watch(householdSettingsNotifierProvider);
     final isSaving = notifierState.valueOrNull?.isSavingNickname ?? false;
+
+    // 世帯切り替えで currentNickname が変化したらコントローラーを更新する
+    ref.listen(householdSettingsNotifierProvider, (prev, next) {
+      final prevNickname = prev?.valueOrNull?.currentNickname;
+      final nextNickname = next.valueOrNull?.currentNickname;
+      if (nextNickname != null && nextNickname != prevNickname) {
+        setState(() {
+          _controller.text = nextNickname;
+        });
+      }
+    });
 
     return Card(
       key: const Key('nicknameSection'),

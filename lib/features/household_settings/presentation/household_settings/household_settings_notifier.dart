@@ -38,6 +38,7 @@ class HouseholdSettingsNotifier
       invitations: invitations,
       isCurrentUserOwner: _computeIsOwner(members, loginUserId),
       hasOtherActiveMembers: _computeHasOtherActive(members, loginUserId),
+      currentNickname: _computeCurrentNickname(members, loginUserId),
     );
   }
 
@@ -47,6 +48,17 @@ class HouseholdSettingsNotifier
   int? get _loginUserId {
     final authState = ref.read(authNotifierProvider).valueOrNull;
     return authState is AuthAuthenticated ? authState.user.userId : null;
+  }
+
+  /// ログインユーザーのニックネームを事前計算する（nickname ?? displayName）。
+  String? _computeCurrentNickname(
+    List<HouseholdSettingsMemberDto> members,
+    int? loginUserId,
+  ) {
+    if (loginUserId == null) return null;
+    final me = members.where((m) => m.userId == loginUserId).firstOrNull;
+    if (me == null) return null;
+    return me.nickname ?? me.displayName;
   }
 
   /// メンバーリストからOWNER判定を事前計算する。

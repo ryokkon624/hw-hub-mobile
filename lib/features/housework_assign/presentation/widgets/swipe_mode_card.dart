@@ -101,63 +101,51 @@ class SwipeModeCard extends StatelessWidget {
             ),
           ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                task.houseworkName,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              // 実施日（Overdue の場合は赤背景・赤文字で装飾）
-              Container(
-                key: const Key('swipe_mode_card_date_container'),
-                color: isOverdue ? colorScheme?.paletteRoseSoft : null,
-                padding: isOverdue
-                    ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2)
-                    : EdgeInsets.zero,
-                child: Text(
-                  l10n.houseworkAssignTargetDateLabel(task.targetDate),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isOverdue ? colorScheme?.paletteRoseText : null,
-                    fontWeight: isOverdue ? FontWeight.w600 : null,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // 担当者（UserAvatar + テキスト）
-              Row(
+        child: Row(
+          key: const Key('swipe_mode_card_content_row'),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 左側: 担当者アイコン（assignableTaskCard と同様のレイアウト）
+            UserAvatar(
+              key: const Key('swipe_mode_card_assignee_avatar'),
+              iconUrl: assigneeIconUrl,
+              label: task.assigneeUserId == null
+                  ? ''
+                  : (task.assigneeNickname ?? task.assigneeUserId.toString()),
+              isUnassigned: task.assigneeUserId == null,
+              size: UserAvatarSize.md,
+            ),
+            const SizedBox(width: 16),
+            // 右側: タスク情報
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  UserAvatar(
-                    key: const Key('swipe_mode_card_assignee_avatar'),
-                    iconUrl: assigneeIconUrl,
-                    label: task.assigneeUserId == null
-                        ? ''
-                        : (task.assigneeNickname ??
-                              task.assigneeUserId.toString()),
-                    isUnassigned: task.assigneeUserId == null,
-                    size: UserAvatarSize.md,
+                  Text(
+                    task.houseworkName,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
+                  const SizedBox(height: 8),
+                  // 実施日（Overdue の場合は赤背景・赤文字で装飾）
+                  Container(
+                    key: const Key('swipe_mode_card_date_container'),
+                    color: isOverdue ? colorScheme?.paletteRoseSoft : null,
+                    padding: isOverdue
+                        ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2)
+                        : EdgeInsets.zero,
                     child: Text(
-                      l10n.houseworkAssignCurrentAssigneeLabel(
-                        task.assigneeUserId == null
-                            ? l10n.houseworkAssignAssigneeUnassigned
-                            : (task.assigneeNickname ??
-                                  task.assigneeUserId.toString()),
+                      l10n.houseworkAssignTargetDateLabel(task.targetDate),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isOverdue ? colorScheme?.paletteRoseText : null,
+                        fontWeight: isOverdue ? FontWeight.w600 : null,
                       ),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

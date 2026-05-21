@@ -200,5 +200,30 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('UserAvatarがカード本体の行レイアウト（左側）に配置される', (tester) async {
+      // カードコンテンツのRowを見つけ、UserAvatarが最初の子（左側）であることを確認する
+      await tester.pumpWidget(
+        _buildCard(
+          onAssignToMe: () {},
+          onNext: () {},
+          assigneeUserId: 1,
+          assigneeIconUrl: null,
+        ),
+      );
+      await tester.pump();
+
+      // swipe_mode_card_content_row が存在する（行レイアウト）
+      final rowFinder = find.byKey(const Key('swipe_mode_card_content_row'));
+      expect(rowFinder, findsOneWidget);
+
+      // swipe_mode_card_assignee_avatar が swipe_mode_card_content_row の子孫に存在する
+      // 左側に配置されていることはRowの最初の子であることで確認
+      final row = tester.widget<Row>(rowFinder);
+      expect(
+        row.children.first.key,
+        const Key('swipe_mode_card_assignee_avatar'),
+      );
+    });
   });
 }

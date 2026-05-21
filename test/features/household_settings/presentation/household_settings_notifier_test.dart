@@ -129,6 +129,94 @@ class _MockRepoWithActiveStatus implements HouseholdSettingsRepository {
       throw UnimplementedError();
 }
 
+/// nicknameが設定されたメンバーを返すモックリポジトリ
+class _MockRepoWithNickname implements HouseholdSettingsRepository {
+  const _MockRepoWithNickname();
+
+  @override
+  Future<List<HouseholdSettingsMemberDto>> fetchMembers({
+    required int householdId,
+  }) async {
+    return [
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 1,
+        displayName: '山田太郎',
+        nickname: 'お父さん',
+        status: '1',
+        role: 'OWNER',
+      ),
+      const HouseholdSettingsMemberDto(
+        householdId: 1,
+        userId: 2,
+        displayName: '山田花子',
+        nickname: 'お母さん',
+        status: '1',
+        role: 'MEMBER',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<HouseholdInvitationDto>> fetchInvitations({
+    required int householdId,
+  }) async => [];
+
+  @override
+  Future<HouseholdInvitationDto> createInvitation({
+    required int householdId,
+    required String invitedEmail,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> revokeInvitation({required String token}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> updateHouseholdName({
+    required int householdId,
+    required String name,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> updateNickname({
+    required int householdId,
+    required String nickname,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> removeMember({
+    required int householdId,
+    required int userId,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> transferOwner({
+    required int householdId,
+    required int newOwnerUserId,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> leaveHousehold({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<HouseholdSettingsDto> createHousehold({required String name}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> deleteHousehold({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<int> fetchHouseworkCount({required int householdId}) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<int> fetchShoppingCount({required int householdId}) async =>
+      throw UnimplementedError();
+}
+
 /// Mockリポジトリ（デフォルト成功）
 class _MockRepo implements HouseholdSettingsRepository {
   final bool shouldFail;
@@ -858,6 +946,61 @@ void main() {
       final async = container.read(householdSettingsNotifierProvider);
       expect(async.hasValue, true);
       expect(async.value!.members, hasLength(2));
+    });
+  });
+
+  group('HouseholdSettingsNotifier.build() - currentNickname', () {
+    test('nicknameが設定されている場合: currentNicknameはnicknameになる', () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer(
+        overrides: [
+          householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+          authNotifierProvider.overrideWith(_FakeAuthNotifier.new),
+          householdSettingsRepositoryProvider.overrideWithValue(
+            const _MockRepoWithNickname(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(authNotifierProvider.future);
+      final state = await container.read(
+        householdSettingsNotifierProvider.future,
+      );
+
+      // userId=1 のnicknameは'お父さん'
+      expect(state.currentNickname, 'お父さん');
+    });
+
+    test('nicknameがnullの場合: currentNicknameはdisplayNameになる', () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer(
+        overrides: [
+          householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+          authNotifierProvider.overrideWith(_FakeAuthNotifier.new),
+          householdSettingsRepositoryProvider.overrideWithValue(
+            const _MockRepoWithActiveStatus(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(authNotifierProvider.future);
+      final state = await container.read(
+        householdSettingsNotifierProvider.future,
+      );
+
+      // userId=1 のnicknameはnull → displayNameの'山田太郎'になる
+      expect(state.currentNickname, '山田太郎');
+    });
+
+    test('loginUserIdがnullの場合: currentNicknameはnullになる', () async {
+      final container = _makeContainerNullHousehold();
+      final state = await container.read(
+        householdSettingsNotifierProvider.future,
+      );
+
+      expect(state.currentNickname, isNull);
     });
   });
 }

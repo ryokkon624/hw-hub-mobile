@@ -23,8 +23,20 @@ class MessageBubble extends StatelessWidget {
       null => message.senderType,
     };
 
-    final bubbleColor = isUser ? colors.primary : colors.surfaceCard;
-    final textColor = isUser ? colors.onPrimary : colors.textBody;
+    final (bubbleColor, bubbleBorderColor, textColor) = switch (senderType) {
+      SenderType.you => (colors.primary, null as Color?, colors.onPrimary),
+      SenderType.aiSupport => (
+        colors.paletteVioletSoft,
+        colors.paletteVioletBorder,
+        colors.paletteVioletText,
+      ),
+      SenderType.staff => (
+        colors.paletteEmeraldSoft,
+        colors.paletteEmeraldBorder,
+        colors.paletteEmeraldText,
+      ),
+      null => (colors.surfaceCard, colors.border, colors.textBody),
+    };
     final alignment = isUser
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
@@ -45,6 +57,7 @@ class MessageBubble extends StatelessWidget {
         ),
         // バブル本体
         Container(
+          key: const Key('messageBubble'),
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
@@ -52,9 +65,12 @@ class MessageBubble extends StatelessWidget {
           decoration: BoxDecoration(
             color: bubbleColor,
             borderRadius: BorderRadius.circular(12),
-            border: isUser ? null : Border.all(color: colors.border),
+            border: bubbleBorderColor != null
+                ? Border.all(color: bubbleBorderColor)
+                : null,
           ),
           child: Text(
+            key: const Key('messageBubbleText'),
             message.body,
             style: TextStyle(color: textColor, fontSize: 14),
           ),
