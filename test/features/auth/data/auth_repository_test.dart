@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/auth/data/auth_repository.dart';
-import 'package:hw_hub_mobile/features/auth/data/models/auth_user.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/invitation_info.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/login_response.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/register_response.dart';
@@ -15,13 +16,16 @@ DioException _dioErr({Object? error}) => DioException(
   error: error,
 );
 
+/// テスト用の S3UrlResolver（isDebug=true で localhost → 10.0.2.2 に変換する）
+const _debugResolver = S3UrlResolver(isDebug: true);
+
 void main() {
   late MockAuthApi mockApi;
   late AuthRepositoryImpl sut;
 
   setUp(() {
     mockApi = MockAuthApi();
-    sut = AuthRepositoryImpl(api: mockApi);
+    sut = AuthRepositoryImpl(api: mockApi, s3UrlResolver: _debugResolver);
   });
 
   group('AuthRepositoryImpl', () {
@@ -247,11 +251,28 @@ void main() {
     });
 
     group('getMyProfile', () {
-      test('成功時にAuthUserを返す', () async {
+      test('成功時にAuthUserを返す（iconUrl が null の場合）', () async {
         const user = AuthUser(userId: 1, email: 'a@b.com', displayName: 'A');
         when(mockApi.getMyProfile()).thenAnswer((_) async => user);
 
-        expect(await sut.getMyProfile(), user);
+        final result = await sut.getMyProfile();
+        expect(result.userId, 1);
+        expect(result.email, 'a@b.com');
+        expect(result.iconUrl, isNull);
+      });
+
+      test('成功時: iconUrl が localhost URL の場合に 10.0.2.2 に変換される', () async {
+        const user = AuthUser(
+          userId: 1,
+          email: 'a@b.com',
+          displayName: 'A',
+          iconUrl: 'http://localhost:4566/hw-hub-bucket/user-icon/1/icon.jpg',
+        );
+        when(mockApi.getMyProfile()).thenAnswer((_) async => user);
+
+        final result = await sut.getMyProfile();
+        expect(result.iconUrl, contains('10.0.2.2'));
+        expect(result.iconUrl, isNot(contains('localhost')));
       });
 
       test('DioException → NetworkException', () {

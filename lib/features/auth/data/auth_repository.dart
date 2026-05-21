@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/models/auth_user.dart';
 import '../../../core/network/app_exception.dart';
+import '../../../core/network/s3_url_resolver.dart';
 import 'auth_api.dart';
 import 'models/invitation_info.dart';
 import 'models/login_response.dart';
@@ -44,9 +45,14 @@ abstract interface class AuthRepository {
 }
 
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl({required AuthApi api}) : _api = api;
+  const AuthRepositoryImpl({
+    required AuthApi api,
+    required S3UrlResolver s3UrlResolver,
+  }) : _api = api,
+       _s3UrlResolver = s3UrlResolver;
 
   final AuthApi _api;
+  final S3UrlResolver _s3UrlResolver;
 
   AppException _convert(DioException e) => e.error is AppException
       ? e.error as AppException
@@ -55,7 +61,14 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<AuthUser> getMyProfile() async {
     try {
-      return await _api.getMyProfile();
+      final user = await _api.getMyProfile();
+      // LocalStack 環境では iconUrl が localhost URL のため、変換して返す
+      return AuthUser(
+        userId: user.userId,
+        email: user.email,
+        displayName: user.displayName,
+        iconUrl: _s3UrlResolver.resolve(user.iconUrl),
+      );
     } on DioException catch (e) {
       throw _convert(e);
     }

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/providers.dart';
+import '../../core/network/s3_url_resolver.dart';
 import 'data/account_settings_repository.dart';
 
 /// S3 に直接 PUT するための素 Dio（インターセプターなし）
@@ -15,5 +17,6 @@ final accountSettingsRepositoryProvider = Provider<AccountSettingsRepository>((
   return AccountSettingsRepositoryImpl(
     ref.watch(dioProvider),
     ref.watch(accountS3DioProvider),
+    S3UrlResolver(isDebug: kDebugMode),
   );
 });

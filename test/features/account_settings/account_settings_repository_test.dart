@@ -3,12 +3,16 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../helpers/mocks.mocks.dart';
 
 RequestOptions _req(String path) => RequestOptions(path: path);
+
+/// テスト用の S3UrlResolver（isDebug=true で localhost → 10.0.2.2 に変換する）
+const _debugResolver = S3UrlResolver(isDebug: true);
 
 void main() {
   late MockDio mockDio;
@@ -18,7 +22,7 @@ void main() {
   setUp(() {
     mockDio = MockDio();
     mockS3Dio = MockDio();
-    repo = AccountSettingsRepositoryImpl(mockDio, mockS3Dio);
+    repo = AccountSettingsRepositoryImpl(mockDio, mockS3Dio, _debugResolver);
   });
 
   // ==================================
@@ -26,7 +30,7 @@ void main() {
   // ==================================
 
   group('fetchProfile()', () {
-    test('成功時: UserProfileDto を返す', () async {
+    test('成功時: UserProfileDto を返す（iconUrl が null の場合）', () async {
       when(mockDio.get<dynamic>('/api/users/me/profile')).thenAnswer(
         (_) async => Response(
           requestOptions: _req('/api/users/me/profile'),
@@ -50,6 +54,29 @@ void main() {
       expect(result.displayName, 'テスト太郎');
       expect(result.locale, 'ja');
       expect(result.iconUrl, isNull);
+    });
+
+    test('成功時: iconUrl が localhost URL の場合に 10.0.2.2 に変換される', () async {
+      when(mockDio.get<dynamic>('/api/users/me/profile')).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/users/me/profile'),
+          statusCode: 200,
+          data: {
+            'userId': 1,
+            'email': 'test@example.com',
+            'authProvider': 'LOCAL',
+            'displayName': 'テスト太郎',
+            'locale': 'ja',
+            'iconUrl':
+                'http://localhost:4566/hw-hub-bucket/user-icon/1/icon.jpg',
+          },
+        ),
+      );
+
+      final result = await repo.fetchProfile();
+
+      expect(result.iconUrl, contains('10.0.2.2'));
+      expect(result.iconUrl, isNot(contains('localhost')));
     });
 
     test('DioException 発生時: AppException を再スロー', () async {
