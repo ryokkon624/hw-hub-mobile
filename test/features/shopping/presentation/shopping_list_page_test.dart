@@ -112,6 +112,12 @@ final _singleHouseholdState = HouseholdState(
   selectedHousehold: const Household(id: 1, name: '我が家'),
 );
 
+// 世帯未所属状態（selectedHousehold == null）
+final _noHouseholdState = HouseholdState(
+  households: const [],
+  selectedHousehold: null,
+);
+
 final _multiHouseholdState = HouseholdState(
   households: [
     const Household(id: 1, name: '我が家'),
@@ -134,6 +140,18 @@ List<Override> _buildOverrides({
   ),
   shoppingListNotifierProvider.overrideWith(
     () => _FakeShoppingListNotifier(items),
+  ),
+];
+
+List<Override> _buildNoHouseholdOverrides() => [
+  authNotifierProvider.overrideWith(
+    () => _FakeAuthNotifier(AuthAuthenticated(_testUser)),
+  ),
+  householdNotifierProvider.overrideWith(
+    () => _FakeSingleHouseholdNotifier(_noHouseholdState),
+  ),
+  shoppingListNotifierProvider.overrideWith(
+    () => _FakeShoppingListNotifier([]),
   ),
 ];
 
@@ -311,6 +329,48 @@ void main() {
 
       // ボタンが表示されていること
       expect(find.text('+ アイテムを追加'), findsOneWidget);
+    });
+
+    testWidgets('世帯未所属時は「+ アイテムを追加」ボタンが非活性になる（#134）', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const ShoppingListPage(),
+          overrides: _buildNoHouseholdOverrides(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // ボタンが表示されていること
+      final button = tester.widget<ElevatedButton>(
+        find.ancestor(
+          of: find.text('+ アイテムを追加'),
+          matching: find.byType(ElevatedButton),
+        ),
+      );
+      // onPressed が null (disabled) になっていること
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets('世帯所属時は「+ アイテムを追加」ボタンが活性になる（#134）', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const ShoppingListPage(),
+          overrides: _buildOverrides(items: []),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // ボタンが表示されていること
+      final button = tester.widget<ElevatedButton>(
+        find.ancestor(
+          of: find.text('+ アイテムを追加'),
+          matching: find.byType(ElevatedButton),
+        ),
+      );
+      // onPressed が非 null (enabled) になっていること
+      expect(button.onPressed, isNotNull);
     });
 
     testWidgets('+ アイテムを追加ボタンタップで/shopping/newへ遷移する（AC12）', (tester) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app_router.dart';
+import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -72,6 +73,8 @@ class _ShoppingBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final householdAsync = ref.watch(householdNotifierProvider);
+    final hasHousehold = householdAsync.valueOrNull?.selectedHousehold != null;
 
     return Column(
       children: [
@@ -86,7 +89,9 @@ class _ShoppingBody extends ConsumerWidget {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push(AppRoutes.shoppingNew),
+              onPressed: hasHousehold
+                  ? () => context.push(AppRoutes.shoppingNew)
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
