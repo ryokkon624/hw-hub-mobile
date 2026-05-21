@@ -657,5 +657,56 @@ void main() {
 
       expect(() => repo.deleteAccount(), throwsA(isA<NetworkException>()));
     });
+
+    test('updateThemeMode: NetworkException をスロー', () async {
+      when(
+        mockDio.patch<dynamic>('/api/users/me/theme', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/theme'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.updateThemeMode(themeMode: 'LIGHT'),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+  });
+
+  // ==================================
+  // updateThemeMode
+  // ==================================
+
+  group('updateThemeMode()', () {
+    test('成功時: 例外なく完了する', () async {
+      when(
+        mockDio.patch<dynamic>('/api/users/me/theme', data: anyNamed('data')),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('/api/users/me/theme'),
+          statusCode: 204,
+        ),
+      );
+
+      await expectLater(repo.updateThemeMode(themeMode: 'LIGHT'), completes);
+    });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      when(
+        mockDio.patch<dynamic>('/api/users/me/theme', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/theme'),
+          error: const NetworkException(),
+        ),
+      );
+
+      expect(
+        () => repo.updateThemeMode(themeMode: 'DARK'),
+        throwsA(isA<AppException>()),
+      );
+    });
   });
 }

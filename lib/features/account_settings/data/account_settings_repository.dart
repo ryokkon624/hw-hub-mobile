@@ -51,6 +51,9 @@ abstract class AccountSettingsRepository {
   /// Google アカウントをモバイル用 IDトークンで連携する。
   Future<void> linkGoogleAccount({required String idToken});
 
+  /// テーマモードを更新する（バックエンドとの同期 AC5）。
+  Future<void> updateThemeMode({required String themeMode});
+
   /// アカウントを削除する（論理削除）。
   Future<void> deleteAccount();
 }
@@ -221,6 +224,19 @@ class AccountSettingsRepositoryImpl implements AccountSettingsRepository {
       await _dio.post<dynamic>(
         '/api/users/me/google/link/mobile',
         data: {'idToken': idToken},
+      );
+    } on DioException catch (e) {
+      if (e.error is AppException) throw e.error!;
+      throw NetworkException(e.message ?? 'Network error');
+    }
+  }
+
+  @override
+  Future<void> updateThemeMode({required String themeMode}) async {
+    try {
+      await _dio.patch<dynamic>(
+        '/api/users/me/theme',
+        data: {'themeMode': themeMode},
       );
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;

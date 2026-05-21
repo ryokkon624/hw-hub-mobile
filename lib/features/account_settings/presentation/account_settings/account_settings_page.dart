@@ -11,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import 'account_settings_notifier.dart';
 import 'account_settings_state.dart';
 import 'widgets/account_info_section.dart';
+import 'widgets/appearance_section.dart';
 import 'widgets/danger_zone_section.dart';
 import 'widgets/icon_section.dart';
 import 'widgets/google_link_section.dart';
@@ -124,6 +125,10 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     .setLocale(Locale(locale));
               },
             ),
+            const SizedBox(height: 20),
+
+            // 外観設定（AC1: ProfileSection と IconSection の間）
+            const AppearanceSection(),
             const SizedBox(height: 20),
 
             // AC4: プロフィール画像
