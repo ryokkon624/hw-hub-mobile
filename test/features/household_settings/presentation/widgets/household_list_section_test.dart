@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
+import 'package:hw_hub_mobile/core/theme/app_color_scheme.dart';
+import 'package:hw_hub_mobile/core/theme/app_theme.dart';
 import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/household_list_section.dart';
+import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 
@@ -217,6 +221,85 @@ void main() {
       // 田中家（未選択）は切り替えボタン（TextButton）を持つ
       expect(find.byType(TextButton), findsWidgets);
     });
+
+    testWidgets(
+      '現在バッジのbackgroundColorがAppColorScheme.statusActiveBgになっている（Lightモード）',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestPage(
+            const Scaffold(
+              body: SingleChildScrollView(child: HouseholdListSection()),
+            ),
+            overrides: [
+              householdNotifierProvider.overrideWith(
+                _TwoHouseholdsNotifier.new,
+              ),
+            ],
+          ),
+        );
+        await tester.pump();
+
+        // AppColorScheme.light() の statusActiveBg と一致すること
+        final expectedBg = AppColorScheme.light().statusActiveBg;
+        final chip = tester.widget<Chip>(find.byType(Chip));
+        expect(chip.backgroundColor, expectedBg);
+      },
+    );
+
+    testWidgets(
+      '現在バッジのbackgroundColorがDarkモードでAppColorScheme.statusActiveBgになっている',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              householdNotifierProvider.overrideWith(
+                _TwoHouseholdsNotifier.new,
+              ),
+            ],
+            child: MaterialApp(
+              locale: const Locale('ja'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              theme: AppTheme.dark,
+              home: const Scaffold(
+                body: SingleChildScrollView(child: HouseholdListSection()),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        // AppColorScheme.dark() の statusActiveBg と一致すること
+        final expectedBg = AppColorScheme.dark().statusActiveBg;
+        final chip = tester.widget<Chip>(find.byType(Chip));
+        expect(chip.backgroundColor, expectedBg);
+      },
+    );
+
+    testWidgets(
+      '現在バッジのlabelTextColorがAppColorScheme.statusActiveTextになっている（Lightモード）',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestPage(
+            const Scaffold(
+              body: SingleChildScrollView(child: HouseholdListSection()),
+            ),
+            overrides: [
+              householdNotifierProvider.overrideWith(
+                _TwoHouseholdsNotifier.new,
+              ),
+            ],
+          ),
+        );
+        await tester.pump();
+
+        // AppColorScheme.light() の statusActiveText と一致すること
+        final expectedText = AppColorScheme.light().statusActiveText;
+        final chip = tester.widget<Chip>(find.byType(Chip));
+        final labelText = chip.label as Text;
+        expect(labelText.style?.color, expectedText);
+      },
+    );
 
     testWidgets('選択中でない世帯の切り替えボタンをタップするとselectが呼ばれる', (tester) async {
       await tester.pumpWidget(

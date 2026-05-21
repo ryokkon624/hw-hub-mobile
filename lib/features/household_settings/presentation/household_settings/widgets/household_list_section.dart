@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/di/providers.dart';
 import '../../../../../core/models/household.dart';
+import '../../../../../core/theme/app_color_scheme.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// 所属世帯一覧セクション（AC1・AC2）。
@@ -101,14 +102,18 @@ class _HouseholdRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).extension<AppColorScheme>()!;
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(household.name, overflow: TextOverflow.ellipsis),
       trailing: isCurrent
           ? Chip(
-              label: Text(l10n.householdSettingsCurrentBadge),
-              backgroundColor: Colors.green.shade100,
+              label: Text(
+                l10n.householdSettingsCurrentBadge,
+                style: TextStyle(color: colors.statusActiveText),
+              ),
+              backgroundColor: colors.statusActiveBg,
             )
           : TextButton(
               onPressed: () {
