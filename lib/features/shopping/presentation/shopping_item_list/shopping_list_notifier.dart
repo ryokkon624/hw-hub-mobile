@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/di/providers.dart';
-import '../../../core/models/favorite_flag.dart';
-import '../../../core/models/shopping_item_status.dart';
-import '../../../core/network/app_exception.dart';
-import '../data/shopping_repository.dart';
-import '../shopping_providers.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../core/models/favorite_flag.dart';
+import '../../../../core/models/shopping_item_status.dart';
+import '../../../../core/network/app_exception.dart';
+import '../../data/shopping_repository.dart';
+import '../../shopping_providers.dart';
 import 'shopping_list_state.dart';
 
 class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {

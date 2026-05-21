@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/theme/app_color_scheme.dart';
 import 'package:hw_hub_mobile/core/theme/app_theme.dart';
 import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart';
-import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_state.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_list/shopping_list_state.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/widgets/swipeable_shopping_card.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
