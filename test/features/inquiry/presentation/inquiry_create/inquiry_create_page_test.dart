@@ -57,17 +57,6 @@ class _BodyRequiredErrorNotifier extends InquiryCreateNotifier {
       const InquiryCreateState(errorMessage: 'inquiryCreateErrorBodyRequired');
 }
 
-// サーバーエラーの Fake Notifier
-class _ServerErrorNotifier extends InquiryCreateNotifier {
-  @override
-  InquiryCreateState build() {
-    Future.microtask(
-      () => state = state.copyWith(errorMessage: 'サーバーエラーが発生しました'),
-    );
-    return const InquiryCreateState();
-  }
-}
-
 void main() {
   group('InquiryCreatePage', () {
     testWidgets('初期表示: フォームの各フィールドが表示される', (tester) async {
@@ -248,6 +237,61 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('inquiry-detail-page'), findsOneWidget);
+    });
+
+    testWidgets('送信成功時: 詳細画面から戻ると新規作成画面ではなく一覧画面が表示される', (tester) async {
+      // 一覧から新規作成に push し、送信成功後に詳細に遷移したとき
+      // context.go を使うことで新規作成画面がスタックから除去される
+      // そのため詳細から Back すると一覧画面が表示される（新規作成画面ではない）
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/settings/inquiries',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('inquiry-list-page')),
+              routes: [
+                GoRoute(
+                  path: 'new',
+                  builder: (_, _) => const InquiryCreatePage(),
+                ),
+                GoRoute(
+                  path: ':id',
+                  builder: (_, _) => Scaffold(
+                    body: const Text('inquiry-detail-page'),
+                    appBar: AppBar(title: const Text('詳細')),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          overrides: [
+            inquiryCreateNotifierProvider.overrideWith(
+              () => _SuccessNotifier(),
+            ),
+          ],
+          // 一覧から新規作成に遷移した状態をシミュレート
+          initialLocation: '/settings/inquiries/new',
+        ),
+      );
+      // microtaskとアニメーション完了を待つ（成功後に詳細に遷移）
+      await tester.pump();
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      // 詳細画面に遷移している
+      expect(find.text('inquiry-detail-page'), findsOneWidget);
+
+      // Back ボタンで戻る
+      final NavigatorState navigator = tester.state(
+        find.byType(Navigator).first,
+      );
+      navigator.pop();
+      await tester.pumpAndSettle();
+
+      // 一覧画面が表示される（新規作成画面ではない）
+      expect(find.text('inquiry-list-page'), findsOneWidget);
+      expect(find.byType(InquiryCreatePage), findsNothing);
     });
   });
 }
