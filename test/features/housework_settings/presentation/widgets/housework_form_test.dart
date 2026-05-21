@@ -288,6 +288,138 @@ void main() {
     });
   });
 
+  group('HouseworkForm テンプレート反映（didUpdateWidget）', () {
+    testWidgets('外部からnameが変わるとhouseworkNameFieldの表示が更新される', (tester) async {
+      var currentForm = const HouseworkFormState(name: '初期名');
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return buildTestPage(
+              Scaffold(
+                body: Column(
+                  children: [
+                    ElevatedButton(
+                      key: const Key('updateFormButton'),
+                      onPressed: () {
+                        setState(() {
+                          currentForm = const HouseworkFormState(
+                            name: 'テンプレート家事名',
+                          );
+                        });
+                      },
+                      child: const Text('update'),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: HouseworkForm(
+                          form: currentForm,
+                          members: const [],
+                          errors: _defaultErrors,
+                          onNameChanged: (_) {},
+                          onDescriptionChanged: (_) {},
+                          onCategoryChanged: (_) {},
+                          onRecurrenceTypeChanged: (_) {},
+                          onWeeklyDayToggled: (_) {},
+                          onDayOfMonthChanged: (_) {},
+                          onNthWeekChanged: (_) {},
+                          onWeekdayChanged: (_) {},
+                          onStartDateChanged: (_) {},
+                          onEndDateChanged: (_) {},
+                          onAssigneeChanged: (_) {},
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+      await tester.pump();
+
+      // 初期値が表示されている
+      final initialField = tester.widget<TextFormField>(
+        find.byKey(const Key('houseworkNameField')),
+      );
+      expect(initialField.controller?.text ?? '', contains('初期名'));
+
+      // ボタンタップでformを更新
+      await tester.tap(find.byKey(const Key('updateFormButton')));
+      await tester.pump();
+
+      // テンプレート名に切り替わっている
+      final updatedField = tester.widget<TextFormField>(
+        find.byKey(const Key('houseworkNameField')),
+      );
+      expect(updatedField.controller?.text ?? '', 'テンプレート家事名');
+    });
+
+    testWidgets('外部からdescriptionが変わるとhouseworkDescriptionFieldの表示が更新される', (
+      tester,
+    ) async {
+      var currentForm = const HouseworkFormState(description: '初期説明');
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return buildTestPage(
+              Scaffold(
+                body: Column(
+                  children: [
+                    ElevatedButton(
+                      key: const Key('updateFormButton'),
+                      onPressed: () {
+                        setState(() {
+                          currentForm = const HouseworkFormState(
+                            description: 'テンプレート説明文',
+                          );
+                        });
+                      },
+                      child: const Text('update'),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: HouseworkForm(
+                          form: currentForm,
+                          members: const [],
+                          errors: _defaultErrors,
+                          onNameChanged: (_) {},
+                          onDescriptionChanged: (_) {},
+                          onCategoryChanged: (_) {},
+                          onRecurrenceTypeChanged: (_) {},
+                          onWeeklyDayToggled: (_) {},
+                          onDayOfMonthChanged: (_) {},
+                          onNthWeekChanged: (_) {},
+                          onWeekdayChanged: (_) {},
+                          onStartDateChanged: (_) {},
+                          onEndDateChanged: (_) {},
+                          onAssigneeChanged: (_) {},
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+      await tester.pump();
+
+      // ボタンタップでformを更新
+      await tester.tap(find.byKey(const Key('updateFormButton')));
+      await tester.pump();
+
+      // テンプレート説明文に切り替わっている
+      final updatedField = tester.widget<TextFormField>(
+        find.byKey(const Key('houseworkDescriptionField')),
+      );
+      expect(updatedField.controller?.text ?? '', 'テンプレート説明文');
+    });
+  });
+
   group('HouseworkForm _errorText switch分岐', () {
     testWidgets('houseworkCreateErrorNameTooLong エラーが表示される', (tester) async {
       await tester.pumpWidget(
