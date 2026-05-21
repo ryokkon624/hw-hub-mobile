@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -176,6 +178,62 @@ void main() {
       await container.read(loginNotifierProvider.notifier).submit();
 
       expect(container.read(loginNotifierProvider).errorMessage, isNotNull);
+    });
+
+    test('autoDispose: コンテナを破棄して再生成したとき初期状態（isLoading=false）になる', () async {
+      // ログアウト後にログイン画面に戻ったとき、スピナーが残らないことを検証する
+      // autoDispose が有効であれば、プロバイダーが破棄されて初期状態に戻る
+      const loginUser = AuthUser(
+        userId: 1,
+        email: 'test@example.com',
+        displayName: 'Test',
+      );
+      when(
+        mockRepo.login(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      ).thenAnswer(
+        (_) => Future.delayed(
+          const Duration(seconds: 10),
+          () => const LoginResponse(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            user: loginUser,
+          ),
+        ),
+      );
+
+      // 1つ目のコンテナで isLoading: true にする
+      final container1 = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(mockStorage),
+          authRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+      );
+      container1.read(loginNotifierProvider.notifier)
+        ..setEmail('test@example.com')
+        ..setPassword('password');
+      // submit を呼ぶが完了を待たない（isLoading: true のまま）
+      unawaited(container1.read(loginNotifierProvider.notifier).submit());
+      expect(container1.read(loginNotifierProvider).isLoading, true);
+
+      // コンテナを破棄（ログアウトに相当）
+      container1.dispose();
+
+      // 2つ目のコンテナ（ログイン画面への再遷移に相当）
+      final container2 = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(mockStorage),
+          authRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+      );
+      addTearDown(container2.dispose);
+
+      // 新しいコンテナでは初期状態になっているはず
+      final state = container2.read(loginNotifierProvider);
+      expect(state.isLoading, false);
+      expect(state.errorMessage, isNull);
     });
   });
 }

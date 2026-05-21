@@ -5,11 +5,10 @@ import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
 import 'login_state.dart';
 
-final loginNotifierProvider = NotifierProvider<LoginNotifier, LoginState>(
-  LoginNotifier.new,
-);
+final loginNotifierProvider =
+    NotifierProvider.autoDispose<LoginNotifier, LoginState>(LoginNotifier.new);
 
-class LoginNotifier extends Notifier<LoginState> {
+class LoginNotifier extends AutoDisposeNotifier<LoginState> {
   @override
   LoginState build() => const LoginState();
 
@@ -33,8 +32,11 @@ class LoginNotifier extends Notifier<LoginState> {
             refreshToken: resp.refreshToken,
             user: resp.user,
           );
+      state = state.copyWith(isLoading: false);
     } on AppException catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
+    } catch (_) {
+      state = state.copyWith(isLoading: false, errorMessage: 'errorUnexpected');
     }
   }
 }
