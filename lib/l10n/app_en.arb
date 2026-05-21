@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "No housework registered yet",
+  "houseworkSettingsEmptyFiltered": "No housework matches the filter",
   "houseworkSettingsAssigneeLabel": "Assignee: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {
@@ -797,6 +799,7 @@
   "houseworkCreateErrorStartDateRequired": "Start date is required",
   "houseworkCreateErrorEndDateRequired": "End date is required",
   "houseworkCreateErrorEndDateBeforeStart": "End date must be on or after start date",
+  "houseworkCreateErrorInvalidDate": "The date is not valid",
   "houseworkEditTitle": "Edit Housework",
   "houseworkEditSaveSuccess": "Housework updated",
   "houseworkTemplateModalTitle": "Select from Template",

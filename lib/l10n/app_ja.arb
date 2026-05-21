@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "家事がまだ登録されていません",
+  "houseworkSettingsEmptyFiltered": "フィルタに該当する家事がありません",
   "houseworkSettingsAssigneeLabel": "担当: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {
@@ -797,6 +799,7 @@
   "houseworkCreateErrorStartDateRequired": "開始日は必須です",
   "houseworkCreateErrorEndDateRequired": "終了日は必須です",
   "houseworkCreateErrorEndDateBeforeStart": "終了日は開始日以降を指定してください",
+  "houseworkCreateErrorInvalidDate": "日付が正しくありません",
   "houseworkEditTitle": "家事編集",
   "houseworkEditSaveSuccess": "家事を更新しました",
   "houseworkTemplateModalTitle": "テンプレートから選択",

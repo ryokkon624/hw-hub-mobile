@@ -9,7 +9,7 @@ import 'nth_weekday_selector.dart';
 import 'weekly_days_selector.dart';
 
 /// 家事作成・編集の共通フォームウィジェット。
-class HouseworkForm extends StatelessWidget {
+class HouseworkForm extends StatefulWidget {
   const HouseworkForm({
     super.key,
     required this.form,
@@ -44,6 +44,45 @@ class HouseworkForm extends StatelessWidget {
   final void Function(int?) onAssigneeChanged;
 
   @override
+  State<HouseworkForm> createState() => _HouseworkFormState();
+}
+
+class _HouseworkFormState extends State<HouseworkForm> {
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.form.name);
+    _descriptionController = TextEditingController(
+      text: widget.form.description,
+    );
+  }
+
+  @override
+  void didUpdateWidget(HouseworkForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // テンプレート選択や外部からの form 変更を TextEditingController に反映する。
+    // ユーザー入力中に上書きしないよう、現在のコントローラ値と異なる場合のみ更新する。
+    if (widget.form.name != oldWidget.form.name &&
+        widget.form.name != _nameController.text) {
+      _nameController.text = widget.form.name;
+    }
+    if (widget.form.description != oldWidget.form.description &&
+        widget.form.description != _descriptionController.text) {
+      _descriptionController.text = widget.form.description;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).extension<AppColorScheme>()!;
@@ -75,13 +114,13 @@ class HouseworkForm extends StatelessWidget {
               // 家事名
               TextFormField(
                 key: const Key('houseworkNameField'),
-                initialValue: form.name,
-                onChanged: onNameChanged,
+                controller: _nameController,
+                onChanged: widget.onNameChanged,
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateNameLabel,
                   hintText: l10n.houseworkCreateNameHint,
-                  errorText: errors.nameError != null
-                      ? _errorText(context, l10n, errors.nameError!)
+                  errorText: widget.errors.nameError != null
+                      ? _errorText(context, l10n, widget.errors.nameError!)
                       : null,
                   border: const OutlineInputBorder(),
                 ),
@@ -90,8 +129,8 @@ class HouseworkForm extends StatelessWidget {
               // 説明
               TextFormField(
                 key: const Key('houseworkDescriptionField'),
-                initialValue: form.description,
-                onChanged: onDescriptionChanged,
+                controller: _descriptionController,
+                onChanged: widget.onDescriptionChanged,
                 maxLines: 3,
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateDescriptionLabel,
@@ -103,7 +142,7 @@ class HouseworkForm extends StatelessWidget {
               // カテゴリ
               DropdownButtonFormField<String>(
                 key: const Key('houseworkCategoryDropdown'),
-                initialValue: form.category,
+                initialValue: widget.form.category,
                 items: categoryItems.map((pair) {
                   return DropdownMenuItem<String>(
                     value: pair.$1,
@@ -111,7 +150,7 @@ class HouseworkForm extends StatelessWidget {
                   );
                 }).toList(),
                 onChanged: (val) {
-                  if (val != null) onCategoryChanged(val);
+                  if (val != null) widget.onCategoryChanged(val);
                 },
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateCategoryLabel,
@@ -136,7 +175,7 @@ class HouseworkForm extends StatelessWidget {
               // 周期タイプ
               DropdownButtonFormField<String>(
                 key: const Key('houseworkRecurrenceTypeDropdown'),
-                initialValue: form.recurrenceType,
+                initialValue: widget.form.recurrenceType,
                 items: recurrenceItems.map((pair) {
                   return DropdownMenuItem<String>(
                     value: pair.$1,
@@ -144,7 +183,7 @@ class HouseworkForm extends StatelessWidget {
                   );
                 }).toList(),
                 onChanged: (val) {
-                  if (val != null) onRecurrenceTypeChanged(val);
+                  if (val != null) widget.onRecurrenceTypeChanged(val);
                 },
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateRecurrenceTypeLabel,
@@ -157,32 +196,36 @@ class HouseworkForm extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               // 周期タイプ別入力
-              if (form.recurrenceType == '1') ...[
+              if (widget.form.recurrenceType == '1') ...[
                 Text(
                   l10n.houseworkCreateWeeklyDaysLabel,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 8),
                 WeeklyDaysSelector(
-                  weeklyDays: form.weeklyDays,
-                  onToggle: onWeeklyDayToggled,
-                  errorText: errors.weeklyDaysError != null
-                      ? _errorText(context, l10n, errors.weeklyDaysError!)
+                  weeklyDays: widget.form.weeklyDays,
+                  onToggle: widget.onWeeklyDayToggled,
+                  errorText: widget.errors.weeklyDaysError != null
+                      ? _errorText(
+                          context,
+                          l10n,
+                          widget.errors.weeklyDaysError!,
+                        )
                       : null,
                 ),
               ],
-              if (form.recurrenceType == '2') ...[
+              if (widget.form.recurrenceType == '2') ...[
                 MonthDaySelector(
-                  dayOfMonth: form.dayOfMonth,
-                  onChanged: onDayOfMonthChanged,
+                  dayOfMonth: widget.form.dayOfMonth,
+                  onChanged: widget.onDayOfMonthChanged,
                 ),
               ],
-              if (form.recurrenceType == '3') ...[
+              if (widget.form.recurrenceType == '3') ...[
                 NthWeekdaySelector(
-                  nthWeek: form.nthWeek,
-                  weekday: form.weekday,
-                  onNthChanged: onNthWeekChanged,
-                  onWeekdayChanged: onWeekdayChanged,
+                  nthWeek: widget.form.nthWeek,
+                  weekday: widget.form.weekday,
+                  onNthChanged: widget.onNthWeekChanged,
+                  onWeekdayChanged: widget.onWeekdayChanged,
                 ),
               ],
             ],
@@ -199,20 +242,20 @@ class HouseworkForm extends StatelessWidget {
               // デフォルト担当者
               DropdownButtonFormField<int?>(
                 key: const Key('houseworkAssigneeDropdown'),
-                initialValue: form.defaultAssigneeUserId,
+                initialValue: widget.form.defaultAssigneeUserId,
                 items: [
                   DropdownMenuItem<int?>(
                     value: null,
                     child: Text(l10n.houseworkCreateAssigneeNone),
                   ),
-                  ...members.map(
+                  ...widget.members.map(
                     (m) => DropdownMenuItem<int?>(
                       value: m.userId,
                       child: Text(m.nickname ?? m.displayName),
                     ),
                   ),
                 ],
-                onChanged: onAssigneeChanged,
+                onChanged: widget.onAssigneeChanged,
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateAssigneeLabel,
                   border: const OutlineInputBorder(),
@@ -226,12 +269,12 @@ class HouseworkForm extends StatelessWidget {
               // 開始日
               TextFormField(
                 key: const Key('houseworkStartDateField'),
-                initialValue: form.startDate,
-                onChanged: onStartDateChanged,
+                initialValue: widget.form.startDate,
+                onChanged: widget.onStartDateChanged,
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateStartDateLabel,
-                  errorText: errors.startDateError != null
-                      ? _errorText(context, l10n, errors.startDateError!)
+                  errorText: widget.errors.startDateError != null
+                      ? _errorText(context, l10n, widget.errors.startDateError!)
                       : null,
                   border: const OutlineInputBorder(),
                 ),
@@ -240,12 +283,12 @@ class HouseworkForm extends StatelessWidget {
               // 終了日
               TextFormField(
                 key: const Key('houseworkEndDateField'),
-                initialValue: form.endDate,
-                onChanged: onEndDateChanged,
+                initialValue: widget.form.endDate,
+                onChanged: widget.onEndDateChanged,
                 decoration: InputDecoration(
                   labelText: l10n.houseworkCreateEndDateLabel,
-                  errorText: errors.endDateError != null
-                      ? _errorText(context, l10n, errors.endDateError!)
+                  errorText: widget.errors.endDateError != null
+                      ? _errorText(context, l10n, widget.errors.endDateError!)
                       : null,
                   border: const OutlineInputBorder(),
                 ),
@@ -277,6 +320,8 @@ class HouseworkForm extends StatelessWidget {
         return l10n.houseworkCreateErrorEndDateRequired;
       case 'houseworkCreateErrorEndDateBeforeStart':
         return l10n.houseworkCreateErrorEndDateBeforeStart;
+      case 'houseworkCreateErrorInvalidDate':
+        return l10n.houseworkCreateErrorInvalidDate;
       default:
         return key;
     }

@@ -471,5 +471,31 @@ void main() {
       final errors = notifier.validate();
       expect(errors.endDateError, isNotNull);
     });
+
+    test('startDateが存在しない日付（2月30日）のときバリデーションエラーが返る', () async {
+      final container = _makeContainer();
+      await container.read(houseworkEditNotifierProvider(1).future);
+
+      final notifier = container.read(
+        houseworkEditNotifierProvider(1).notifier,
+      );
+      notifier.updateStartDate('2026-02-30');
+
+      final errors = notifier.validate();
+      expect(errors.startDateError, 'houseworkCreateErrorInvalidDate');
+    });
+
+    test('endDateが存在しない日付（4月31日）のときバリデーションエラーが返る', () async {
+      final container = _makeContainer();
+      await container.read(houseworkEditNotifierProvider(1).future);
+
+      final notifier = container.read(
+        houseworkEditNotifierProvider(1).notifier,
+      );
+      notifier.updateEndDate('2026-04-31');
+
+      final errors = notifier.validate();
+      expect(errors.endDateError, 'houseworkCreateErrorInvalidDate');
+    });
   });
 }

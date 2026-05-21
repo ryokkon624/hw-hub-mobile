@@ -307,6 +307,48 @@ void main() {
 
       expect(errors.weeklyDaysError, isNotNull);
     });
+
+    test('startDateが存在しない日付（2月30日）のときバリデーションエラーが返る', () async {
+      final container = _makeContainer();
+
+      await container.read(houseworkCreateNotifierProvider.future);
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateName('掃除機');
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .toggleWeeklyDay(1);
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateStartDate('2026-02-30');
+
+      final errors = container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .validate();
+
+      expect(errors.startDateError, 'houseworkCreateErrorInvalidDate');
+    });
+
+    test('endDateが存在しない日付（4月31日）のときバリデーションエラーが返る', () async {
+      final container = _makeContainer();
+
+      await container.read(houseworkCreateNotifierProvider.future);
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateName('掃除機');
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .toggleWeeklyDay(1);
+      container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .updateEndDate('2026-04-31');
+
+      final errors = container
+          .read(houseworkCreateNotifierProvider.notifier)
+          .validate();
+
+      expect(errors.endDateError, 'houseworkCreateErrorInvalidDate');
+    });
   });
 
   // ==================================

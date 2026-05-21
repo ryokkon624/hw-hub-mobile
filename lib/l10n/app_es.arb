@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "No hay tareas registradas",
+  "houseworkSettingsEmptyFiltered": "No hay tareas que coincidan con el filtro",
   "houseworkSettingsAssigneeLabel": "Asignado: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {
@@ -797,6 +799,7 @@
   "houseworkCreateErrorStartDateRequired": "La fecha de inicio es obligatoria",
   "houseworkCreateErrorEndDateRequired": "La fecha de fin es obligatoria",
   "houseworkCreateErrorEndDateBeforeStart": "La fecha de fin debe ser posterior a la de inicio",
+  "houseworkCreateErrorInvalidDate": "La fecha no es válida",
   "houseworkEditTitle": "Editar tarea",
   "houseworkEditSaveSuccess": "Tarea actualizada",
   "houseworkTemplateModalTitle": "Seleccionar plantilla",
