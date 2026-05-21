@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../account_settings_providers.dart';
 import '../../data/account_settings_repository.dart';
@@ -134,6 +135,9 @@ class AccountSettingsNotifier
           clearError: true,
         ),
       );
+
+      // Step5: authNotifier を invalidate してヘッダーのアイコンを更新する（AC2）
+      ref.invalidate(authNotifierProvider);
     } on AppException catch (e) {
       state = AsyncData(
         current.copyWith(

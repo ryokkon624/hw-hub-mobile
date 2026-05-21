@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
+import 'package:hw_hub_mobile/core/auth/auth_state.dart';
+import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
@@ -10,9 +13,33 @@ import 'package:mockito/mockito.dart';
 @GenerateMocks([AccountSettingsRepository])
 import 'account_settings_notifier_test.mocks.dart';
 
+/// uploadIcon 後の authNotifierProvider invalidate を検証するカウンター
+int _authNotifierBuildCount = 0;
+
+class _FakeAuthNotifier extends AuthNotifier {
+  @override
+  Future<AuthState> build() async {
+    _authNotifierBuildCount++;
+    return const AuthUnauthenticated();
+  }
+}
+
 ProviderContainer _makeContainer(AccountSettingsRepository repo) {
   final container = ProviderContainer(
     overrides: [accountSettingsRepositoryProvider.overrideWithValue(repo)],
+  );
+  addTearDown(container.dispose);
+  return container;
+}
+
+/// authNotifier を含む Container（uploadIcon の invalidate 検証用）
+ProviderContainer _makeContainerWithAuth(AccountSettingsRepository repo) {
+  _authNotifierBuildCount = 0;
+  final container = ProviderContainer(
+    overrides: [
+      accountSettingsRepositoryProvider.overrideWithValue(repo),
+      authNotifierProvider.overrideWith(_FakeAuthNotifier.new),
+    ],
   );
   addTearDown(container.dispose);
   return container;
@@ -394,6 +421,64 @@ void main() {
       final state = container.read(accountSettingsNotifierProvider).value!;
       expect(state.successMessage, isNotNull);
       expect(state.isUploadingIcon, isFalse);
+    });
+
+    test('成功時: authNotifierProvider が invalidate されてヘッダーに反映される', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.createIconUploadUrl(
+          fileName: anyNamed('fileName'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'uploadUrl': 'https://example.com/upload',
+          'fileKey': 'key/icon.jpg',
+        },
+      );
+      when(
+        mockRepo.uploadToS3(
+          uploadUrl: anyNamed('uploadUrl'),
+          bytes: anyNamed('bytes'),
+          mimeType: anyNamed('mimeType'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        mockRepo.updateIcon(fileKey: anyNamed('fileKey')),
+      ).thenAnswer((_) async {});
+      when(mockRepo.fetchProfile()).thenAnswer(
+        (_) async => const UserProfileDto(
+          userId: 1,
+          email: 'test@example.com',
+          authProvider: 'LOCAL',
+          displayName: 'テスト太郎',
+          locale: 'ja',
+        ),
+      );
+
+      // authNotifierProvider を含む Container を使う
+      final container = _makeContainerWithAuth(mockRepo);
+      // authNotifier を購読して初期ビルドを待つ
+      container.listen(authNotifierProvider, (_, _) {});
+      await container.read(authNotifierProvider.future);
+
+      final buildCountBefore = _authNotifierBuildCount;
+
+      // アカウント設定を初期ロード
+      await container.read(accountSettingsNotifierProvider.future);
+
+      // uploadIcon を実行
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .uploadIcon(
+            bytes: [1, 2, 3],
+            fileName: 'icon.jpg',
+            mimeType: 'image/jpeg',
+          );
+
+      // uploadIcon 後に authNotifierProvider が invalidate されて再ビルドされる
+      await container.read(authNotifierProvider.future);
+      expect(_authNotifierBuildCount, greaterThan(buildCountBefore));
     });
 
     test('失敗時: errorMessage がセットされ isUploadingIcon が false になる', () async {
