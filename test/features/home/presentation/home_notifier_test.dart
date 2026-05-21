@@ -286,6 +286,95 @@ void main() {
     });
   });
 
+  group('HomeNotifier: shoppingItems変換', () {
+    test('shoppingItemsが正しく変換される', () async {
+      const h = Household(id: 1, name: '山田家');
+      final items = [
+        const ShoppingItemDto(
+          shoppingItemId: 1,
+          householdId: 1,
+          name: '牛乳',
+          status: '0',
+          createdAt: '2025-01-01T00:00:00',
+          hasImage: false,
+        ),
+      ];
+      when(
+        mockRepo.loadAll(1),
+      ).thenAnswer((_) async => _makeRawData(shoppingItems: items));
+
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: h,
+      );
+      final state = await container.read(homeNotifierProvider.future);
+
+      expect(state.shoppingItems.length, 1);
+      expect(state.shoppingItems.first.name, '牛乳');
+    });
+  });
+
+  group('HomeNotifier: refresh()', () {
+    test('refresh後にHomeStateが更新される', () async {
+      const h = Household(id: 1, name: '山田家');
+      when(mockRepo.loadAll(1)).thenAnswer((_) async => _makeRawData());
+
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: h,
+      );
+
+      // 初期ロード
+      await container.read(homeNotifierProvider.future);
+
+      // refresh
+      await container.read(homeNotifierProvider.notifier).refresh();
+
+      verify(mockRepo.loadAll(1)).called(greaterThanOrEqualTo(2));
+    });
+
+    test('世帯が選択されていないときrefreshは何もしない', () async {
+      final container = _makeContainer(
+        mockRepo: mockRepo,
+        selectedHousehold: null,
+      );
+
+      await container.read(homeNotifierProvider.future);
+      await container.read(homeNotifierProvider.notifier).refresh();
+
+      // loadAllが呼ばれない
+      verifyNever(mockRepo.loadAll(any));
+    });
+  });
+
+  group('HomeNotifier: 認証エラー', () {
+    test('authStateがAuthAuthenticatedでない場合はエラーになる', () async {
+      const h = Household(id: 1, name: '山田家');
+      when(mockRepo.loadAll(1)).thenAnswer((_) async => _makeRawData());
+
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer(
+        overrides: [
+          homeRepositoryProvider.overrideWithValue(mockRepo),
+          householdNotifierProvider.overrideWith(
+            () => _FakeHouseholdNotifier(
+              const HouseholdState(households: [h], selectedHousehold: h),
+            ),
+          ),
+          authNotifierProvider.overrideWith(
+            () => _FakeAuthNotifier(AuthUnauthenticated()),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.listen(homeNotifierProvider, (_, _) {});
+      await Future<void>.delayed(Duration.zero);
+
+      final result = container.read(homeNotifierProvider);
+      expect(result.hasError, isTrue);
+    });
+  });
+
   group('集計: DailyOverview (おうちの様子)', () {
     test('13日分のDailyOverviewが生成される', () async {
       const h = Household(id: 1, name: '山田家');

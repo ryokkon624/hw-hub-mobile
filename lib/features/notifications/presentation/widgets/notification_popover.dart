@@ -139,6 +139,7 @@ class _NotificationPopoverState extends ConsumerState<NotificationPopover> {
                   )
                 else if (_notifications.isEmpty)
                   Padding(
+                    key: const Key('notificationEmpty'),
                     padding: const EdgeInsets.all(32),
                     child: Text(
                       l10n.notificationsEmpty,

@@ -39,6 +39,38 @@ class _SuccessRequiresVerifySignupNotifier extends SignupNotifier {
   }
 }
 
+class _SuccessNoVerifySignupNotifier extends SignupNotifier {
+  @override
+  SignupState build() {
+    Future.microtask(
+      () => state = state.copyWith(
+        successResult: const SignupSuccessResult(
+          email: 'test@example.com',
+          requiresEmailVerify: false,
+        ),
+      ),
+    );
+    return const SignupState();
+  }
+}
+
+class _SubmittableSignupNotifier extends SignupNotifier {
+  bool submitCalled = false;
+
+  @override
+  SignupState build() => const SignupState(
+    email: 'test@example.com',
+    displayName: 'Test User',
+    password: 'password123',
+    passwordConfirm: 'password123',
+  );
+
+  @override
+  Future<void> submit({String? invitationToken}) async {
+    submitCalled = true;
+  }
+}
+
 void main() {
   group('SignupPage', () {
     testWidgets('初期状態: アカウント作成タイトルが表示されボタンが無効', (tester) async {
@@ -159,6 +191,67 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('login-page'), findsOneWidget);
+    });
+
+    testWidgets('サインアップ成功(メール確認不要): /homeに遷移する', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(path: '/signup', builder: (_, _) => const SignupPage()),
+            GoRoute(
+              path: '/',
+              builder: (_, _) => const Scaffold(body: Text('home-page')),
+            ),
+          ],
+          overrides: [
+            signupNotifierProvider.overrideWith(
+              () => _SuccessNoVerifySignupNotifier(),
+            ),
+          ],
+          initialLocation: '/signup',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('home-page'), findsOneWidget);
+    });
+
+    testWidgets('送信ボタンをタップするとsubmitが呼ばれる', (tester) async {
+      final notifier = _SubmittableSignupNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const SignupPage(),
+          overrides: [signupNotifierProvider.overrideWith(() => notifier)],
+        ),
+      );
+      await tester.pump();
+
+      await tester.ensureVisible(find.byType(FilledButton));
+      await tester.tap(find.byType(FilledButton));
+      await tester.pump();
+
+      expect(notifier.submitCalled, isTrue);
+    });
+
+    testWidgets('onSubmitted: キーボードdoneキーでsubmitが呼ばれる', (tester) async {
+      final notifier = _SubmittableSignupNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const SignupPage(),
+          overrides: [signupNotifierProvider.overrideWith(() => notifier)],
+        ),
+      );
+      await tester.pump();
+
+      // 4番目のTextField（パスワード確認）にフォーカスしてdoneアクションを送る
+      await tester.tap(find.byType(TextField).at(3));
+      await tester.pump();
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+
+      // canSubmit=true なので submit が呼ばれる
+      expect(notifier.submitCalled, isTrue);
     });
   });
 }

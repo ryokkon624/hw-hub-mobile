@@ -7,6 +7,7 @@ import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
+import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_notifier.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_list_state.dart';
@@ -494,5 +495,123 @@ void main() {
       final item = state.items.firstWhere((e) => e.shoppingItemId == 1);
       expect(item.favorite, '0');
     });
+  });
+
+  group('ShoppingListNotifier - AppException分岐', () {
+    test('moveToBasket: AppExceptionでe.messageがerrorMessageにセットされる', () async {
+      final items = [_item(id: 1, status: '0')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.updateStatus(shoppingItemId: 1, status: '1'),
+      ).thenThrow(const NetworkException('ネットワークエラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .moveToBasket(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.errorMessage, 'ネットワークエラー');
+    });
+
+    test('markPurchased: AppExceptionでe.messageがerrorMessageにセットされる', () async {
+      final items = [_item(id: 1, status: '1')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.updateStatus(shoppingItemId: 1, status: '9'),
+      ).thenThrow(const NetworkException('ネットワークエラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .markPurchased(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.errorMessage, 'ネットワークエラー');
+    });
+
+    test(
+      'moveBackToUnpurchased: AppExceptionでe.messageがerrorMessageにセットされる',
+      () async {
+        final items = [_item(id: 1, status: '1')];
+        when(
+          mockRepo.fetchItems(householdId: 1),
+        ).thenAnswer((_) async => items);
+        when(
+          mockRepo.updateStatus(shoppingItemId: 1, status: '0'),
+        ).thenThrow(const NetworkException('ネットワークエラー'));
+
+        final container = _makeContainer(mockRepo);
+        await container.read(shoppingListNotifierProvider.future);
+
+        await container
+            .read(shoppingListNotifierProvider.notifier)
+            .moveBackToUnpurchased(1);
+
+        final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+        expect(state.errorMessage, 'ネットワークエラー');
+      },
+    );
+
+    test('bulkPurchase: AppExceptionでe.messageがerrorMessageにセットされる', () async {
+      final items = [_item(id: 1, status: '1')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.bulkUpdateStatus(ids: [1], status: '9'),
+      ).thenThrow(const NetworkException('ネットワークエラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container
+          .read(shoppingListNotifierProvider.notifier)
+          .bulkPurchase();
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.errorMessage, 'ネットワークエラー');
+    });
+
+    test('deleteItem: AppExceptionでe.messageがerrorMessageにセットされる', () async {
+      final items = [_item(id: 1, status: '0')];
+      when(mockRepo.fetchItems(householdId: 1)).thenAnswer((_) async => items);
+      when(
+        mockRepo.deleteItem(shoppingItemId: 1),
+      ).thenThrow(const NetworkException('ネットワークエラー'));
+
+      final container = _makeContainer(mockRepo);
+      await container.read(shoppingListNotifierProvider.future);
+
+      await container.read(shoppingListNotifierProvider.notifier).deleteItem(1);
+
+      final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+      expect(state.errorMessage, 'ネットワークエラー');
+    });
+
+    test(
+      'toggleFavorite: AppExceptionでe.messageがerrorMessageにセットされる',
+      () async {
+        final items = [_item(id: 1, status: '0', favorite: '0')];
+        when(
+          mockRepo.fetchItems(householdId: 1),
+        ).thenAnswer((_) async => items);
+        when(
+          mockRepo.toggleFavorite(shoppingItemId: 1, favorite: '1'),
+        ).thenThrow(const NetworkException('ネットワークエラー'));
+
+        final container = _makeContainer(mockRepo);
+        await container.read(shoppingListNotifierProvider.future);
+
+        await container
+            .read(shoppingListNotifierProvider.notifier)
+            .toggleFavorite(1);
+
+        final state = container.read(shoppingListNotifierProvider).valueOrNull!;
+        expect(state.errorMessage, 'ネットワークエラー');
+      },
+    );
   });
 }

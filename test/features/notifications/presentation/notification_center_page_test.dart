@@ -32,6 +32,41 @@ class _FakeNotificationCenterNotifier extends NotificationCenterNotifier {
   NotificationCenterState build() => _state;
 }
 
+/// reload()を記録するNotifier
+class _RecordingNotifier extends NotificationCenterNotifier {
+  bool reloadCalled = false;
+  final NotificationCenterState _initialState;
+
+  _RecordingNotifier(this._initialState);
+
+  @override
+  NotificationCenterState build() => _initialState;
+
+  @override
+  Future<void> reload() async {
+    reloadCalled = true;
+  }
+}
+
+/// 状態を変更できるNotifier（listenテスト用）
+class _MutableNotifier extends NotificationCenterNotifier {
+  _MutableNotifier(NotificationCenterState initialState) {
+    _initial = initialState;
+  }
+  late final NotificationCenterState _initial;
+
+  @override
+  NotificationCenterState build() => _initial;
+
+  void setError(String message) {
+    state = state.copyWith(errorMessage: message);
+  }
+
+  void setLoaded(List<NotificationDto> notifications) {
+    state = state.copyWith(isLoading: false, notifications: notifications);
+  }
+}
+
 void main() {
   group('NotificationCenterPage', () {
     testWidgets('ローディング中はCircularProgressIndicatorを表示する', (tester) async {
@@ -151,6 +186,71 @@ void main() {
       );
 
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    });
+
+    testWidgets('更新ボタンタップでreload()が呼ばれる', (tester) async {
+      final notifier = _RecordingNotifier(
+        const NotificationCenterState(isLoading: false),
+      );
+      await tester.pumpWidget(
+        buildTestPage(
+          const NotificationCenterPage(),
+          overrides: [
+            notificationCenterNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+
+      await tester.tap(find.text('更新'));
+      await tester.pump();
+
+      expect(notifier.reloadCalled, isTrue);
+    });
+
+    testWidgets('エラーメッセージがある状態に遷移するとlistenerが発火する（errorMessage分岐）', (
+      tester,
+    ) async {
+      final notifier = _MutableNotifier(
+        const NotificationCenterState(isLoading: false),
+      );
+      await tester.pumpWidget(
+        buildTestPage(
+          const NotificationCenterPage(),
+          overrides: [
+            notificationCenterNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // エラー状態に変更
+      notifier.setError('テストエラー');
+      await tester.pump();
+
+      // クラッシュなく動作する（AppSnackBarのlistener分岐が通る）
+      expect(find.byType(NotificationCenterPage), findsOneWidget);
+    });
+
+    testWidgets('通知がある状態に遷移するとlistenerが発火する（resetToZero分岐）', (tester) async {
+      final notifier = _MutableNotifier(
+        const NotificationCenterState(isLoading: true),
+      );
+      await tester.pumpWidget(
+        buildTestPage(
+          const NotificationCenterPage(),
+          overrides: [
+            notificationCenterNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // 通知が読み込まれた状態に変更
+      notifier.setLoaded([_dto(id: 1)]);
+      await tester.pump();
+
+      // クラッシュなく動作する（resetToZero分岐が通る）
+      expect(find.byType(NotificationCenterPage), findsOneWidget);
     });
   });
 }

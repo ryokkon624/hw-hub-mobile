@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_notifier.dart';
@@ -306,6 +307,112 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
   });
+
+  group('HouseworkAssignPage フィルタ', () {
+    testWidgets('未割当フィルタ選択時: 未割当タスクのみ表示される', (tester) async {
+      bool filterCalled = false;
+      final trackingNotifier = _FilterTrackingNotifier(
+        HouseworkAssignState(
+          tasks: [
+            _task(id: 1, assigneeUserId: null),
+            _task(id: 2, assigneeUserId: 10),
+          ],
+          members: [],
+          filter: AssignFilter.unassignedOnly,
+        ),
+        onFilterChanged: (_) => filterCalled = true,
+      );
+      await tester.pumpWidget(
+        buildTestPage(
+          const HouseworkAssignPage(),
+          overrides: [
+            houseworkAssignNotifierProvider.overrideWith(
+              () => trackingNotifier,
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 未割当タスク1件のみ表示
+      expect(find.text('タスク1'), findsOneWidget);
+      expect(find.text('タスク2'), findsNothing);
+    });
+
+    testWidgets('自分+未フィルタ選択時: 自分のタスクと未割当が表示される', (tester) async {
+      final state = HouseworkAssignState(
+        tasks: [
+          _task(id: 1, assigneeUserId: null), // 未割当
+          _task(id: 2, assigneeUserId: 10), // 自分（currentUserId=-1なので除外される）
+          _task(id: 3, assigneeUserId: 20), // 他人
+        ],
+        members: [],
+        filter: AssignFilter.meAndUnassigned,
+      );
+      await tester.pumpWidget(_buildPage(state));
+      await tester.pumpAndSettle();
+
+      // 自分のID=-1なので未割当のみ表示（currentUserId取得失敗）
+      expect(find.text('タスク1'), findsOneWidget);
+      expect(find.text('タスク3'), findsNothing);
+    });
+
+    testWidgets('全件フィルタ: 全タスクが表示される', (tester) async {
+      final state = HouseworkAssignState(
+        tasks: [
+          _task(id: 1, assigneeUserId: null),
+          _task(id: 2, assigneeUserId: 10),
+          _task(id: 3, assigneeUserId: 20),
+        ],
+        members: [],
+        filter: AssignFilter.all,
+      );
+      await tester.pumpWidget(_buildPage(state));
+      await tester.pumpAndSettle();
+
+      expect(find.text('タスク1'), findsOneWidget);
+      expect(find.text('タスク2'), findsOneWidget);
+      expect(find.text('タスク3'), findsOneWidget);
+    });
+  });
+
+  group('HouseworkAssignPage スキップダイアログ', () {
+    testWidgets('スキップボタンタップでBulkSkipDialogが表示される', (tester) async {
+      final state = HouseworkAssignState(
+        tasks: [
+          _task(id: 1, targetDate: _daysFromNow(-1), assigneeUserId: null),
+        ],
+        members: [],
+      );
+      await tester.pumpWidget(_buildPage(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('過去の未割当をスキップ'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+  });
+
+  group('HouseworkAssignPage スワイプモード（currentTask==null）', () {
+    testWidgets('swipeIndex<swipeTaskCountだがswipeTasksが空ならインジケータが表示される', (
+      tester,
+    ) async {
+      // tasks が空なのに swipeTaskCount > swipeIndex の場合: currentTask == null
+      final state = HouseworkAssignState(
+        tasks: [], // assigned tasks are empty -> swipeTasks is empty
+        members: [],
+        mode: AssignMode.swipe,
+        swipeTarget: SwipeTarget.unassigned,
+        swipeIndex: 0,
+        swipeTaskCount: 5, // swipeIndex(0) < swipeTaskCount(5) but no tasks
+      );
+      await tester.pumpWidget(_buildPage(state));
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+  });
 }
 
 class _LoadingNotifier extends HouseworkAssignNotifier {
@@ -327,5 +434,20 @@ class _ExitTrackingNotifier extends HouseworkAssignNotifier {
   @override
   void exitSwipeMode() {
     onExit();
+  }
+}
+
+class _FilterTrackingNotifier extends HouseworkAssignNotifier {
+  _FilterTrackingNotifier(this._initialState, {required this.onFilterChanged});
+  final HouseworkAssignState _initialState;
+  final void Function(AssignFilter) onFilterChanged;
+
+  @override
+  Future<HouseworkAssignState> build() async => _initialState;
+
+  @override
+  void setFilter(AssignFilter filter) {
+    onFilterChanged(filter);
+    state = AsyncData(state.value!.copyWith(filter: filter));
   }
 }

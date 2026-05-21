@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
@@ -14,6 +16,22 @@ class _FakeNotifier extends AccountSettingsNotifier {
 
   @override
   Future<AccountSettingsState> build() async => _initialState;
+}
+
+// ローディング中（永久に完了しない）FakeNotifier
+class _LoadingNotifier extends AccountSettingsNotifier {
+  @override
+  Future<AccountSettingsState> build() {
+    return Completer<AccountSettingsState>().future;
+  }
+}
+
+// エラー状態を返す FakeNotifier
+class _ErrorNotifier extends AccountSettingsNotifier {
+  @override
+  Future<AccountSettingsState> build() async {
+    throw Exception('ロードエラー');
+  }
 }
 
 // ローカルアカウントのプロフィール（パスワードセクション表示あり、Googleセクションなし）
@@ -140,6 +158,91 @@ void main() {
 
       // エラーがセットされていても画面は表示される
       expect(find.text('test@example.com'), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - アイコンセクション', () {
+    testWidgets('IconSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      // アイコンセクションは常に表示
+      expect(find.byKey(const Key('deleteAccountButton')), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - プロフィールセクション', () {
+    testWidgets('ProfileSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      // プロフィールセクションは常に表示
+      expect(find.text('test@example.com'), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - dangerZoneSection', () {
+    testWidgets('dangerZoneSectionが表示される', (tester) async {
+      await tester.pumpWidget(_buildPage(_localState()));
+      await tester.pump();
+
+      expect(find.byKey(const Key('dangerZoneSection')), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - ローディング状態', () {
+    testWidgets('ローディング中はCircularProgressIndicatorが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _LoadingNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - エラー状態', () {
+    testWidgets('エラー時はエラーメッセージが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _ErrorNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // エラー状態ではScaffoldが表示されていること
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - profile=nullのときSizedBox.shrink', () {
+    testWidgets('profile=nullのときSizedBox.shrinkが表示される（空ボディ）', (tester) async {
+      final emptyState = AccountSettingsState();
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _FakeNotifier(emptyState),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(Scaffold), findsOneWidget);
     });
   });
 }

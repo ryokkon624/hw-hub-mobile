@@ -47,6 +47,19 @@ class _FakeMyTasksNotifier extends MyTasksNotifier {
   Future<MyTasksState> build() async => _initialState;
 }
 
+/// エラーメッセージを持つ状態に変更できるNotifier（ref.listen分岐テスト用）
+class _MutableMyTasksNotifier extends MyTasksNotifier {
+  _MutableMyTasksNotifier(this._initialState);
+  final MyTasksState _initialState;
+
+  @override
+  Future<MyTasksState> build() async => _initialState;
+
+  void setError(String message) {
+    state = AsyncData(_initialState.copyWith(errorMessage: message));
+  }
+}
+
 class _CompleterMyTasksNotifier extends MyTasksNotifier {
   _CompleterMyTasksNotifier(this._completer);
   final Completer<MyTasksState> _completer;
@@ -297,6 +310,50 @@ void main() {
       expect(width0, equals(width1));
       // さらに幅が0より大きいこと（レイアウトが壊れていないこと）
       expect(width0, greaterThan(0));
+    });
+
+    testWidgets('errorMessage状態に変化するとlistenerが発火する（AppSnackBar分岐）', (
+      tester,
+    ) async {
+      final notifier = _MutableMyTasksNotifier(const MyTasksState());
+      await tester.pumpWidget(
+        buildTestPage(
+          const MyTasksPage(),
+          overrides: [
+            myTasksNotifierProvider.overrideWith(() => notifier),
+            householdNotifierProvider.overrideWith(
+              () => _FakeHouseholdNotifier(
+                const HouseholdState(households: [], selectedHousehold: null),
+              ),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      // エラー状態に変更してlistenerを発火させる
+      notifier.setError('errorUnexpected');
+      await tester.pump();
+
+      // クラッシュなく動作する（AppSnackBar分岐・_resolveErrorMessage分岐が通る）
+      expect(find.byType(MyTasksPage), findsOneWidget);
+    });
+
+    testWidgets('RefreshIndicatorで引っ張り更新ができる（onRefreshコールバック分岐）', (
+      tester,
+    ) async {
+      const state = MyTasksState(pastTasks: [], futureTasks: []);
+      await tester.pumpWidget(
+        buildTestPage(const MyTasksPage(), overrides: _overrides(state)),
+      );
+      await tester.pump();
+
+      // RefreshIndicatorのonRefreshを呼ぶ（引っ張り更新）
+      await tester.drag(find.byType(ListView), const Offset(0, 400));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する（onRefresh分岐が通る）
+      expect(find.byType(MyTasksPage), findsOneWidget);
     });
   });
 }

@@ -173,5 +173,135 @@ void main() {
       // エラーなく表示される（displayName が空文字のため UserAvatar がイニシャル '?' を表示する）
       expect(find.byType(UserAvatar), findsOneWidget);
     });
+
+    testWidgets('ログアウトダイアログでキャンセルをタップするとダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => Scaffold(
+                appBar: AppBar(actions: const [HeaderUserIcon()]),
+                body: const SizedBox(),
+              ),
+            ),
+          ],
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(
+                const AuthAuthenticated(_authenticatedUser),
+              ),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.byType(UserAvatar));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ログアウト'));
+      await tester.pumpAndSettle();
+
+      // キャンセルをタップ
+      await tester.tap(find.text('キャンセル'));
+      await tester.pumpAndSettle();
+
+      // ダイアログが閉じる
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('ログアウトダイアログではいをタップするとlogoutが呼ばれる', (tester) async {
+      bool logoutCalled = false;
+
+      // AuthNotifier を override してlogoutを記録する
+      final notifier = _RecordingAuthNotifier(
+        const AuthAuthenticated(_authenticatedUser),
+        onLogout: () => logoutCalled = true,
+      );
+
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => Scaffold(
+                appBar: AppBar(actions: const [HeaderUserIcon()]),
+                body: const SizedBox(),
+              ),
+            ),
+            GoRoute(
+              path: '/login',
+              builder: (_, _) => const Scaffold(body: Text('login-page')),
+            ),
+          ],
+          overrides: [authNotifierProvider.overrideWith(() => notifier)],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.byType(UserAvatar));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ログアウト'));
+      await tester.pumpAndSettle();
+
+      // はいをタップ
+      await tester.tap(find.text('はい'));
+      await tester.pumpAndSettle();
+
+      expect(logoutCalled, isTrue);
+    });
+
+    testWidgets('メニューをタップせずに閉じるとcase null分岐が通る', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => Scaffold(
+                appBar: AppBar(actions: const [HeaderUserIcon()]),
+                body: const SizedBox(),
+              ),
+            ),
+          ],
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(
+                const AuthAuthenticated(_authenticatedUser),
+              ),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      await tester.tap(find.byType(UserAvatar));
+      await tester.pumpAndSettle();
+
+      // メニューをタップせずバリア（外側）をタップして閉じる
+      await tester.tapAt(const Offset(100, 100));
+      await tester.pumpAndSettle();
+
+      // クラッシュなく動作する（case null: break 分岐が通る）
+      expect(find.byType(UserAvatar), findsOneWidget);
+    });
   });
+}
+
+class _RecordingAuthNotifier extends AuthNotifier {
+  _RecordingAuthNotifier(this._state, {required this.onLogout});
+  final AuthState _state;
+  final void Function() onLogout;
+
+  @override
+  Future<AuthState> build() async => _state;
+
+  @override
+  Future<void> logout() async {
+    onLogout();
+  }
 }

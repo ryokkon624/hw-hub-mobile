@@ -212,5 +212,107 @@ void main() {
       );
       expect(sendButton.onPressed, isNull);
     });
+
+    testWidgets('返信テキストを入力: 送信ボタンが有効になる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(() => _LoadedNotifier()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byKey(const Key('replyField')), 'テスト返信');
+      await tester.pump();
+
+      final sendButton = tester.widget<ElevatedButton>(
+        find.byKey(const Key('sendButton')),
+      );
+      expect(sendButton.onPressed, isNotNull);
+    });
+
+    testWidgets('クローズ確認ダイアログ: closeButtonタップでダイアログが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(() => _LoadedNotifier()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('closeButton')));
+      await tester.pumpAndSettle();
+
+      // AlertDialogが表示されている
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('クローズ確認ダイアログ: キャンセルでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(() => _LoadedNotifier()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('closeButton')));
+      await tester.pumpAndSettle();
+
+      // キャンセルボタンをタップ
+      final cancelButtons = find.byType(TextButton);
+      await tester.tap(cancelButtons.first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('エスカレート確認ダイアログ: escalateButtonタップでダイアログが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(
+              () => _AiAnsweredNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('escalateButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('エスカレート確認ダイアログ: キャンセルでダイアログが閉じる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(
+              () => _AiAnsweredNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('escalateButton')));
+      await tester.pumpAndSettle();
+
+      final cancelButtons = find.byType(TextButton);
+      await tester.tap(cancelButtons.first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
   });
 }

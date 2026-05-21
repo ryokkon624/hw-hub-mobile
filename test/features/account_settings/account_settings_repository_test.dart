@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
@@ -182,6 +184,82 @@ void main() {
       expect(result['uploadUrl'], 'https://s3.example.com/upload');
       expect(result['fileKey'], 'user-icon/1/icon.jpg');
     });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      when(
+        mockDio.post<dynamic>(
+          '/api/users/me/icon/upload-url',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/icon/upload-url'),
+          error: const NetworkException(),
+        ),
+      );
+
+      expect(
+        () => repo.createIconUploadUrl(
+          fileName: 'icon.jpg',
+          mimeType: 'image/jpeg',
+        ),
+        throwsA(isA<AppException>()),
+      );
+    });
+  });
+
+  // ==================================
+  // uploadToS3
+  // ==================================
+
+  group('uploadToS3()', () {
+    test('成功時: 例外なく完了する', () async {
+      when(
+        mockS3Dio.put<dynamic>(
+          any,
+          data: anyNamed('data'),
+          options: anyNamed('options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: _req('https://s3.example.com/upload'),
+          statusCode: 200,
+        ),
+      );
+
+      await expectLater(
+        repo.uploadToS3(
+          uploadUrl: 'https://s3.example.com/upload',
+          bytes: Uint8List.fromList([1, 2, 3]),
+          mimeType: 'image/jpeg',
+        ),
+        completes,
+      );
+    });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      when(
+        mockS3Dio.put<dynamic>(
+          any,
+          data: anyNamed('data'),
+          options: anyNamed('options'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('https://s3.example.com/upload'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.uploadToS3(
+          uploadUrl: 'https://s3.example.com/upload',
+          bytes: Uint8List.fromList([1, 2, 3]),
+          mimeType: 'image/jpeg',
+        ),
+        throwsA(isA<NetworkException>()),
+      );
+    });
   });
 
   // ==================================
@@ -202,6 +280,22 @@ void main() {
       await expectLater(
         repo.updateIcon(fileKey: 'user-icon/1/icon.jpg'),
         completes,
+      );
+    });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      when(
+        mockDio.post<dynamic>('/api/users/me/icon', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/icon'),
+          error: const NetworkException(),
+        ),
+      );
+
+      expect(
+        () => repo.updateIcon(fileKey: 'user-icon/1/icon.jpg'),
+        throwsA(isA<AppException>()),
       );
     });
   });
@@ -230,6 +324,22 @@ void main() {
       expect(result.notificationEnabled, isTrue);
       expect(result.groupSettings['100'], isTrue);
       expect(result.groupSettings['200'], isFalse);
+    });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      when(
+        mockDio.get<dynamic>('/api/users/me/notification-settings'),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/notification-settings'),
+          error: const NetworkException(),
+        ),
+      );
+
+      expect(
+        () => repo.fetchNotificationSettings(),
+        throwsA(isA<AppException>()),
+      );
     });
   });
 
@@ -263,6 +373,30 @@ void main() {
       final result = await repo.updateNotificationSettings(settings);
 
       expect(result.notificationEnabled, isFalse);
+    });
+
+    test('DioException 発生時: AppException を再スロー', () async {
+      final settings = NotificationSettingsDto(
+        notificationEnabled: true,
+        groupSettings: {'100': true},
+      );
+
+      when(
+        mockDio.put<dynamic>(
+          '/api/users/me/notification-settings',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/notification-settings'),
+          error: const NetworkException(),
+        ),
+      );
+
+      expect(
+        () => repo.updateNotificationSettings(settings),
+        throwsA(isA<AppException>()),
+      );
     });
   });
 
@@ -339,6 +473,162 @@ void main() {
       );
 
       expect(() => repo.deleteAccount(), throwsA(isA<AppException>()));
+    });
+  });
+
+  // ==================================
+  // NetworkException fallback（e.error が AppException でない場合）
+  // ==================================
+
+  group('NetworkException fallback（e.error が AppException でない場合）', () {
+    test('fetchProfile: NetworkException をスロー', () async {
+      when(mockDio.get<dynamic>('/api/users/me/profile')).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/profile'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(() => repo.fetchProfile(), throwsA(isA<NetworkException>()));
+    });
+
+    test('updateProfile: NetworkException をスロー', () async {
+      when(
+        mockDio.put<dynamic>('/api/users/me/profile', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/profile'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.updateProfile(displayName: '名前', locale: 'ja'),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('changePassword: NetworkException をスロー', () async {
+      when(
+        mockDio.put<dynamic>('/api/users/me/password', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/password'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.changePassword(currentPassword: 'old', newPassword: 'new'),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('createIconUploadUrl: NetworkException をスロー', () async {
+      when(
+        mockDio.post<dynamic>(
+          '/api/users/me/icon/upload-url',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/icon/upload-url'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.createIconUploadUrl(
+          fileName: 'icon.jpg',
+          mimeType: 'image/jpeg',
+        ),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('updateIcon: NetworkException をスロー', () async {
+      when(
+        mockDio.post<dynamic>('/api/users/me/icon', data: anyNamed('data')),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/icon'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.updateIcon(fileKey: 'user-icon/1/icon.jpg'),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('fetchNotificationSettings: NetworkException をスロー', () async {
+      when(
+        mockDio.get<dynamic>('/api/users/me/notification-settings'),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/notification-settings'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.fetchNotificationSettings(),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('updateNotificationSettings: NetworkException をスロー', () async {
+      final settings = NotificationSettingsDto(
+        notificationEnabled: true,
+        groupSettings: {},
+      );
+      when(
+        mockDio.put<dynamic>(
+          '/api/users/me/notification-settings',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/notification-settings'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.updateNotificationSettings(settings),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('linkGoogleAccount: NetworkException をスロー', () async {
+      when(
+        mockDio.post<dynamic>(
+          '/api/users/me/google/link/mobile',
+          data: anyNamed('data'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me/google/link/mobile'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => repo.linkGoogleAccount(idToken: 'bad-token'),
+        throwsA(isA<NetworkException>()),
+      );
+    });
+
+    test('deleteAccount: NetworkException をスロー', () async {
+      when(mockDio.delete<dynamic>('/api/users/me')).thenThrow(
+        DioException(
+          requestOptions: _req('/api/users/me'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(() => repo.deleteAccount(), throwsA(isA<NetworkException>()));
     });
   });
 }
