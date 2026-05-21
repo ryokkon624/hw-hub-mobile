@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
 import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_notifier.dart';
 import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_page.dart';
 import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_state.dart';
 
 import '../../helpers/widget_test_helpers.dart';
-import 'account_settings_notifier_test.mocks.dart';
-import 'package:mockito/mockito.dart';
 
 // ロードされた状態を返す FakeNotifier
 class _FakeNotifier extends AccountSettingsNotifier {

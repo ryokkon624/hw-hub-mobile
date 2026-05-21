@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
@@ -80,8 +79,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // メニューが表示される
-      expect(find.text('設定'), findsOneWidget);
-      expect(find.text('ログアウト'), findsOneWidget);
+      expect(find.byKey(const Key('menuItemSettings')), findsOneWidget);
+      expect(find.byKey(const Key('menuItemLogout')), findsOneWidget);
     });
 
     testWidgets('設定メニューをタップすると /settings に遷移する', (tester) async {
@@ -115,7 +114,7 @@ void main() {
       await tester.tap(find.byType(UserAvatar));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('設定'));
+      await tester.tap(find.byKey(const Key('menuItemSettings')));
       await tester.pumpAndSettle();
 
       expect(find.text('settings-page'), findsOneWidget);
@@ -148,13 +147,13 @@ void main() {
       await tester.tap(find.byType(UserAvatar));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('ログアウト'));
+      await tester.tap(find.byKey(const Key('menuItemLogout')));
       await tester.pumpAndSettle();
 
       // 確認ダイアログが表示される
-      expect(find.text('ログアウトしますか？'), findsOneWidget);
-      expect(find.text('はい'), findsOneWidget);
-      expect(find.text('キャンセル'), findsOneWidget);
+      expect(find.byKey(const Key('logoutConfirmDialog')), findsOneWidget);
+      expect(find.byKey(const Key('logoutConfirmButton')), findsOneWidget);
+      expect(find.byKey(const Key('logoutCancelButton')), findsOneWidget);
     });
 
     testWidgets('AuthUnauthenticated の場合でも表示エラーが発生しない', (tester) async {

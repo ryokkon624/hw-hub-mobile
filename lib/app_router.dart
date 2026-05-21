@@ -306,23 +306,3 @@ abstract final class AppRoutes {
   static const _settingsTermsRelative = 'terms';
   static const _settingsPrivacyRelative = 'privacy';
 }
-
-// Phase 4以降で実装するまでの仮画面
-class _P extends StatelessWidget {
-  const _P(this.name);
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(name.split('\n').first)),
-      body: Center(
-        child: Text(
-          name,
-          style: Theme.of(context).textTheme.bodyLarge,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}

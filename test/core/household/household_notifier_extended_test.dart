@@ -104,7 +104,7 @@ void main() {
     mockDio = MockDio();
   });
 
-  void _setupHouseholdsApi(MockDio dio, List<Household> households) {
+  void setupHouseholdsApi(MockDio dio, List<Household> households) {
     when(dio.get<List<dynamic>>('/api/users/me/households')).thenAnswer(
       (_) async => Response<List<dynamic>>(
         requestOptions: RequestOptions(path: '/api/users/me/households'),
@@ -116,7 +116,7 @@ void main() {
 
   group('HouseholdNotifier.refresh()', () {
     test('refresh()で世帯リストが再取得される', () async {
-      _setupHouseholdsApi(mockDio, [const Household(id: 1, name: '山田家')]);
+      setupHouseholdsApi(mockDio, [const Household(id: 1, name: '山田家')]);
 
       final container = _makeContainer(mockDio);
       await container.read(householdNotifierProvider.future);
@@ -141,7 +141,7 @@ void main() {
 
   group('HouseholdNotifier.addHousehold()', () {
     test('addHousehold()で世帯が追加されてリストが更新される', () async {
-      _setupHouseholdsApi(mockDio, [const Household(id: 1, name: '山田家')]);
+      setupHouseholdsApi(mockDio, [const Household(id: 1, name: '山田家')]);
 
       final container = _makeContainer(mockDio);
       await container.read(householdNotifierProvider.future);
