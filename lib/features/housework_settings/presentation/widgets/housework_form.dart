@@ -320,6 +320,8 @@ class _HouseworkFormState extends State<HouseworkForm> {
         return l10n.houseworkCreateErrorEndDateRequired;
       case 'houseworkCreateErrorEndDateBeforeStart':
         return l10n.houseworkCreateErrorEndDateBeforeStart;
+      case 'houseworkCreateErrorInvalidDate':
+        return l10n.houseworkCreateErrorInvalidDate;
       default:
         return key;
     }

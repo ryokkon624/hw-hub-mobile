@@ -209,11 +209,17 @@ class HouseworkCreateNotifier
 
     if (form.startDate.isEmpty) {
       startDateError = 'houseworkCreateErrorStartDateRequired';
+    } else if (!_isValidDate(form.startDate)) {
+      startDateError = 'houseworkCreateErrorInvalidDate';
     }
     if (form.endDate.isEmpty) {
       endDateError = 'houseworkCreateErrorEndDateRequired';
+    } else if (!_isValidDate(form.endDate)) {
+      endDateError = 'houseworkCreateErrorInvalidDate';
     }
-    if (form.startDate.isNotEmpty &&
+    if (startDateError == null &&
+        endDateError == null &&
+        form.startDate.isNotEmpty &&
         form.endDate.isNotEmpty &&
         form.endDate.compareTo(form.startDate) < 0) {
       endDateError = 'houseworkCreateErrorEndDateBeforeStart';
@@ -228,6 +234,16 @@ class HouseworkCreateNotifier
       startDateError: startDateError,
       endDateError: endDateError,
     );
+  }
+
+  /// 日付文字列（YYYY-MM-DD）が実在する日付かどうかを検証する。
+  /// Dart の DateTime は無効な日付を自動繰り越しするため、
+  /// parse 後の月・日が入力値と一致するかで存在チェックする。
+  bool _isValidDate(String value) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return false;
+    // 例: '2026-02-30' → parse で 2026-03-02 に繰り越される → toIso8601String で月が変わる
+    return parsed.toIso8601String().substring(0, 10) == value;
   }
 
   /// 保存する（新規作成）。
