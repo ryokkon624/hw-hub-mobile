@@ -45,7 +45,7 @@ class _InquiryCreatePageState extends ConsumerState<InquiryCreatePage> {
       if (next.createdInquiryId != null &&
           next.createdInquiryId != prev?.createdInquiryId) {
         AppSnackBar.showSuccess(l10n.inquiryCreateSuccessMessage);
-        context.push(
+        context.go(
           AppRoutes.settingsInquiryDetail(next.createdInquiryId.toString()),
         );
       }
