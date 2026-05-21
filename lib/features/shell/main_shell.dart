@@ -11,13 +11,14 @@ class MainShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   /// 現在のルートで HouseholdIndicatorBar を非表示にするか判定する。
-  /// 買い物アイテム追加・詳細画面では非表示。
+  /// 買い物アイテム追加・詳細画面、おうち設定画面では非表示。
   bool _shouldHideIndicator(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
     return location == AppRoutes.shoppingNew ||
         location.startsWith('/shopping/') &&
             location != AppRoutes.shopping &&
-            location != AppRoutes.shoppingNew;
+            location != AppRoutes.shoppingNew ||
+        location == AppRoutes.settingsHousehold;
   }
 
   @override
