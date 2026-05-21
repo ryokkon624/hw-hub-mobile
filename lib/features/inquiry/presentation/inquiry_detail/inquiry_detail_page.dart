@@ -148,24 +148,38 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
 
         // メッセージ一覧
         Expanded(
-          child: detail.messages.isEmpty
-              ? Center(
-                  key: const Key('noMessages'),
-                  child: Text('', style: TextStyle(color: colors.textMuted)),
-                )
-              : ListView.separated(
-                  key: const Key('messageList'),
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: detail.messages.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    return MessageBubble(
-                      key: ValueKey(detail.messages[index].messageId),
-                      message: detail.messages[index],
-                    );
-                  },
-                ),
+          child: RefreshIndicator(
+            onRefresh: () => ref
+                .read(inquiryDetailNotifierProvider(widget.inquiryId).notifier)
+                .reload(),
+            child: detail.messages.isEmpty
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      Center(
+                        key: const Key('noMessages'),
+                        child: Text(
+                          '',
+                          style: TextStyle(color: colors.textMuted),
+                        ),
+                      ),
+                    ],
+                  )
+                : ListView.separated(
+                    key: const Key('messageList'),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: detail.messages.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      return MessageBubble(
+                        key: ValueKey(detail.messages[index].messageId),
+                        message: detail.messages[index],
+                      );
+                    },
+                  ),
+          ),
         ),
 
         // 返信エリア（クローズ済みは非表示）

@@ -847,4 +847,17 @@ void main() {
       },
     );
   });
+
+  group('HouseholdSettingsNotifier.reload()', () {
+    test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
+      final container = _makeContainer();
+      await container.read(householdSettingsNotifierProvider.future);
+
+      await container.read(householdSettingsNotifierProvider.notifier).reload();
+
+      final async = container.read(householdSettingsNotifierProvider);
+      expect(async.hasValue, true);
+      expect(async.value!.members, hasLength(2));
+    });
+  });
 }

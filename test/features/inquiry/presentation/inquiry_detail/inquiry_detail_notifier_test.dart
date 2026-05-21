@@ -232,6 +232,49 @@ void main() {
     });
   });
 
+  group('InquiryDetailNotifier.reload()', () {
+    test('リロード成功時: detailが更新され isLoading=false になる', () async {
+      final initialDto = _detailDto(status: '00');
+      when(mockRepo.fetchInquiry(1)).thenAnswer((_) async => initialDto);
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      final sub = container.listen(inquiryDetailNotifierProvider(1), (_, _) {});
+      await Future<void>.microtask(() {});
+      await Future<void>.delayed(Duration.zero);
+
+      // 2回目のAPI呼び出しで別のデータを返す
+      final updatedDto = _detailDto(status: '20', messages: [_messageDto()]);
+      when(mockRepo.fetchInquiry(1)).thenAnswer((_) async => updatedDto);
+
+      await container.read(inquiryDetailNotifierProvider(1).notifier).reload();
+
+      final state = container.read(inquiryDetailNotifierProvider(1));
+      expect(state.isLoading, false);
+      expect(state.detail!.status, '20');
+      expect(state.detail!.messages, hasLength(1));
+      sub.close();
+    });
+
+    test('リロード失敗時（AppException）: errorMessageがセットされる', () async {
+      when(mockRepo.fetchInquiry(1)).thenAnswer((_) async => _detailDto());
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      final sub = container.listen(inquiryDetailNotifierProvider(1), (_, _) {});
+      await Future<void>.microtask(() {});
+      await Future<void>.delayed(Duration.zero);
+
+      const exception = NetworkException('接続エラー');
+      when(mockRepo.fetchInquiry(1)).thenThrow(exception);
+
+      await container.read(inquiryDetailNotifierProvider(1).notifier).reload();
+
+      final state = container.read(inquiryDetailNotifierProvider(1));
+      expect(state.errorMessage, exception.message);
+      expect(state.isLoading, false);
+      sub.close();
+    });
+  });
+
   group('InquiryDetailNotifier.clearReplySent()', () {
     test('replySentをfalseに戻す', () async {
       when(mockRepo.fetchInquiry(1)).thenAnswer((_) async => _detailDto());

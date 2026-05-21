@@ -256,6 +256,12 @@ class HouseworkAssignNotifier
     }
   }
 
+  /// 手動リロード（pull-to-refresh 用）。
+  Future<void> reload() async {
+    ref.invalidateSelf();
+    await future;
+  }
+
   Future<void> _reloadAndExitSwipe() async {
     final householdState = await ref.read(householdNotifierProvider.future);
     final selectedHousehold = householdState.selectedHousehold;

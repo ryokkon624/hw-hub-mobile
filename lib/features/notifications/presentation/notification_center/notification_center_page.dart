@@ -78,37 +78,51 @@ class NotificationCenterPage extends ConsumerWidget {
           const Divider(height: 1),
           // 通知一覧
           Expanded(
-            child: state.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : state.notifications.isEmpty
-                ? Center(
-                    child: Text(
-                      l10n.notificationsEmpty,
-                      style: TextStyle(color: colors.textMuted),
+            child: RefreshIndicator(
+              onRefresh: () => ref
+                  .read(notificationCenterNotifierProvider.notifier)
+                  .reload(),
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : state.notifications.isEmpty
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 64),
+                            child: Text(
+                              l10n.notificationsEmpty,
+                              style: TextStyle(color: colors.textMuted),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: state.notifications.length,
+                      itemBuilder: (context, index) {
+                        final notification = state.notifications[index];
+                        return NotificationListItem(
+                          key: ValueKey(notification.notificationId),
+                          notification: notification,
+                          renderer: renderer,
+                          onTap:
+                              NotificationLinkType.fromCode(
+                                    notification.linkType,
+                                  ) !=
+                                  NotificationLinkType.none
+                              ? () => NotificationLinkNavigator.navigate(
+                                  context: context,
+                                  linkType: notification.linkType,
+                                  linkId: notification.linkId,
+                                )
+                              : null,
+                        );
+                      },
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: state.notifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = state.notifications[index];
-                      return NotificationListItem(
-                        key: ValueKey(notification.notificationId),
-                        notification: notification,
-                        renderer: renderer,
-                        onTap:
-                            NotificationLinkType.fromCode(
-                                  notification.linkType,
-                                ) !=
-                                NotificationLinkType.none
-                            ? () => NotificationLinkNavigator.navigate(
-                                context: context,
-                                linkType: notification.linkType,
-                                linkId: notification.linkId,
-                              )
-                            : null,
-                      );
-                    },
-                  ),
+            ),
           ),
         ],
       ),

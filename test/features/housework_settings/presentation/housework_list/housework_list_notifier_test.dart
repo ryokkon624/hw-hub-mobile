@@ -254,6 +254,27 @@ void main() {
   });
 
   // ==================================
+  // reload
+  // ==================================
+
+  group('reload()', () {
+    test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
+      final container = _makeContainer();
+
+      // 初期ロードを待つ
+      await container.read(houseworkListNotifierProvider.future);
+
+      // reload() を呼ぶ
+      await container.read(houseworkListNotifierProvider.notifier).reload();
+
+      // reload後も AsyncData として読み取れること
+      final async = container.read(houseworkListNotifierProvider);
+      expect(async.hasValue, true);
+      expect(async.value!.allHouseworks, hasLength(2));
+    });
+  });
+
+  // ==================================
   // pagedHouseworks
   // ==================================
 

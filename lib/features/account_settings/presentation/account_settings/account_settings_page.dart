@@ -82,114 +82,123 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
     final profile = state.profile;
     if (profile == null) return const SizedBox.shrink();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // AC1: アカウント情報（読み取り専用）
-          AccountInfoSection(profile: profile),
-          const SizedBox(height: 20),
+    return RefreshIndicator(
+      onRefresh: () =>
+          ref.read(accountSettingsNotifierProvider.notifier).reload(),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // AC1: アカウント情報（読み取り専用）
+            AccountInfoSection(profile: profile),
+            const SizedBox(height: 20),
 
-          // AC2: パスワード変更（Googleのみアカウントは非表示）
-          if (!profile.isGoogleOnly) ...[
-            PasswordChangeSection(
-              key: const Key('passwordChangeSection'),
-              onSave: (current, next) async {
+            // AC2: パスワード変更（Googleのみアカウントは非表示）
+            if (!profile.isGoogleOnly) ...[
+              PasswordChangeSection(
+                key: const Key('passwordChangeSection'),
+                onSave: (current, next) async {
+                  await ref
+                      .read(accountSettingsNotifierProvider.notifier)
+                      .changePassword(
+                        currentPassword: current,
+                        newPassword: next,
+                      );
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // AC3: プロフィール設定（表示名・言語）
+            ProfileSection(
+              profile: profile,
+              onSave: (displayName, locale) async {
                 await ref
                     .read(accountSettingsNotifierProvider.notifier)
-                    .changePassword(
-                      currentPassword: current,
-                      newPassword: next,
+                    .updateProfile(displayName: displayName, locale: locale);
+                // ロケール即時反映
+                await ref
+                    .read(localeNotifierProvider.notifier)
+                    .setLocale(Locale(locale));
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // AC4: プロフィール画像
+            IconSection(
+              iconUrl: profile.iconUrl,
+              displayName: profile.displayName,
+              isUploading: state.isUploadingIcon,
+              onImageSelected: (bytes, fileName, mimeType) async {
+                await ref
+                    .read(accountSettingsNotifierProvider.notifier)
+                    .uploadIcon(
+                      bytes: bytes,
+                      fileName: fileName,
+                      mimeType: mimeType,
                     );
               },
             ),
             const SizedBox(height: 20),
-          ],
 
-          // AC3: プロフィール設定（表示名・言語）
-          ProfileSection(
-            profile: profile,
-            onSave: (displayName, locale) async {
-              await ref
-                  .read(accountSettingsNotifierProvider.notifier)
-                  .updateProfile(displayName: displayName, locale: locale);
-              // ロケール即時反映
-              await ref
-                  .read(localeNotifierProvider.notifier)
-                  .setLocale(Locale(locale));
-            },
-          ),
-          const SizedBox(height: 20),
+            // AC5: 通知設定
+            if (state.notificationSettings != null)
+              NotificationSettingsSection(
+                key: const Key('notificationSettingsSection'),
+                settings: state.notificationSettings!,
+                onToggleGlobal: (enabled) async {
+                  await ref
+                      .read(accountSettingsNotifierProvider.notifier)
+                      .toggleGlobalNotification(enabled: enabled);
+                },
+                onToggleGroup: (code, enabled) async {
+                  await ref
+                      .read(accountSettingsNotifierProvider.notifier)
+                      .toggleGroupNotification(
+                        groupCode: code,
+                        enabled: enabled,
+                      );
+                },
+              ),
+            const SizedBox(height: 20),
 
-          // AC4: プロフィール画像
-          IconSection(
-            iconUrl: profile.iconUrl,
-            displayName: profile.displayName,
-            isUploading: state.isUploadingIcon,
-            onImageSelected: (bytes, fileName, mimeType) async {
-              await ref
-                  .read(accountSettingsNotifierProvider.notifier)
-                  .uploadIcon(
-                    bytes: bytes,
-                    fileName: fileName,
-                    mimeType: mimeType,
-                  );
-            },
-          ),
-          const SizedBox(height: 20),
+            // AC6: Google連携（@gmail.com のみ表示）
+            if (profile.email.endsWith('@gmail.com'))
+              GoogleLinkSection(
+                key: const Key('googleLinkSection'),
+                isLinked: profile.isGoogleOnly,
+                isLinking: state.isLinkingGoogle,
+                onLink: (idToken) async {
+                  await ref
+                      .read(accountSettingsNotifierProvider.notifier)
+                      .linkGoogleAccount(idToken: idToken);
+                },
+              ),
+            if (profile.email.endsWith('@gmail.com'))
+              const SizedBox(height: 20),
 
-          // AC5: 通知設定
-          if (state.notificationSettings != null)
-            NotificationSettingsSection(
-              key: const Key('notificationSettingsSection'),
-              settings: state.notificationSettings!,
-              onToggleGlobal: (enabled) async {
+            // AC7: 危険ゾーン（アカウント削除）
+            DangerZoneSection(
+              key: const Key('dangerZoneSection'),
+              isDeleting: state.isDeletingAccount,
+              onDelete: () async {
                 await ref
                     .read(accountSettingsNotifierProvider.notifier)
-                    .toggleGlobalNotification(enabled: enabled);
-              },
-              onToggleGroup: (code, enabled) async {
-                await ref
-                    .read(accountSettingsNotifierProvider.notifier)
-                    .toggleGroupNotification(groupCode: code, enabled: enabled);
-              },
-            ),
-          const SizedBox(height: 20),
-
-          // AC6: Google連携（@gmail.com のみ表示）
-          if (profile.email.endsWith('@gmail.com'))
-            GoogleLinkSection(
-              key: const Key('googleLinkSection'),
-              isLinked: profile.isGoogleOnly,
-              isLinking: state.isLinkingGoogle,
-              onLink: (idToken) async {
-                await ref
-                    .read(accountSettingsNotifierProvider.notifier)
-                    .linkGoogleAccount(idToken: idToken);
-              },
-            ),
-          if (profile.email.endsWith('@gmail.com')) const SizedBox(height: 20),
-
-          // AC7: 危険ゾーン（アカウント削除）
-          DangerZoneSection(
-            key: const Key('dangerZoneSection'),
-            isDeleting: state.isDeletingAccount,
-            onDelete: () async {
-              await ref
-                  .read(accountSettingsNotifierProvider.notifier)
-                  .deleteAccount();
-              // 削除成功後: トークン破棄 → ログイン画面へ
-              if (mounted) {
-                await ref.read(authNotifierProvider.notifier).logout();
-                if (context.mounted) {
-                  context.go(AppRoutes.login);
+                    .deleteAccount();
+                // 削除成功後: トークン破棄 → ログイン画面へ
+                if (mounted) {
+                  await ref.read(authNotifierProvider.notifier).logout();
+                  if (context.mounted) {
+                    context.go(AppRoutes.login);
+                  }
                 }
-              }
-            },
-          ),
-          const SizedBox(height: 32),
-        ],
+              },
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }

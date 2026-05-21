@@ -44,7 +44,14 @@ class HouseworkListPage extends ConsumerWidget {
           .watch(houseworkListNotifierProvider)
           .when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(e.toString())),
+            error: (e, _) => RefreshIndicator(
+              onRefresh: () =>
+                  ref.read(houseworkListNotifierProvider.notifier).reload(),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [Center(child: Text(e.toString()))],
+              ),
+            ),
             data: (state) => _HouseworkListBody(state: state),
           ),
     );
@@ -72,106 +79,112 @@ class _HouseworkListBody extends ConsumerWidget {
       ('OTHER', l10n.houseworkSettingsFilterOther),
     ];
 
-    return Column(
-      children: [
-        // 家事を追加するボタン
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              key: const Key('houseworkAddButton'),
-              onPressed: () => context.push(AppRoutes.settingsHouseworkNew),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.houseworkSettingsAddButton),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 12),
+    return RefreshIndicator(
+      onRefresh: () => notifier.reload(),
+      child: Column(
+        children: [
+          // 家事を追加するボタン
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                key: const Key('houseworkAddButton'),
+                onPressed: () => context.push(AppRoutes.settingsHouseworkNew),
+                icon: const Icon(Icons.add),
+                label: Text(l10n.houseworkSettingsAddButton),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
               ),
             ),
           ),
-        ),
-        // 家事マスタ一覧カード
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.surfaceCard,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: colors.border),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // カテゴリフィルタ + 件数
-                Row(
-                  children: [
-                    DropdownButton<String?>(
-                      key: const Key('categoryFilterDropdown'),
-                      value: state.selectedCategory,
-                      isDense: true,
-                      underline: const SizedBox(),
-                      items: categories.map((pair) {
-                        return DropdownMenuItem<String?>(
-                          value: pair.$1,
-                          child: Text(pair.$2),
-                        );
-                      }).toList(),
-                      onChanged: (val) => notifier.filterByCategory(val),
-                    ),
-                    const Spacer(),
-                    Text(
-                      l10n.houseworkSettingsTotalCount(
-                        state.filteredHouseworks.length,
+          // 家事マスタ一覧カード
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.surfaceCard,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: colors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // カテゴリフィルタ + 件数
+                  Row(
+                    children: [
+                      DropdownButton<String?>(
+                        key: const Key('categoryFilterDropdown'),
+                        value: state.selectedCategory,
+                        isDense: true,
+                        underline: const SizedBox(),
+                        items: categories.map((pair) {
+                          return DropdownMenuItem<String?>(
+                            value: pair.$1,
+                            child: Text(pair.$2),
+                          );
+                        }).toList(),
+                        onChanged: (val) => notifier.filterByCategory(val),
                       ),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-                    ),
-                  ],
-                ),
-                const Divider(height: 16),
-                // 家事リスト
-                Expanded(
-                  child: state.filteredHouseworks.isEmpty
-                      ? Center(
-                          child: Text(
-                            l10n.commonLoading,
-                            style: TextStyle(color: colors.textMuted),
-                          ),
-                        )
-                      : ListView(
-                          children: [
-                            ...state.pagedHouseworks.map((hw) {
-                              return Padding(
-                                key: ValueKey(hw.houseworkId),
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: HouseworkCard(
-                                  housework: hw,
-                                  assigneeName: state.memberNameById(
-                                    hw.defaultAssigneeUserId,
-                                  ),
-                                  onTap: () => context.push(
-                                    AppRoutes.settingsHouseworkDetail(
-                                      hw.houseworkId.toString(),
+                      const Spacer(),
+                      Text(
+                        l10n.houseworkSettingsTotalCount(
+                          state.filteredHouseworks.length,
+                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 16),
+                  // 家事リスト
+                  Expanded(
+                    child: state.filteredHouseworks.isEmpty
+                        ? Center(
+                            child: Text(
+                              l10n.commonLoading,
+                              style: TextStyle(color: colors.textMuted),
+                            ),
+                          )
+                        : ListView(
+                            children: [
+                              ...state.pagedHouseworks.map((hw) {
+                                return Padding(
+                                  key: ValueKey(hw.houseworkId),
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: HouseworkCard(
+                                    housework: hw,
+                                    assigneeName: state.memberNameById(
+                                      hw.defaultAssigneeUserId,
+                                    ),
+                                    onTap: () => context.push(
+                                      AppRoutes.settingsHouseworkDetail(
+                                        hw.houseworkId.toString(),
+                                      ),
                                     ),
                                   ),
+                                );
+                              }),
+                              // ページネーション
+                              if (state.totalPages > 1)
+                                _PaginationRow(
+                                  state: state,
+                                  notifier: notifier,
                                 ),
-                              );
-                            }),
-                            // ページネーション
-                            if (state.totalPages > 1)
-                              _PaginationRow(state: state, notifier: notifier),
-                          ],
-                        ),
-                ),
-              ],
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
