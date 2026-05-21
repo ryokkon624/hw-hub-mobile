@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_router.dart';
 import 'core/locale/locale_notifier.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_mode_notifier.dart';
 import 'core/ui/app_snack_bar.dart';
 import 'features/notifications/presentation/notification_global_notifier.dart';
 import 'l10n/app_localizations.dart';
@@ -53,11 +54,14 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final router = ref.watch(routerProvider);
     final localeAsync = ref.watch(localeNotifierProvider);
     final locale = localeAsync.valueOrNull;
+    // テーマモードを watch して即時反映（AC3）
+    final themeModeAsync = ref.watch(themeModeNotifierProvider);
+    final themeMode = themeModeAsync.valueOrNull ?? ThemeMode.system;
     return MaterialApp.router(
       title: 'HwHub',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       scaffoldMessengerKey: AppSnackBar.messengerKey,
       routerConfig: router,
       locale: locale,

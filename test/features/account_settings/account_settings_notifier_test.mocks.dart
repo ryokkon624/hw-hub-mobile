@@ -176,6 +176,15 @@ class MockAccountSettingsRepository extends _i1.Mock
           as _i5.Future<void>);
 
   @override
+  _i5.Future<void> updateThemeMode({required String? themeMode}) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateThemeMode, [], {#themeMode: themeMode}),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
   _i5.Future<void> deleteAccount() =>
       (super.noSuchMethod(
             Invocation.method(#deleteAccount, []),

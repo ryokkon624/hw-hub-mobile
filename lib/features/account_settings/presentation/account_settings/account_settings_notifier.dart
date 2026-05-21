@@ -279,6 +279,17 @@ class AccountSettingsNotifier
     state = AsyncData(current.copyWith(clearSuccess: true));
   }
 
+  /// テーマモードをバックエンドに同期する（AC5: Nice to Have）。
+  ///
+  /// 失敗してもサイレントに無視する（デバイスローカルの設定は ThemeModeNotifier が管理）。
+  Future<void> updateThemeMode({required String themeMode}) async {
+    try {
+      await _repo.updateThemeMode(themeMode: themeMode);
+    } catch (_) {
+      // AC5 は Nice to Have のため、バックエンド同期失敗は UI に表示しない
+    }
+  }
+
   /// 手動リロード（pull-to-refresh 用）。
   Future<void> reload() async {
     ref.invalidateSelf();

@@ -607,4 +607,44 @@ void main() {
       expect(async.hasValue, true);
     });
   });
+
+  group('AccountSettingsNotifier.updateThemeMode()', () {
+    test('成功時: 例外なく完了する（state に変化なし）', () async {
+      _stubInitialLoad(mockRepo);
+      when(
+        mockRepo.updateThemeMode(themeMode: 'LIGHT'),
+      ).thenAnswer((_) async {});
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .updateThemeMode(themeMode: 'LIGHT');
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      // updateThemeMode は state を変更しない（ThemeModeNotifier が管理）
+      expect(state.errorMessage, isNull);
+    });
+
+    test('失敗時: サイレントに失敗する（AC5 は Nice to Have のため errorMessage は不要）', () async {
+      _stubInitialLoad(mockRepo);
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      // updateThemeMode のスタブ（初期ロード後に設定）
+      when(
+        mockRepo.updateThemeMode(themeMode: 'DARK'),
+      ).thenThrow(const NetworkException('接続エラー'));
+
+      await container
+          .read(accountSettingsNotifierProvider.notifier)
+          .updateThemeMode(themeMode: 'DARK');
+
+      final state = container.read(accountSettingsNotifierProvider).value!;
+      // バックエンド同期失敗はサイレント（AC5はNice to Have）→ errorMessageは不要
+      expect(state.errorMessage, isNull);
+    });
+  });
 }
