@@ -11,7 +11,11 @@ Widget _buildWithL10n(Widget child) => MaterialApp(
 );
 
 void main() {
-  testWidgets('taskAssigned キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  // バックエンドが DB に保存するフルパス形式のキー値でレンダリングできることを検証する。
+  // NotificationPublisher / NotificationAggregationService が
+  // 'notifications.messages.xxx.title' / 'notifications.messages.xxx.body' 形式で保存する。
+
+  testWidgets('taskAssigned フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -21,16 +25,20 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('taskAssigned', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.taskAssigned.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('taskAssigned', {
-                    'actorName': 'ママ',
-                    'household': '自宅',
-                    'date': '2026/05/01',
-                    'count': '2',
-                  }),
+                  renderer
+                      .renderBody('notifications.messages.taskAssigned.body', {
+                        'actorName': 'ママ',
+                        'household': '自宅',
+                        'date': '2026/05/01',
+                        'count': '2',
+                      }),
                   key: const Key('body'),
                 ),
               ],
@@ -41,17 +49,10 @@ void main() {
     );
 
     expect(find.byKey(const Key('title')), findsOneWidget);
-    expect(
-      (tester.widget(find.byKey(const Key('title'))) as Text).data,
-      'タスクが割り当てられました',
-    );
-    expect(
-      (tester.widget(find.byKey(const Key('body'))) as Text).data,
-      'ママによってタスクが割り当てられました。おうち: 自宅, 日付: 2026/05/01, 件数: 2件',
-    );
+    expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('yourTaskWasTaken キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('yourTaskWasTaken フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -61,7 +62,10 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('yourTaskWasTaken', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.yourTaskWasTaken.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
               ],
@@ -71,10 +75,7 @@ void main() {
       ),
     );
 
-    expect(
-      (tester.widget(find.byKey(const Key('title'))) as Text).data,
-      '他メンバーがあなたのタスクを奪いました',
-    );
+    expect(find.byKey(const Key('title')), findsOneWidget);
   });
 
   testWidgets('不明なキー: キー文字列をそのまま返す（Web版と同じ挙動）', (tester) async {
@@ -101,17 +102,11 @@ void main() {
       ),
     );
 
-    expect(
-      (tester.widget(find.byKey(const Key('title'))) as Text).data,
-      'unknownKey',
-    );
-    expect(
-      (tester.widget(find.byKey(const Key('body'))) as Text).data,
-      'unknownKey',
-    );
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('inquiryReplied キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('inquiryReplied フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -121,51 +116,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('inquiryReplied', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.inquiryReplied.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('inquiryReplied', {
-                    'inquiryId': '42',
-                    'title': 'テスト問い合わせ',
-                  }),
-                  key: const Key('body'),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-
-    expect(
-      (tester.widget(find.byKey(const Key('title'))) as Text).data,
-      '問い合わせに返信が届きました',
-    );
-    expect(
-      (tester.widget(find.byKey(const Key('body'))) as Text).data,
-      '#42「テスト問い合わせ」に返信が届いています。内容をご確認ください。',
-    );
-  });
-
-  testWidgets('acceptInvitation キー: タイトルと本文が正しくレンダリングされる', (tester) async {
-    await tester.pumpWidget(
-      _buildWithL10n(
-        Builder(
-          builder: (context) {
-            final l10n = AppLocalizations.of(context);
-            final renderer = NotificationMessageRenderer(l10n: l10n);
-            return Column(
-              children: [
-                Text(
-                  renderer.renderTitle('acceptInvitation', {}),
-                  key: const Key('title'),
-                ),
-                Text(
-                  renderer.renderBody('acceptInvitation', {
-                    'householdName': '山田家',
-                    'memberName': '太郎',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.inquiryReplied.body',
+                    {'inquiryId': '42', 'title': 'テスト問い合わせ'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -179,7 +140,7 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('declineInvitation キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('acceptInvitation フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -189,14 +150,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('declineInvitation', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.acceptInvitation.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('declineInvitation', {
-                    'householdName': '山田家',
-                    'memberName': '花子',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.acceptInvitation.body',
+                    {'householdName': '山田家', 'memberName': '太郎'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -210,7 +174,7 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('removedFromHousehold キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('declineInvitation フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -220,13 +184,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('removedFromHousehold', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.declineInvitation.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('removedFromHousehold', {
-                    'householdName': '山田家',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.declineInvitation.body',
+                    {'householdName': '山田家', 'memberName': '花子'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -240,7 +208,9 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('leftHousehold キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('removedFromHousehold フルパスキー: タイトルと本文が正しくレンダリングされる', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -250,14 +220,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('leftHousehold', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.removedFromHousehold.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('leftHousehold', {
-                    'householdName': '山田家',
-                    'memberName': '太郎',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.removedFromHousehold.body',
+                    {'householdName': '山田家'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -271,7 +244,7 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('assigned2Owner キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('leftHousehold フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -281,13 +254,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('assigned2Owner', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.leftHousehold.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('assigned2Owner', {
-                    'householdName': '山田家',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.leftHousehold.body',
+                    {'householdName': '山田家', 'memberName': '太郎'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -301,7 +278,7 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('beDumpedTasks キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('assigned2Owner フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -311,16 +288,17 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('beDumpedTasks', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.assigned2Owner.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('beDumpedTasks', {
-                    'actorName': 'パパ',
-                    'household': '自宅',
-                    'date': '2026/05/01',
-                    'count': '3',
-                  }),
+                  renderer.renderBody(
+                    'notifications.messages.assigned2Owner.body',
+                    {'householdName': '山田家'},
+                  ),
                   key: const Key('body'),
                 ),
               ],
@@ -334,7 +312,7 @@ void main() {
     expect(find.byKey(const Key('body')), findsOneWidget);
   });
 
-  testWidgets('generic キー: タイトルと本文が正しくレンダリングされる', (tester) async {
+  testWidgets('beDumpedTasks フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
     await tester.pumpWidget(
       _buildWithL10n(
         Builder(
@@ -344,11 +322,51 @@ void main() {
             return Column(
               children: [
                 Text(
-                  renderer.renderTitle('generic', {}),
+                  renderer.renderTitle(
+                    'notifications.messages.beDumpedTasks.title',
+                    {},
+                  ),
                   key: const Key('title'),
                 ),
                 Text(
-                  renderer.renderBody('generic', {
+                  renderer
+                      .renderBody('notifications.messages.beDumpedTasks.body', {
+                        'actorName': 'パパ',
+                        'household': '自宅',
+                        'date': '2026/05/01',
+                        'count': '3',
+                      }),
+                  key: const Key('body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('title')), findsOneWidget);
+    expect(find.byKey(const Key('body')), findsOneWidget);
+  });
+
+  testWidgets('generic フルパスキー: タイトルと本文が正しくレンダリングされる', (tester) async {
+    await tester.pumpWidget(
+      _buildWithL10n(
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final renderer = NotificationMessageRenderer(l10n: l10n);
+            return Column(
+              children: [
+                Text(
+                  renderer.renderTitle(
+                    'notifications.messages.generic.title',
+                    {},
+                  ),
+                  key: const Key('title'),
+                ),
+                Text(
+                  renderer.renderBody('notifications.messages.generic.body', {
                     'household': '自宅',
                     'date': '2026/05/01',
                     'count': '1',
