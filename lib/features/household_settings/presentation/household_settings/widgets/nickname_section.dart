@@ -47,7 +47,9 @@ class _NicknameSectionState extends ConsumerState<NicknameSection> {
       final prevNickname = prev?.valueOrNull?.currentNickname;
       final nextNickname = next.valueOrNull?.currentNickname;
       if (nextNickname != null && nextNickname != prevNickname) {
-        _controller.text = nextNickname;
+        setState(() {
+          _controller.text = nextNickname;
+        });
       }
     });
 
