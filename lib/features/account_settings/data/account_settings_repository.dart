@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/network/app_exception.dart';
+import '../../../core/network/s3_url_resolver.dart';
 import 'models/notification_settings_dto.dart';
 import 'models/user_profile_dto.dart';
 
@@ -55,16 +56,28 @@ abstract class AccountSettingsRepository {
 }
 
 class AccountSettingsRepositoryImpl implements AccountSettingsRepository {
-  AccountSettingsRepositoryImpl(this._dio, this._s3Dio);
+  AccountSettingsRepositoryImpl(this._dio, this._s3Dio, this._s3UrlResolver);
 
   final Dio _dio;
   final Dio _s3Dio; // S3 直接 PUT 用（インターセプターなし）
+  final S3UrlResolver _s3UrlResolver;
 
   @override
   Future<UserProfileDto> fetchProfile() async {
     try {
       final response = await _dio.get<dynamic>('/api/users/me/profile');
-      return UserProfileDto.fromJson(response.data as Map<String, dynamic>);
+      final dto = UserProfileDto.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      // LocalStack 環境では iconUrl が localhost URL のため、変換して返す
+      return UserProfileDto(
+        userId: dto.userId,
+        email: dto.email,
+        authProvider: dto.authProvider,
+        displayName: dto.displayName,
+        locale: dto.locale,
+        iconUrl: _s3UrlResolver.resolve(dto.iconUrl),
+      );
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');
@@ -81,7 +94,17 @@ class AccountSettingsRepositoryImpl implements AccountSettingsRepository {
         '/api/users/me/profile',
         data: {'displayName': displayName, 'locale': locale},
       );
-      return UserProfileDto.fromJson(response.data as Map<String, dynamic>);
+      final dto = UserProfileDto.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      return UserProfileDto(
+        userId: dto.userId,
+        email: dto.email,
+        authProvider: dto.authProvider,
+        displayName: dto.displayName,
+        locale: dto.locale,
+        iconUrl: _s3UrlResolver.resolve(dto.iconUrl),
+      );
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;
       throw NetworkException(e.message ?? 'Network error');
@@ -125,13 +148,6 @@ class AccountSettingsRepositoryImpl implements AccountSettingsRepository {
     }
   }
 
-  String _resolveS3Url(String url) {
-    if (!kDebugMode) return url;
-    return url
-        .replaceFirst('localhost', '10.0.2.2')
-        .replaceFirst('127.0.0.1', '10.0.2.2');
-  }
-
   @override
   Future<void> uploadToS3({
     required String uploadUrl,
@@ -139,7 +155,7 @@ class AccountSettingsRepositoryImpl implements AccountSettingsRepository {
     required String mimeType,
   }) async {
     try {
-      final resolved = _resolveS3Url(uploadUrl);
+      final resolved = _s3UrlResolver.resolve(uploadUrl) ?? uploadUrl;
       await _s3Dio.put<dynamic>(
         resolved,
         data: Stream.fromIterable([bytes]),
