@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../shopping_list_state.dart';
+import '../shopping_item_list/shopping_list_state.dart';
 
 class ShoppingTabBar extends StatelessWidget {
   const ShoppingTabBar({

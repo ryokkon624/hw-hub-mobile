@@ -1,4 +1,4 @@
-import '../data/shopping_repository.dart';
+import '../../data/shopping_repository.dart';
 
 enum ShoppingTab { unpurchased, basket, purchased }
 

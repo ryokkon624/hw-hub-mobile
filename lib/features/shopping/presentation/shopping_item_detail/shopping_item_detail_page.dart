@@ -7,7 +7,7 @@ import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_attachment_repository.dart';
-import '../shopping_list_notifier.dart';
+import '../shopping_item_list/shopping_list_notifier.dart';
 import '../widgets/image_picker_field.dart';
 import '../widgets/status_step_selector.dart';
 import 'shopping_item_detail_notifier.dart';

@@ -4,7 +4,7 @@ import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
-import '../shopping_list_state.dart';
+import '../shopping_item_list/shopping_list_state.dart';
 
 /// 未購入・かご・購入済みタブのアイテムカード。
 /// [variant] により背景・スワイプアクションが変わる。

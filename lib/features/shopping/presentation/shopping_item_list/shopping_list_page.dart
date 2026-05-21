@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../app_router.dart';
-import '../../../core/network/app_exception.dart';
-import '../../../core/theme/app_color_scheme.dart';
-import '../../../core/theme/app_spacing.dart';
-import '../../../core/ui/app_snack_bar.dart';
-import '../../../core/ui/main_app_bar.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../../app_router.dart';
+import '../../../../core/network/app_exception.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ui/app_snack_bar.dart';
+import '../../../../core/ui/main_app_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'shopping_list_notifier.dart';
 import 'shopping_list_state.dart';
-import 'widgets/basket_tab.dart';
-import 'widgets/purchased_tab.dart';
-import 'widgets/shopping_tab_bar.dart';
-import 'widgets/unpurchased_tab.dart';
+import '../widgets/basket_tab.dart';
+import '../widgets/purchased_tab.dart';
+import '../widgets/shopping_tab_bar.dart';
+import '../widgets/unpurchased_tab.dart';
 
 class ShoppingListPage extends ConsumerWidget {
   const ShoppingListPage({super.key});
