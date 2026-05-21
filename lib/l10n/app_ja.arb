@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "家事がまだ登録されていません",
+  "houseworkSettingsEmptyFiltered": "フィルタに該当する家事がありません",
   "houseworkSettingsAssigneeLabel": "担当: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {

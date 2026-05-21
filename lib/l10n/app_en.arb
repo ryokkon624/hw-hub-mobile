@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "No housework registered yet",
+  "houseworkSettingsEmptyFiltered": "No housework matches the filter",
   "houseworkSettingsAssigneeLabel": "Assignee: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {

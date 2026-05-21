@@ -741,6 +741,8 @@
       "total": { "type": "int" }
     }
   },
+  "houseworkSettingsEmptyAll": "No hay tareas registradas",
+  "houseworkSettingsEmptyFiltered": "No hay tareas que coincidan con el filtro",
   "houseworkSettingsAssigneeLabel": "Asignado: {name}",
   "@houseworkSettingsAssigneeLabel": {
     "placeholders": {

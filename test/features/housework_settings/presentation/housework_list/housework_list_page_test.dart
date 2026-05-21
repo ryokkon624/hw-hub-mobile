@@ -151,6 +151,38 @@ void main() {
       expect(find.byType(Card), findsNothing);
     });
 
+    testWidgets('家事が0件でフィルタなしの場合: houseworkSettingsEmptyAll Keyが表示される', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildPage(const HouseworkListState()));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('houseworkSettingsEmptyAll')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      '家事が0件でカテゴリフィルタありの場合: houseworkSettingsEmptyFiltered Keyが表示される',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildPage(
+            const HouseworkListState(
+              allHouseworks: [_hw1],
+              selectedCategory: 'KITCHEN', // hw1はCLEANなのでフィルタ後0件
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('houseworkSettingsEmptyFiltered')),
+          findsOneWidget,
+        );
+      },
+    );
+
     testWidgets('家事を追加するボタンが表示される', (tester) async {
       await tester.pumpWidget(_buildPage(const HouseworkListState()));
       await tester.pumpAndSettle();

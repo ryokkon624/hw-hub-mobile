@@ -146,10 +146,19 @@ class _HouseworkListBody extends ConsumerWidget {
                   Expanded(
                     child: state.filteredHouseworks.isEmpty
                         ? Center(
-                            child: Text(
-                              l10n.commonLoading,
-                              style: TextStyle(color: colors.textMuted),
-                            ),
+                            child: state.selectedCategory == null
+                                ? Text(
+                                    key: const Key('houseworkSettingsEmptyAll'),
+                                    l10n.houseworkSettingsEmptyAll,
+                                    style: TextStyle(color: colors.textMuted),
+                                  )
+                                : Text(
+                                    key: const Key(
+                                      'houseworkSettingsEmptyFiltered',
+                                    ),
+                                    l10n.houseworkSettingsEmptyFiltered,
+                                    style: TextStyle(color: colors.textMuted),
+                                  ),
                           )
                         : ListView(
                             children: [
