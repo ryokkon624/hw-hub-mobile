@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
@@ -15,6 +16,25 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
   Future<HouseholdState> build() async => const HouseholdState(
     households: [Household(id: 1, name: '山田家')],
     selectedHousehold: Household(id: 1, name: '山田家'),
+  );
+}
+
+/// 世帯切り替えをシミュレートできる Notifier
+class _SwitchableHouseholdNotifier extends HouseholdNotifier {
+  Household _current = const Household(id: 1, name: '山田家');
+
+  void switchTo(Household h) {
+    _current = h;
+    state = AsyncData(state.value!.copyWith(selectedHousehold: h));
+  }
+
+  @override
+  Future<HouseholdState> build() async => HouseholdState(
+    households: const [
+      Household(id: 1, name: '山田家'),
+      Household(id: 2, name: '田中家'),
+    ],
+    selectedHousehold: _current,
   );
 }
 
@@ -168,6 +188,36 @@ void main() {
       await tester.pump();
 
       expect(notifier.savedName, '新しい世帯名');
+    });
+
+    testWidgets('世帯切り替え時: テキストフィールドが切り替え先のおうち名に更新される', (tester) async {
+      final householdNotifier = _SwitchableHouseholdNotifier();
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(
+            body: SingleChildScrollView(child: HouseholdNameSection()),
+          ),
+          overrides: [
+            householdNotifierProvider.overrideWith(() => householdNotifier),
+            householdSettingsNotifierProvider.overrideWith(
+              _FakeSettingsNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 初期状態: 山田家が表示されている
+      final tf1 = tester.widget<TextField>(find.byType(TextField));
+      expect(tf1.controller?.text, '山田家');
+
+      // 世帯切り替え
+      householdNotifier.switchTo(const Household(id: 2, name: '田中家'));
+      await tester.pumpAndSettle();
+
+      // 田中家に更新される
+      final tf2 = tester.widget<TextField>(find.byType(TextField));
+      expect(tf2.controller?.text, '田中家');
     });
   });
 }

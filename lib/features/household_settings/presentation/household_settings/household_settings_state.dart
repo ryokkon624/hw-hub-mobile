@@ -14,6 +14,7 @@ class HouseholdSettingsState {
     this.isLoadingDeleteCounts = false,
     this.houseworkCount,
     this.shoppingCount,
+    this.currentNickname,
     this.errorMessage,
     this.successMessage,
   });
@@ -48,6 +49,10 @@ class HouseholdSettingsState {
   /// 買い物件数（削除確認ダイアログ用）
   final int? shoppingCount;
 
+  /// ログインユーザーのニックネーム（nickname ?? displayName）
+  /// NicknameSection の初期表示・世帯切り替え時の更新に使用する
+  final String? currentNickname;
+
   final String? errorMessage;
   final String? successMessage;
 
@@ -62,11 +67,13 @@ class HouseholdSettingsState {
     bool? isLoadingDeleteCounts,
     int? houseworkCount,
     int? shoppingCount,
+    String? currentNickname,
     String? errorMessage,
     String? successMessage,
     bool clearError = false,
     bool clearSuccess = false,
     bool clearDeleteCounts = false,
+    bool clearCurrentNickname = false,
   }) {
     return HouseholdSettingsState(
       members: members ?? this.members,
@@ -85,6 +92,9 @@ class HouseholdSettingsState {
       shoppingCount: clearDeleteCounts
           ? null
           : (shoppingCount ?? this.shoppingCount),
+      currentNickname: clearCurrentNickname
+          ? null
+          : (currentNickname ?? this.currentNickname),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       successMessage: clearSuccess
           ? null

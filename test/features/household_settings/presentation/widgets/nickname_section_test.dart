@@ -21,6 +21,13 @@ class _FakeSettingsNotifier extends HouseholdSettingsNotifier {
       const HouseholdSettingsState(invitations: []);
 }
 
+/// currentNickname が設定された Fake Notifier
+class _WithNicknameSettingsNotifier extends HouseholdSettingsNotifier {
+  @override
+  Future<HouseholdSettingsState> build() async =>
+      const HouseholdSettingsState(invitations: [], currentNickname: 'お父さん');
+}
+
 class _RecordingSettingsNotifier extends HouseholdSettingsNotifier {
   String? savedNickname;
 
@@ -88,6 +95,27 @@ void main() {
       await tester.pump();
 
       expect(notifier.savedNickname, 'ニックネーム太郎');
+    });
+
+    testWidgets('Stateにcurrentnicknameがある場合: 初期状態でテキストフィールドに表示される', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const Scaffold(body: SingleChildScrollView(child: NicknameSection())),
+          overrides: [
+            householdNotifierProvider.overrideWith(_FakeHouseholdNotifier.new),
+            householdSettingsNotifierProvider.overrideWith(
+              _WithNicknameSettingsNotifier.new,
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // currentNickname が TextEditingController に反映されている
+      final tf = tester.widget<TextField>(find.byType(TextField));
+      expect(tf.controller?.text, 'お父さん');
     });
   });
 }

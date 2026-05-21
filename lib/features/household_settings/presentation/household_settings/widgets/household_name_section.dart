@@ -47,6 +47,18 @@ class _HouseholdNameSectionState extends ConsumerState<HouseholdNameSection> {
     final notifierState = ref.watch(householdSettingsNotifierProvider);
     final isSaving = notifierState.valueOrNull?.isSavingName ?? false;
 
+    // 世帯切り替えで selectedHousehold が変化したらコントローラーと _originalName を更新する
+    ref.listen(householdNotifierProvider, (prev, next) {
+      final prevName = prev?.valueOrNull?.selectedHousehold?.name;
+      final nextName = next.valueOrNull?.selectedHousehold?.name;
+      if (nextName != null && nextName != prevName) {
+        setState(() {
+          _controller.text = nextName;
+          _originalName = nextName;
+        });
+      }
+    });
+
     return Card(
       key: const Key('householdInfoSection'),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
