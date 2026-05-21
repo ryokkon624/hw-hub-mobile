@@ -171,34 +171,38 @@ class _ListModePage extends ConsumerWidget {
 
           // タスクリスト
           Expanded(
-            child: ListView(
-              children: [
-                ...filteredTasks.map(
-                  (task) => Padding(
-                    key: ValueKey(task.houseworkTaskId),
-                    padding: const EdgeInsets.symmetric(vertical: 1),
-                    child: AssignableTaskCard(
-                      task: task,
-                      assigneeIconUrl: task.assigneeUserId != null
-                          ? state.memberIconUrls[task.assigneeUserId]
-                          : null,
-                      onAssignToMe: () =>
-                          notifier.assignToMe(taskId: task.houseworkTaskId),
-                      onPickMember: () => MemberPickerBottomSheet.show(
-                        context,
-                        members: state.members,
-                        onSelected: (userId, nickname) =>
-                            notifier.assignToMember(
-                              taskId: task.houseworkTaskId,
-                              assigneeUserId: userId,
-                              assigneeNickname: nickname,
-                            ),
+            child: RefreshIndicator(
+              onRefresh: () => notifier.reload(),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  ...filteredTasks.map(
+                    (task) => Padding(
+                      key: ValueKey(task.houseworkTaskId),
+                      padding: const EdgeInsets.symmetric(vertical: 1),
+                      child: AssignableTaskCard(
+                        task: task,
+                        assigneeIconUrl: task.assigneeUserId != null
+                            ? state.memberIconUrls[task.assigneeUserId]
+                            : null,
+                        onAssignToMe: () =>
+                            notifier.assignToMe(taskId: task.houseworkTaskId),
+                        onPickMember: () => MemberPickerBottomSheet.show(
+                          context,
+                          members: state.members,
+                          onSelected: (userId, nickname) =>
+                              notifier.assignToMember(
+                                taskId: task.houseworkTaskId,
+                                assigneeUserId: userId,
+                                assigneeNickname: nickname,
+                              ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ],

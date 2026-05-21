@@ -424,6 +424,12 @@ class HouseholdSettingsNotifier
     if (current == null) return;
     state = AsyncData(current.copyWith(clearSuccess: true));
   }
+
+  /// 手動リロード（pull-to-refresh 用）。
+  Future<void> reload() async {
+    ref.invalidateSelf();
+    await future;
+  }
 }
 
 final householdSettingsNotifierProvider =

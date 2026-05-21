@@ -593,4 +593,18 @@ void main() {
       expect(state.isDeletingAccount, isFalse);
     });
   });
+
+  group('AccountSettingsNotifier.reload()', () {
+    test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
+      _stubInitialLoad(mockRepo);
+
+      final container = _makeContainer(mockRepo);
+      await container.read(accountSettingsNotifierProvider.future);
+
+      await container.read(accountSettingsNotifierProvider.notifier).reload();
+
+      final async = container.read(accountSettingsNotifierProvider);
+      expect(async.hasValue, true);
+    });
+  });
 }

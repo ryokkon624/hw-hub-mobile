@@ -78,75 +78,91 @@ class InquiryListPage extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
     if (state.inquiries.isEmpty) {
-      return Center(
-        key: const Key('emptyState'),
-        child: Text(
-          l10n.inquiryListEmpty,
-          style: TextStyle(color: colors.textMuted),
+      return RefreshIndicator(
+        onRefresh: () =>
+            ref.read(inquiryListNotifierProvider.notifier).reload(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            Center(
+              key: const Key('emptyState'),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 64),
+                child: Text(
+                  l10n.inquiryListEmpty,
+                  style: TextStyle(color: colors.textMuted),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
-    return ListView.separated(
-      key: const Key('inquiryList'),
-      itemCount: state.inquiries.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final inquiry = state.inquiries[index];
-        return InkWell(
-          key: ValueKey(inquiry.inquiryId),
-          borderRadius: BorderRadius.circular(12),
-          onTap: () => context.push(
-            AppRoutes.settingsInquiryDetail(inquiry.inquiryId.toString()),
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colors.surfaceCard,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    return RefreshIndicator(
+      onRefresh: () => ref.read(inquiryListNotifierProvider.notifier).reload(),
+      child: ListView.separated(
+        key: const Key('inquiryList'),
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: state.inquiries.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
+        itemBuilder: (context, index) {
+          final inquiry = state.inquiries[index];
+          return InkWell(
+            key: ValueKey(inquiry.inquiryId),
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => context.push(
+              AppRoutes.settingsInquiryDetail(inquiry.inquiryId.toString()),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // タイトル
-                Text(
-                  '#${inquiry.inquiryId}: ${inquiry.title}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colors.textHeading,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: colors.surfaceCard,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 6),
-                // カテゴリバッジ + ステータスバッジ
-                Row(
-                  children: [
-                    InquiryCategoryBadge(categoryCode: inquiry.category),
-                    const Spacer(),
-                    InquiryStatusBadge(statusCode: inquiry.status),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // 作成日時
-                Text(
-                  _formatDateTime(inquiry.createdAt),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
-                ),
-              ],
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // タイトル
+                  Text(
+                    '#${inquiry.inquiryId}: ${inquiry.title}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.textHeading,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  const SizedBox(height: 6),
+                  // カテゴリバッジ + ステータスバッジ
+                  Row(
+                    children: [
+                      InquiryCategoryBadge(categoryCode: inquiry.category),
+                      const Spacer(),
+                      InquiryStatusBadge(statusCode: inquiry.status),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // 作成日時
+                  Text(
+                    _formatDateTime(inquiry.createdAt),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

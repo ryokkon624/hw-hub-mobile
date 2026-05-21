@@ -595,6 +595,21 @@ void main() {
       expect(state.mode, AssignMode.list);
     });
   });
+
+  group('HouseworkAssignNotifier.reload()', () {
+    test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
+      when(mockRepo.fetchTasks(householdId: 1)).thenAnswer((_) async => []);
+      when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+
+      final container = _makeContainer(mockRepo: mockRepo);
+      await container.read(houseworkAssignNotifierProvider.future);
+
+      await container.read(houseworkAssignNotifierProvider.notifier).reload();
+
+      final async = container.read(houseworkAssignNotifierProvider);
+      expect(async.hasValue, true);
+    });
+  });
 }
 
 class _FakeHouseholdNotifier extends HouseholdNotifier {

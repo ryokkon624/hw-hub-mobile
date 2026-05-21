@@ -56,25 +56,30 @@ class HouseholdSettingsPage extends ConsumerWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            // AC1 / AC2: 世帯一覧・切り替え・追加
-            const HouseholdListSection(),
-            // AC3: 世帯名変更
-            const HouseholdNameSection(),
-            // AC4: ニックネーム設定
-            const NicknameSection(),
-            // AC5 / AC6 / AC7: メンバー一覧・操作
-            if (loginUserId != null) MembersSection(loginUserId: loginUserId),
-            // AC8 / AC9: 招待
-            const InvitationSection(),
-            // AC10: 危険ゾーン（OWNERのみ表示 - State.isCurrentUserOwnerで判定）
-            const DangerZoneSection(),
-            const SizedBox(height: 32),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () =>
+            ref.read(householdSettingsNotifierProvider.notifier).reload(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              // AC1 / AC2: 世帯一覧・切り替え・追加
+              const HouseholdListSection(),
+              // AC3: 世帯名変更
+              const HouseholdNameSection(),
+              // AC4: ニックネーム設定
+              const NicknameSection(),
+              // AC5 / AC6 / AC7: メンバー一覧・操作
+              if (loginUserId != null) MembersSection(loginUserId: loginUserId),
+              // AC8 / AC9: 招待
+              const InvitationSection(),
+              // AC10: 危険ゾーン（OWNERのみ表示 - State.isCurrentUserOwnerで判定）
+              const DangerZoneSection(),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

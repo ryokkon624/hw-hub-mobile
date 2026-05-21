@@ -71,6 +71,10 @@ class InquiryDetailNotifier
     }
   }
 
+  Future<void> reload() async {
+    await _fetchDetail();
+  }
+
   void clearReplySent() {
     state = state.copyWith(replySent: false);
   }

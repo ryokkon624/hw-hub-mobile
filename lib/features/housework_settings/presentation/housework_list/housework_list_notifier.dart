@@ -48,6 +48,12 @@ class HouseworkListNotifier
     if (current == null) return;
     state = AsyncData(current.copyWith(currentPage: page));
   }
+
+  /// 手動リロード（pull-to-refresh 用）。
+  Future<void> reload() async {
+    ref.invalidateSelf();
+    await future;
+  }
 }
 
 final houseworkListNotifierProvider =
