@@ -158,18 +158,22 @@ class AccountSettingsNotifier
   }
 
   /// グローバル通知設定を切り替える。
+  ///
+  /// groupSettings は空 Map を送信する（Web版の setGlobalEnabled と同じ挙動）。
+  /// グローバル ON/OFF は m_user.notification_enabled のみを更新し、
+  /// 各グループ設定値（m_user_notification_setting）は変更しない。
   Future<void> toggleGlobalNotification({required bool enabled}) async {
     final current = state.valueOrNull;
     if (current == null || current.notificationSettings == null) return;
 
-    final oldSettings = current.notificationSettings!;
-    final newSettings = NotificationSettingsDto(
+    // delta: groupSettings は空 Map を送信（バックエンドはグループ差分テーブルを更新しない）
+    final payload = NotificationSettingsDto(
       notificationEnabled: enabled,
-      groupSettings: oldSettings.groupSettings,
+      groupSettings: const {},
     );
 
     try {
-      final updated = await _repo.updateNotificationSettings(newSettings);
+      final updated = await _repo.updateNotificationSettings(payload);
       state = AsyncData(current.copyWith(notificationSettings: updated));
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
@@ -179,6 +183,9 @@ class AccountSettingsNotifier
   }
 
   /// グループ通知設定を切り替える。
+  ///
+  /// groupSettings は対象グループのみ含む delta Map を送信する（Web版の setGroupEnabled と同じ挙動）。
+  /// 他グループの設定値は送信せず、バックエンドは対象グループのみ差分更新する。
   Future<void> toggleGroupNotification({
     required String groupCode,
     required bool enabled,
@@ -186,17 +193,16 @@ class AccountSettingsNotifier
     final current = state.valueOrNull;
     if (current == null || current.notificationSettings == null) return;
 
-    final oldSettings = current.notificationSettings!;
-    final newGroupSettings = Map<String, bool>.from(oldSettings.groupSettings)
-      ..[groupCode] = enabled;
+    final currentSettings = current.notificationSettings!;
 
-    final newSettings = NotificationSettingsDto(
-      notificationEnabled: oldSettings.notificationEnabled,
-      groupSettings: newGroupSettings,
+    // delta: 対象グループのみ含む Map を送信
+    final payload = NotificationSettingsDto(
+      notificationEnabled: currentSettings.notificationEnabled,
+      groupSettings: {groupCode: enabled},
     );
 
     try {
-      final updated = await _repo.updateNotificationSettings(newSettings);
+      final updated = await _repo.updateNotificationSettings(payload);
       state = AsyncData(current.copyWith(notificationSettings: updated));
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));

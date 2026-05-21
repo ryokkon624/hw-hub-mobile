@@ -679,6 +679,177 @@ void main() {
     });
   });
 
+  group(
+    'AccountSettingsNotifier.toggleGlobalNotification() — payload 検証 (#128)',
+    () {
+      test(
+        'ON→OFF時: Repository に渡される payload の groupSettings が空 Map である',
+        () async {
+          _stubInitialLoad(mockRepo);
+
+          const returnedSettings = NotificationSettingsDto(
+            notificationEnabled: false,
+            groupSettings: {'100': false, '200': false},
+          );
+          when(
+            mockRepo.updateNotificationSettings(any),
+          ).thenAnswer((_) async => returnedSettings);
+
+          final container = _makeContainer(mockRepo);
+          await container.read(accountSettingsNotifierProvider.future);
+
+          await container
+              .read(accountSettingsNotifierProvider.notifier)
+              .toggleGlobalNotification(enabled: false);
+
+          // Repository に渡されたオブジェクトを検証
+          final captured = verify(
+            mockRepo.updateNotificationSettings(captureAny),
+          ).captured;
+          final sentSettings = captured.last as NotificationSettingsDto;
+          expect(sentSettings.notificationEnabled, isFalse);
+          expect(sentSettings.groupSettings, isEmpty);
+        },
+      );
+
+      test(
+        'OFF→ON時: Repository に渡される payload の groupSettings が空 Map である',
+        () async {
+          _stubInitialLoad(mockRepo);
+
+          const returnedSettings = NotificationSettingsDto(
+            notificationEnabled: true,
+            groupSettings: {'100': true, '200': true},
+          );
+          when(
+            mockRepo.updateNotificationSettings(any),
+          ).thenAnswer((_) async => returnedSettings);
+
+          final container = _makeContainer(mockRepo);
+          await container.read(accountSettingsNotifierProvider.future);
+
+          await container
+              .read(accountSettingsNotifierProvider.notifier)
+              .toggleGlobalNotification(enabled: true);
+
+          final captured = verify(
+            mockRepo.updateNotificationSettings(captureAny),
+          ).captured;
+          final sentSettings = captured.last as NotificationSettingsDto;
+          expect(sentSettings.notificationEnabled, isTrue);
+          expect(sentSettings.groupSettings, isEmpty);
+        },
+      );
+
+      test('ON→OFF→ON のシナリオ: 最後の ON 送信時も groupSettings が空 Map である', () async {
+        _stubInitialLoad(mockRepo);
+
+        // ON→OFF 時のレスポンス（全グループ false）
+        when(mockRepo.updateNotificationSettings(any)).thenAnswer((_) async {
+          return const NotificationSettingsDto(
+            notificationEnabled: false,
+            groupSettings: {'100': false, '200': false},
+          );
+        });
+
+        final container = _makeContainer(mockRepo);
+        await container.read(accountSettingsNotifierProvider.future);
+
+        // 1回目: ON→OFF
+        await container
+            .read(accountSettingsNotifierProvider.notifier)
+            .toggleGlobalNotification(enabled: false);
+
+        // OFF→ON 時のレスポンスに変更
+        when(mockRepo.updateNotificationSettings(any)).thenAnswer((_) async {
+          return const NotificationSettingsDto(
+            notificationEnabled: true,
+            groupSettings: {'100': true, '200': true},
+          );
+        });
+
+        // 2回目: OFF→ON
+        await container
+            .read(accountSettingsNotifierProvider.notifier)
+            .toggleGlobalNotification(enabled: true);
+
+        final captured = verify(
+          mockRepo.updateNotificationSettings(captureAny),
+        ).captured;
+        // 最後（2回目）の呼び出しを確認
+        final sentSettings = captured.last as NotificationSettingsDto;
+        expect(sentSettings.notificationEnabled, isTrue);
+        expect(sentSettings.groupSettings, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'AccountSettingsNotifier.toggleGroupNotification() — payload 検証 (#128)',
+    () {
+      test(
+        'グループ通知 OFF 時: Repository に渡される groupSettings が対象グループのみ含む delta Map',
+        () async {
+          _stubInitialLoad(mockRepo);
+
+          const returnedSettings = NotificationSettingsDto(
+            notificationEnabled: true,
+            groupSettings: {'100': true, '200': false},
+          );
+          when(
+            mockRepo.updateNotificationSettings(any),
+          ).thenAnswer((_) async => returnedSettings);
+
+          final container = _makeContainer(mockRepo);
+          await container.read(accountSettingsNotifierProvider.future);
+
+          await container
+              .read(accountSettingsNotifierProvider.notifier)
+              .toggleGroupNotification(groupCode: '200', enabled: false);
+
+          final captured = verify(
+            mockRepo.updateNotificationSettings(captureAny),
+          ).captured;
+          final sentSettings = captured.last as NotificationSettingsDto;
+          expect(sentSettings.notificationEnabled, isTrue);
+          // delta: 対象グループのみ含む（他グループは含まない）
+          expect(sentSettings.groupSettings, {'200': false});
+          expect(sentSettings.groupSettings.containsKey('100'), isFalse);
+        },
+      );
+
+      test(
+        'グループ通知 ON 時: Repository に渡される groupSettings が対象グループのみ含む delta Map',
+        () async {
+          _stubInitialLoad(mockRepo);
+
+          const returnedSettings = NotificationSettingsDto(
+            notificationEnabled: true,
+            groupSettings: {'100': true, '200': true},
+          );
+          when(
+            mockRepo.updateNotificationSettings(any),
+          ).thenAnswer((_) async => returnedSettings);
+
+          final container = _makeContainer(mockRepo);
+          await container.read(accountSettingsNotifierProvider.future);
+
+          await container
+              .read(accountSettingsNotifierProvider.notifier)
+              .toggleGroupNotification(groupCode: '200', enabled: true);
+
+          final captured = verify(
+            mockRepo.updateNotificationSettings(captureAny),
+          ).captured;
+          final sentSettings = captured.last as NotificationSettingsDto;
+          expect(sentSettings.notificationEnabled, isTrue);
+          expect(sentSettings.groupSettings, {'200': true});
+          expect(sentSettings.groupSettings.containsKey('100'), isFalse);
+        },
+      );
+    },
+  );
+
   group('AccountSettingsNotifier.reload()', () {
     test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
       _stubInitialLoad(mockRepo);
