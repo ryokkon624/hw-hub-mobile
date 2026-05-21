@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../../core/config/app_config.dart';
+import '../../../../../core/network/app_exception.dart';
 import '../../../../../core/theme/app_color_scheme.dart';
+import '../../../../../core/ui/app_snack_bar.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// AC6: Google アカウント連携セクション（@gmail.com のみ表示）
-class GoogleLinkSection extends StatelessWidget {
+class GoogleLinkSection extends StatefulWidget {
   const GoogleLinkSection({
     super.key,
     required this.isLinked,
@@ -17,23 +20,38 @@ class GoogleLinkSection extends StatelessWidget {
   final bool isLinking;
   final Future<void> Function(String idToken) onLink;
 
-  Future<void> _handleLink(BuildContext context) async {
+  @override
+  State<GoogleLinkSection> createState() => _GoogleLinkSectionState();
+}
+
+class _GoogleLinkSectionState extends State<GoogleLinkSection> {
+  Future<void> _handleLink() async {
     try {
-      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId: AppConfig.googleServerClientId.isEmpty
+            ? null
+            : AppConfig.googleServerClientId,
+      );
       final account = await googleSignIn.signIn();
       if (account == null) return; // キャンセル
 
       final auth = await account.authentication;
       final idToken = auth.idToken;
       if (idToken == null) {
+        debugPrint('Google sign-in: idToken was null');
         return;
       }
 
-      await onLink(idToken);
-    } on Exception catch (_) {
-      // Google サインイン失敗: Notifier 側でハンドリングされるが、
-      // ここで catch した場合は onLink が呼ばれていないため Notifier の state には影響しない
-      debugPrint('Google Sign-In error occurred');
+      await widget.onLink(idToken);
+    } on AppException catch (e) {
+      AppSnackBar.showError(e.message);
+    } catch (_) {
+      debugPrint('Google sign-in failed');
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        AppSnackBar.showError(l10n.errorUnexpected);
+      }
     }
   }
 
@@ -61,7 +79,7 @@ class GoogleLinkSection extends StatelessWidget {
             border: Border.all(color: colors.border),
           ),
           padding: const EdgeInsets.all(16),
-          child: isLinked
+          child: widget.isLinked
               ? _buildLinked(context, l10n, colors)
               : _buildUnlinked(context, l10n, colors),
         ),
@@ -121,12 +139,12 @@ class GoogleLinkSection extends StatelessWidget {
     AppLocalizations l10n,
     AppColorScheme colors,
   ) {
-    if (isLinking) {
+    if (widget.isLinking) {
       return const Center(child: CircularProgressIndicator());
     }
     return ElevatedButton.icon(
       key: const Key('googleLinkButton'),
-      onPressed: () => _handleLink(context),
+      onPressed: _handleLink,
       icon: const Icon(Icons.login, size: 18),
       label: Text(l10n.accountSettingsGoogleLinkButton),
       style: ElevatedButton.styleFrom(
