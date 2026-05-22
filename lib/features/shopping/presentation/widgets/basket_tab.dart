@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
 import '../shopping_item_list/shopping_list_notifier.dart';
@@ -39,12 +40,7 @@ class BasketTab extends ConsumerWidget {
                     .read(shoppingListNotifierProvider.notifier)
                     .bulkPurchase();
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.shoppingToastBulkPurchased),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                  AppSnackBar.showSuccess(l10n.shoppingToastBulkPurchased);
                 }
               },
               icon: const Icon(Icons.shopping_bag_outlined),
@@ -90,13 +86,8 @@ class BasketTab extends ConsumerWidget {
                                 .read(shoppingListNotifierProvider.notifier)
                                 .markPurchased(item.shoppingItemId);
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l10n.shoppingToastMarkedPurchased,
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
+                              AppSnackBar.showSuccess(
+                                l10n.shoppingToastMarkedPurchased,
                               );
                             }
                             return true;
@@ -107,11 +98,8 @@ class BasketTab extends ConsumerWidget {
                                 .read(shoppingListNotifierProvider.notifier)
                                 .moveBackToUnpurchased(item.shoppingItemId);
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l10n.shoppingToastMovedBack),
-                                  duration: const Duration(seconds: 2),
-                                ),
+                              AppSnackBar.showSuccess(
+                                l10n.shoppingToastMovedBack,
                               );
                             }
                             return true;

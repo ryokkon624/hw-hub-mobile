@@ -28,9 +28,7 @@ class ShoppingItemDetailPage extends ConsumerWidget {
     // 削除後に前の画面に戻る
     ref.listen(shoppingItemDetailNotifierProvider(itemId), (prev, next) {
       if (next.isDeleted && !(prev?.isDeleted ?? false)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.shoppingDetailToastDeleteSuccess)),
-        );
+        AppSnackBar.showSuccess(l10n.shoppingDetailToastDeleteSuccess);
         // #108: 削除後に一覧を即時反映するためinvalidate
         ref.invalidate(shoppingListNotifierProvider);
         context.pop();
@@ -72,9 +70,7 @@ class ShoppingItemDetailPage extends ConsumerWidget {
   ) async {
     await notifier.save();
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastSaveSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastSaveSuccess);
   }
 }
 
@@ -127,7 +123,6 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
 
   Future<void> _pickCamera() async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final file = await _imagePicker.pickImage(
       source: ImageSource.camera,
       maxWidth: 1920,
@@ -138,14 +133,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final bytes = await file.readAsBytes();
     await widget.notifier.addImage(bytes: bytes, fileName: file.name);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageAddSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageAddSuccess);
   }
 
   Future<void> _pickGallery() async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final file = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1920,
@@ -156,9 +148,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final bytes = await file.readAsBytes();
     await widget.notifier.addImage(bytes: bytes, fileName: file.name);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageAddSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageAddSuccess);
   }
 
   Future<void> _confirmDeleteAttachment(
@@ -166,7 +156,6 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     int attachmentId,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     // #96: dialogContextを使ってダイアログ自体をpopする（外側のcontextでpopするとgo_router環境で詳細画面がpopされてしまう）
     final confirmed = await showDialog<bool>(
       context: context,
@@ -187,9 +176,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     if (confirmed != true || !mounted) return;
     await widget.notifier.deleteAttachment(attachmentId);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageDeleteSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageDeleteSuccess);
   }
 
   Future<void> _confirmDeleteItem(BuildContext context) async {
