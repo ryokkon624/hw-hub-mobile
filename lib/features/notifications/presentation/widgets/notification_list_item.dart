@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/models/notification_link_type.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/utils/date_format_utils.dart';
 import '../../data/notification_repository.dart';
 import 'notification_message_renderer.dart';
 
@@ -84,7 +85,7 @@ class NotificationListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatDate(notification.occurredAt),
+                    formatDateTimeWithSeconds(notification.occurredAt),
                     style: Theme.of(
                       context,
                     ).textTheme.labelSmall?.copyWith(color: colors.textMuted),
@@ -106,15 +107,5 @@ class NotificationListItem extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDate(String occurredAt) {
-    try {
-      final dt = DateTime.parse(occurredAt);
-      return '${dt.year}/${dt.month.toString().padLeft(2, '0')}/${dt.day.toString().padLeft(2, '0')} '
-          '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return occurredAt;
-    }
   }
 }

@@ -5,6 +5,7 @@ import '../../../../app_router.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../core/ui/main_app_bar.dart';
+import '../../../../core/utils/date_format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/inquiry_category_badge.dart';
 import '../widgets/inquiry_status_badge.dart';
@@ -152,7 +153,7 @@ class InquiryListPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   // 作成日時
                   Text(
-                    _formatDateTime(inquiry.createdAt),
+                    formatDateTime(inquiry.createdAt),
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
@@ -164,19 +165,5 @@ class InquiryListPage extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  String _formatDateTime(String isoString) {
-    try {
-      final dt = DateTime.parse(isoString);
-      final y = dt.year;
-      final mo = dt.month.toString().padLeft(2, '0');
-      final d = dt.day.toString().padLeft(2, '0');
-      final h = dt.hour.toString().padLeft(2, '0');
-      final mi = dt.minute.toString().padLeft(2, '0');
-      return '$y/$mo/$d $h:$mi';
-    } catch (_) {
-      return isoString;
-    }
   }
 }
