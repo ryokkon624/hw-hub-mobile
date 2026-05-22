@@ -12,7 +12,7 @@ import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_list/shopping_list_page.dart';
 
-import '../../../helpers/widget_test_helpers.dart';
+import '../../../../helpers/widget_test_helpers.dart';
 
 ShoppingItemDto _item({
   int id = 1,

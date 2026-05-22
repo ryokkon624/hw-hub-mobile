@@ -13,7 +13,7 @@ import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../shopping_mocks.mocks.dart';
+import '../../shopping_mocks.mocks.dart';
 
 // テスト用フィクスチャ
 ShoppingItemDto _item({

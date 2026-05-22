@@ -16,8 +16,8 @@ import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../helpers/widget_test_helpers.dart';
-import '../shopping_mocks.mocks.dart';
+import '../../../../helpers/widget_test_helpers.dart';
+import '../../shopping_mocks.mocks.dart';
 
 // テスト用データ生成
 ShoppingItemDto _item({
