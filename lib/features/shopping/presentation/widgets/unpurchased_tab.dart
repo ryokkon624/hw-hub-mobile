@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
 import '../shopping_item_list/shopping_list_notifier.dart';
@@ -60,6 +61,7 @@ class UnpurchasedTab extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return Padding(
+                        key: ValueKey(item.shoppingItemId),
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.md,
                           vertical: AppSpacing.xs,
@@ -73,13 +75,8 @@ class UnpurchasedTab extends ConsumerWidget {
                                 .read(shoppingListNotifierProvider.notifier)
                                 .moveToBasket(item.shoppingItemId);
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l10n.shoppingToastMovedToBasket,
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
+                              AppSnackBar.showSuccess(
+                                l10n.shoppingToastMovedToBasket,
                               );
                             }
                             return true;
@@ -95,11 +92,8 @@ class UnpurchasedTab extends ConsumerWidget {
                                 .read(shoppingListNotifierProvider.notifier)
                                 .deleteItem(item.shoppingItemId);
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l10n.shoppingToastDeleted),
-                                  duration: const Duration(seconds: 2),
-                                ),
+                              AppSnackBar.showSuccess(
+                                l10n.shoppingToastDeleted,
                               );
                             }
                             return true;

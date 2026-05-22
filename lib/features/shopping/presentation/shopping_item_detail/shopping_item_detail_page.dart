@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/models/purchase_location_type.dart';
+import '../../../../core/ui/app_dialog.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_attachment_repository.dart';
@@ -28,9 +29,7 @@ class ShoppingItemDetailPage extends ConsumerWidget {
     // 削除後に前の画面に戻る
     ref.listen(shoppingItemDetailNotifierProvider(itemId), (prev, next) {
       if (next.isDeleted && !(prev?.isDeleted ?? false)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.shoppingDetailToastDeleteSuccess)),
-        );
+        AppSnackBar.showSuccess(l10n.shoppingDetailToastDeleteSuccess);
         // #108: 削除後に一覧を即時反映するためinvalidate
         ref.invalidate(shoppingListNotifierProvider);
         context.pop();
@@ -72,9 +71,7 @@ class ShoppingItemDetailPage extends ConsumerWidget {
   ) async {
     await notifier.save();
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastSaveSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastSaveSuccess);
   }
 }
 
@@ -127,7 +124,6 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
 
   Future<void> _pickCamera() async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final file = await _imagePicker.pickImage(
       source: ImageSource.camera,
       maxWidth: 1920,
@@ -138,14 +134,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final bytes = await file.readAsBytes();
     await widget.notifier.addImage(bytes: bytes, fileName: file.name);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageAddSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageAddSuccess);
   }
 
   Future<void> _pickGallery() async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final file = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1920,
@@ -156,9 +149,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final bytes = await file.readAsBytes();
     await widget.notifier.addImage(bytes: bytes, fileName: file.name);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageAddSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageAddSuccess);
   }
 
   Future<void> _confirmDeleteAttachment(
@@ -166,55 +157,35 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     int attachmentId,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    // #96: dialogContextを使ってダイアログ自体をpopする（外側のcontextでpopするとgo_router環境で詳細画面がpopされてしまう）
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        content: Text(l10n.shoppingDetailImageDeleteConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.shoppingDetailImageDelete),
-          ),
-        ],
-      ),
+    // AppDialog.confirm は内部でダイアログ自身の BuildContext を使って pop するため
+    // go_router 環境でも詳細画面がポップされる問題は発生しない
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: '',
+      message: l10n.shoppingDetailImageDeleteConfirm,
+      confirmLabel: l10n.shoppingDetailImageDelete,
+      cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
+      isDanger: true,
     );
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
     await widget.notifier.deleteAttachment(attachmentId);
     if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.shoppingDetailToastImageDeleteSuccess)),
-    );
+    AppSnackBar.showSuccess(l10n.shoppingDetailToastImageDeleteSuccess);
   }
 
   Future<void> _confirmDeleteItem(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    // #94: dialogContextを使ってダイアログ自体をpopする（外側のcontextでpopするとgo_router環境で詳細画面がpopされてしまう）
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        content: Text(l10n.shoppingDetailDeleteConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.shoppingDetailDeleteItem),
-          ),
-        ],
-      ),
+    // AppDialog.confirm は内部でダイアログ自身の BuildContext を使って pop するため
+    // go_router 環境でも詳細画面がポップされる問題は発生しない
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: '',
+      message: l10n.shoppingDetailDeleteConfirm,
+      confirmLabel: l10n.shoppingDetailDeleteItem,
+      cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
+      isDanger: true,
     );
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
     await widget.notifier.deleteItem();
   }
 

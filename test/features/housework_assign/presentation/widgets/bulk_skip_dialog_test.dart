@@ -4,21 +4,43 @@ import 'package:hw_hub_mobile/features/housework_assign/presentation/widgets/bul
 
 import '../../../../helpers/widget_test_helpers.dart';
 
-Widget _buildDialog({int count = 3}) {
-  return buildTestPage(Scaffold(body: BulkSkipDialog(count: count)));
-}
-
 void main() {
-  group('BulkSkipDialog', () {
-    testWidgets('AlertDialogが表示される', (tester) async {
-      await tester.pumpWidget(_buildDialog());
+  group('showBulkSkipDialog', () {
+    testWidgets('ダイアログが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          Builder(
+            builder: (context) => ElevatedButton(
+              key: const Key('openDialog'),
+              onPressed: () => showBulkSkipDialog(context, count: 3),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('openDialog')));
       await tester.pump();
 
       expect(find.byType(AlertDialog), findsOneWidget);
     });
 
     testWidgets('キャンセルと実行ボタンが表示される', (tester) async {
-      await tester.pumpWidget(_buildDialog());
+      await tester.pumpWidget(
+        buildTestPage(
+          Builder(
+            builder: (context) => ElevatedButton(
+              key: const Key('openDialog'),
+              onPressed: () => showBulkSkipDialog(context, count: 3),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('openDialog')));
       await tester.pump();
 
       expect(find.byType(TextButton), findsNWidgets(2));

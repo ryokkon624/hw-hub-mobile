@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/models/sender_type.dart';
 import '../../../../../core/theme/app_color_scheme.dart';
+import '../../../../../core/utils/date_format_utils.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/models/inquiry_message_dto.dart';
 
@@ -79,7 +80,7 @@ class MessageBubble extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
-            _formatDateTime(message.createdAt),
+            formatDateTime(message.createdAt),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: colors.textMuted,
               fontSize: 11,
@@ -88,19 +89,5 @@ class MessageBubble extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatDateTime(String isoString) {
-    try {
-      final dt = DateTime.parse(isoString);
-      final y = dt.year;
-      final mo = dt.month.toString().padLeft(2, '0');
-      final d = dt.day.toString().padLeft(2, '0');
-      final h = dt.hour.toString().padLeft(2, '0');
-      final mi = dt.minute.toString().padLeft(2, '0');
-      return '$y/$mo/$d $h:$mi';
-    } catch (_) {
-      return isoString;
-    }
   }
 }

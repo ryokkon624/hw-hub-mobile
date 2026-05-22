@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app_router.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'email_verify_wait_notifier.dart';
 
@@ -27,14 +28,10 @@ class EmailVerifyWaitPage extends ConsumerWidget {
 
     ref.listen(emailVerifyWaitNotifierProvider(email), (_, next) {
       if (next.resentSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.emailVerifyWaitAlertResent)),
-        );
+        AppSnackBar.showSuccess(l10n.emailVerifyWaitAlertResent);
       }
       if (next.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        AppSnackBar.showError(next.errorMessage!);
       }
     });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/models/household_member_status.dart';
+import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../core/ui/user_avatar.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/models/household_member_dto.dart';
@@ -57,96 +58,66 @@ class MembersSection extends ConsumerWidget {
     );
   }
 
-  void _confirmRemove(
+  Future<void> _confirmRemove(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
     HouseholdSettingsMemberDto member,
-  ) {
+  ) async {
     final name = member.nickname ?? member.displayName;
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.householdSettingsRemoveMemberConfirmTitle),
-        content: Text(l10n.householdSettingsRemoveMemberConfirmBody(name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref
-                  .read(householdSettingsNotifierProvider.notifier)
-                  .removeMember(userId: member.userId);
-            },
-            child: Text(l10n.householdSettingsRemoveMemberButton),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.householdSettingsRemoveMemberConfirmTitle,
+      message: l10n.householdSettingsRemoveMemberConfirmBody(name),
+      confirmLabel: l10n.householdSettingsRemoveMemberButton,
+      cancelLabel: l10n.commonCancel,
     );
+    if (confirmed) {
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .removeMember(userId: member.userId);
+    }
   }
 
-  void _confirmTransfer(
+  Future<void> _confirmTransfer(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
     HouseholdSettingsMemberDto member,
-  ) {
+  ) async {
     final name = member.nickname ?? member.displayName;
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.householdSettingsTransferOwnerConfirmTitle),
-        content: Text(l10n.householdSettingsTransferOwnerConfirmBody(name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref
-                  .read(householdSettingsNotifierProvider.notifier)
-                  .transferOwner(newOwnerUserId: member.userId);
-            },
-            child: Text(l10n.householdSettingsTransferOwnerButton),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.householdSettingsTransferOwnerConfirmTitle,
+      message: l10n.householdSettingsTransferOwnerConfirmBody(name),
+      confirmLabel: l10n.householdSettingsTransferOwnerButton,
+      cancelLabel: l10n.commonCancel,
     );
+    if (confirmed) {
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .transferOwner(newOwnerUserId: member.userId);
+    }
   }
 
-  void _confirmLeave(
+  Future<void> _confirmLeave(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.householdSettingsLeaveConfirmTitle),
-        content: Text(l10n.householdSettingsLeaveConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              // 離脱後は世帯切り替え（householdNotifier.refresh() はPage側でhandleする）
-              await ref
-                  .read(householdSettingsNotifierProvider.notifier)
-                  .leaveHousehold();
-            },
-            child: Text(l10n.householdSettingsLeaveButton),
-          ),
-        ],
-      ),
+  ) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.householdSettingsLeaveConfirmTitle,
+      message: l10n.householdSettingsLeaveConfirmBody,
+      confirmLabel: l10n.householdSettingsLeaveButton,
+      cancelLabel: l10n.commonCancel,
     );
+    if (confirmed) {
+      // 離脱後は世帯切り替え（householdNotifier.refresh() はPage側でhandleする）
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .leaveHousehold();
+    }
   }
 }
 
@@ -164,9 +135,9 @@ class _MemberCard extends ConsumerWidget {
   final HouseholdSettingsMemberDto member;
   final int loginUserId;
   final bool isCurrentUserOwner;
-  final VoidCallback onRemove;
-  final VoidCallback onTransferOwner;
-  final VoidCallback onLeave;
+  final Future<void> Function() onRemove;
+  final Future<void> Function() onTransferOwner;
+  final Future<void> Function() onLeave;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

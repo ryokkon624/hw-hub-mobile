@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app_router.dart';
+import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'password_reset_sent_notifier.dart';
 
@@ -21,14 +22,10 @@ class PasswordResetSentPage extends ConsumerWidget {
 
     ref.listen(passwordResetSentNotifierProvider(email), (_, next) {
       if (next.resentSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.passwordResetSentResendSuccess)),
-        );
+        AppSnackBar.showSuccess(l10n.passwordResetSentResendSuccess);
       }
       if (next.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        AppSnackBar.showError(next.errorMessage!);
       }
     });
 

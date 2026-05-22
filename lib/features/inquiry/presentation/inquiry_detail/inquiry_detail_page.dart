@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app_router.dart';
 import '../../../../core/models/inquiry_status.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/app_dialog.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../core/ui/main_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -279,25 +280,14 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
     BuildContext context,
     AppLocalizations l10n,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.inquiryDetailCloseConfirmTitle),
-        content: Text(l10n.inquiryDetailCloseConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            key: const Key('closeConfirmButton'),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.inquiryDetailResolvedButton),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.inquiryDetailCloseConfirmTitle,
+      message: l10n.inquiryDetailCloseConfirmBody,
+      confirmLabel: l10n.inquiryDetailResolvedButton,
+      cancelLabel: l10n.commonCancel,
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await ref
           .read(inquiryDetailNotifierProvider(widget.inquiryId).notifier)
           .close();
@@ -308,25 +298,14 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
     BuildContext context,
     AppLocalizations l10n,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.inquiryDetailEscalateConfirmTitle),
-        content: Text(l10n.inquiryDetailEscalateConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            key: const Key('escalateConfirmButton'),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.inquiryDetailEscalateButton),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.inquiryDetailEscalateConfirmTitle,
+      message: l10n.inquiryDetailEscalateConfirmBody,
+      confirmLabel: l10n.inquiryDetailEscalateButton,
+      cancelLabel: l10n.commonCancel,
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await ref
           .read(inquiryDetailNotifierProvider(widget.inquiryId).notifier)
           .escalate();

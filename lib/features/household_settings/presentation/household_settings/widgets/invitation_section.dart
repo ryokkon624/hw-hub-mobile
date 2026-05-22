@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../../core/models/invitation_status.dart';
+import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/models/household_invitation_dto.dart';
 import '../household_settings_notifier.dart';
@@ -116,36 +117,24 @@ class _InvitationSectionState extends ConsumerState<InvitationSection> {
     );
   }
 
-  void _confirmRevoke(
+  Future<void> _confirmRevoke(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
     HouseholdInvitationDto inv,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.householdSettingsRevokeConfirmTitle),
-        content: Text(
-          l10n.householdSettingsRevokeConfirmBody(inv.invitedEmail),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref
-                  .read(householdSettingsNotifierProvider.notifier)
-                  .revokeInvitation(token: inv.invitationToken);
-            },
-            child: Text(l10n.householdSettingsRevokeInvitationButton),
-          ),
-        ],
-      ),
+  ) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.householdSettingsRevokeConfirmTitle,
+      message: l10n.householdSettingsRevokeConfirmBody(inv.invitedEmail),
+      confirmLabel: l10n.householdSettingsRevokeInvitationButton,
+      cancelLabel: l10n.commonCancel,
     );
+    if (confirmed) {
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .revokeInvitation(token: inv.invitationToken);
+    }
   }
 
   void _shareLink(String token) {
@@ -163,7 +152,7 @@ class _InvitationRow extends StatelessWidget {
   });
 
   final HouseholdInvitationDto invitation;
-  final VoidCallback onRevoke;
+  final Future<void> Function() onRevoke;
   final VoidCallback onShare;
 
   @override

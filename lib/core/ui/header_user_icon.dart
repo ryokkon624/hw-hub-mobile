@@ -6,6 +6,7 @@ import '../../app_router.dart';
 import '../auth/auth_state.dart';
 import '../di/providers.dart';
 import '../../l10n/app_localizations.dart';
+import 'app_dialog.dart';
 import 'user_avatar.dart';
 
 /// ヘッダー右端に表示するユーザーアイコン。
@@ -93,28 +94,15 @@ class HeaderUserIcon extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l10n,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        key: const Key('logoutConfirmDialog'),
-        title: Text(l10n.headerUserIconLogoutConfirmTitle),
-        content: Text(l10n.headerUserIconLogoutConfirmMessage),
-        actions: [
-          TextButton(
-            key: const Key('logoutCancelButton'),
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            key: const Key('logoutConfirmButton'),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.commonYes),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.headerUserIconLogoutConfirmTitle,
+      message: l10n.headerUserIconLogoutConfirmMessage,
+      confirmLabel: l10n.commonYes,
+      cancelLabel: l10n.commonCancel,
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       await ref.read(authNotifierProvider.notifier).logout();
     }
   }
