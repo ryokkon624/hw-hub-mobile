@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
@@ -13,6 +14,8 @@ import 'package:mockito/mockito.dart';
 @GenerateMocks([AccountSettingsRepository])
 import 'account_settings_notifier_test.mocks.dart';
 
+import '../../helpers/mocks.mocks.dart';
+
 /// uploadIcon 後の authNotifierProvider invalidate を検証するカウンター
 int _authNotifierBuildCount = 0;
 
@@ -24,21 +27,31 @@ class _FakeAuthNotifier extends AuthNotifier {
   }
 }
 
-ProviderContainer _makeContainer(AccountSettingsRepository repo) {
+ProviderContainer _makeContainer(
+  AccountSettingsRepository repo,
+  MockDio mockDio,
+) {
   final container = ProviderContainer(
-    overrides: [accountSettingsRepositoryProvider.overrideWithValue(repo)],
+    overrides: [
+      accountSettingsRepositoryProvider.overrideWithValue(repo),
+      dioProvider.overrideWithValue(mockDio),
+    ],
   );
   addTearDown(container.dispose);
   return container;
 }
 
 /// authNotifier を含む Container（uploadIcon の invalidate 検証用）
-ProviderContainer _makeContainerWithAuth(AccountSettingsRepository repo) {
+ProviderContainer _makeContainerWithAuth(
+  AccountSettingsRepository repo,
+  MockDio mockDio,
+) {
   _authNotifierBuildCount = 0;
   final container = ProviderContainer(
     overrides: [
       accountSettingsRepositoryProvider.overrideWithValue(repo),
       authNotifierProvider.overrideWith(_FakeAuthNotifier.new),
+      dioProvider.overrideWithValue(mockDio),
     ],
   );
   addTearDown(container.dispose);
@@ -66,16 +79,18 @@ void _stubInitialLoad(MockAccountSettingsRepository repo) {
 
 void main() {
   late MockAccountSettingsRepository mockRepo;
+  late MockDio mockDio;
 
   setUp(() {
     mockRepo = MockAccountSettingsRepository();
+    mockDio = MockDio();
   });
 
   group('AccountSettingsNotifier.build()', () {
     test('初期ロード成功時: profile と notificationSettings が state に格納される', () async {
       _stubInitialLoad(mockRepo);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       final state = await container.read(
         accountSettingsNotifierProvider.future,
       );
@@ -93,7 +108,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       container.listen(accountSettingsNotifierProvider, (_, _) {});
       await Future<void>.delayed(Duration.zero);
 
@@ -117,7 +132,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -139,7 +154,7 @@ void main() {
         ),
       ).thenThrow(const NetworkException('接続エラー'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -159,7 +174,7 @@ void main() {
         mockRepo.changePassword(currentPassword: 'old', newPassword: 'new'),
       ).thenAnswer((_) async {});
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -185,7 +200,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -210,7 +225,7 @@ void main() {
         mockRepo.updateNotificationSettings(any),
       ).thenAnswer((_) async => updatedSettings);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -232,7 +247,7 @@ void main() {
         mockRepo.updateNotificationSettings(any),
       ).thenAnswer((_) async => updatedSettings);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -256,7 +271,7 @@ void main() {
         mockRepo.updateNotificationSettings(any),
       ).thenAnswer((_) async => updatedSettings);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -285,7 +300,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -304,7 +319,7 @@ void main() {
         const ApiException('IDトークンが無効です', code: 'OAUTH_ID_TOKEN_INVALID'),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -322,7 +337,7 @@ void main() {
       _stubInitialLoad(mockRepo);
       when(mockRepo.deleteAccount()).thenAnswer((_) async {});
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -339,7 +354,7 @@ void main() {
         const ApiException('OWNERは削除できません', code: 'OWNER_CANNOT_DELETE'),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -356,7 +371,7 @@ void main() {
     test('5MB超: errorMessage accountSettingsIconTooLarge がセットされる', () async {
       _stubInitialLoad(mockRepo);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       // 5MB + 1バイト
@@ -406,7 +421,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       final smallBytes = [1, 2, 3];
@@ -457,7 +472,7 @@ void main() {
       );
 
       // authNotifierProvider を含む Container を使う
-      final container = _makeContainerWithAuth(mockRepo);
+      final container = _makeContainerWithAuth(mockRepo, mockDio);
       // authNotifier を購読して初期ビルドを待つ
       container.listen(authNotifierProvider, (_, _) {});
       await container.read(authNotifierProvider.future);
@@ -490,7 +505,7 @@ void main() {
         ),
       ).thenThrow(const NetworkException('接続エラー'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       final smallBytes = [1, 2, 3];
@@ -518,7 +533,7 @@ void main() {
         ),
       ).thenThrow(const NetworkException('接続エラー'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -547,7 +562,7 @@ void main() {
         ),
       );
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -573,7 +588,7 @@ void main() {
         ),
       ).thenThrow(Exception('unexpected'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -593,7 +608,7 @@ void main() {
         ),
       ).thenThrow(Exception('unexpected'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -612,7 +627,7 @@ void main() {
           mockRepo.updateNotificationSettings(any),
         ).thenThrow(Exception('unexpected'));
 
-        final container = _makeContainer(mockRepo);
+        final container = _makeContainer(mockRepo, mockDio);
         await container.read(accountSettingsNotifierProvider.future);
 
         await container
@@ -632,7 +647,7 @@ void main() {
           mockRepo.updateNotificationSettings(any),
         ).thenThrow(Exception('unexpected'));
 
-        final container = _makeContainer(mockRepo);
+        final container = _makeContainer(mockRepo, mockDio);
         await container.read(accountSettingsNotifierProvider.future);
 
         await container
@@ -650,7 +665,7 @@ void main() {
         mockRepo.linkGoogleAccount(idToken: anyNamed('idToken')),
       ).thenThrow(Exception('unexpected'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -666,7 +681,7 @@ void main() {
       _stubInitialLoad(mockRepo);
       when(mockRepo.deleteAccount()).thenThrow(Exception('unexpected'));
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -695,7 +710,7 @@ void main() {
             mockRepo.updateNotificationSettings(any),
           ).thenAnswer((_) async => returnedSettings);
 
-          final container = _makeContainer(mockRepo);
+          final container = _makeContainer(mockRepo, mockDio);
           await container.read(accountSettingsNotifierProvider.future);
 
           await container
@@ -725,7 +740,7 @@ void main() {
             mockRepo.updateNotificationSettings(any),
           ).thenAnswer((_) async => returnedSettings);
 
-          final container = _makeContainer(mockRepo);
+          final container = _makeContainer(mockRepo, mockDio);
           await container.read(accountSettingsNotifierProvider.future);
 
           await container
@@ -752,7 +767,7 @@ void main() {
           );
         });
 
-        final container = _makeContainer(mockRepo);
+        final container = _makeContainer(mockRepo, mockDio);
         await container.read(accountSettingsNotifierProvider.future);
 
         // 1回目: ON→OFF
@@ -800,7 +815,7 @@ void main() {
             mockRepo.updateNotificationSettings(any),
           ).thenAnswer((_) async => returnedSettings);
 
-          final container = _makeContainer(mockRepo);
+          final container = _makeContainer(mockRepo, mockDio);
           await container.read(accountSettingsNotifierProvider.future);
 
           await container
@@ -831,7 +846,7 @@ void main() {
             mockRepo.updateNotificationSettings(any),
           ).thenAnswer((_) async => returnedSettings);
 
-          final container = _makeContainer(mockRepo);
+          final container = _makeContainer(mockRepo, mockDio);
           await container.read(accountSettingsNotifierProvider.future);
 
           await container
@@ -854,7 +869,7 @@ void main() {
     test('reload()を呼ぶと状態がAsyncDataとして取得できる', () async {
       _stubInitialLoad(mockRepo);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container.read(accountSettingsNotifierProvider.notifier).reload();
@@ -871,7 +886,7 @@ void main() {
         mockRepo.updateThemeMode(themeMode: 'LIGHT'),
       ).thenAnswer((_) async {});
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       await container
@@ -886,7 +901,7 @@ void main() {
     test('失敗時: サイレントに失敗する（AC5 は Nice to Have のため errorMessage は不要）', () async {
       _stubInitialLoad(mockRepo);
 
-      final container = _makeContainer(mockRepo);
+      final container = _makeContainer(mockRepo, mockDio);
       await container.read(accountSettingsNotifierProvider.future);
 
       // updateThemeMode のスタブ（初期ロード後に設定）

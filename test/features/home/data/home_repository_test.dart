@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/home/data/home_repository.dart';
 import 'package:mockito/mockito.dart';
 
@@ -55,7 +56,7 @@ void main() {
 
   setUp(() {
     mockDio = MockDio();
-    repo = HomeRepositoryImpl(mockDio);
+    repo = HomeRepositoryImpl(mockDio, const S3UrlResolver(isDebug: false));
   });
 
   group('HomeRepository.loadAll()', () {

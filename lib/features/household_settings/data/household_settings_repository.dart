@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/app_exception.dart';
+import '../../../core/network/s3_url_resolver.dart';
 import 'models/household_dto.dart';
 import 'models/household_invitation_dto.dart';
 import 'models/household_member_dto.dart';
@@ -66,9 +67,10 @@ abstract class HouseholdSettingsRepository {
 }
 
 class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
-  HouseholdSettingsRepositoryImpl(this._dio);
+  HouseholdSettingsRepositoryImpl(this._dio, this._s3UrlResolver);
 
   final Dio _dio;
+  final S3UrlResolver _s3UrlResolver;
 
   @override
   Future<List<HouseholdSettingsMemberDto>> fetchMembers({
@@ -83,6 +85,7 @@ class HouseholdSettingsRepositoryImpl implements HouseholdSettingsRepository {
             (e) =>
                 HouseholdSettingsMemberDto.fromJson(e as Map<String, dynamic>),
           )
+          .map((m) => m.copyWith(iconUrl: _s3UrlResolver.resolve(m.iconUrl)))
           .toList();
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;

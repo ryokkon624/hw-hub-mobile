@@ -5,6 +5,9 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../account_settings_providers.dart';
 import '../../data/account_settings_repository.dart';
+import '../../../home/presentation/home_notifier.dart';
+import '../../../household_settings/presentation/household_settings/household_settings_notifier.dart';
+import '../../../housework_assign/presentation/housework_assign_notifier.dart';
 import 'account_settings_state.dart';
 
 class AccountSettingsNotifier
@@ -136,8 +139,11 @@ class AccountSettingsNotifier
         ),
       );
 
-      // Step5: authNotifier を invalidate してヘッダーのアイコンを更新する（AC2）
+      // Step5: 各 Provider を invalidate してアイコンを全画面に反映する（AC2, AC3）
       ref.invalidate(authNotifierProvider);
+      ref.invalidate(homeNotifierProvider);
+      ref.invalidate(householdSettingsNotifierProvider);
+      ref.invalidate(houseworkAssignNotifierProvider);
     } on AppException catch (e) {
       state = AsyncData(
         current.copyWith(
