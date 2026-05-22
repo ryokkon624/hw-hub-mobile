@@ -9,7 +9,7 @@ import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dar
     as _i5;
 import 'package:hw_hub_mobile/features/housework_assign/data/housework_assign_repository.dart'
     as _i2;
-import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart'
+import 'package:hw_hub_mobile/features/my_tasks/data/models/housework_task_dto.dart'
     as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 

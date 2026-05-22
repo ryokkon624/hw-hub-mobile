@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
-import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/my_tasks_repository.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../../helpers/mocks.mocks.dart';

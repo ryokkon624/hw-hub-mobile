@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/widgets/assignable_task_card.dart';
-import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/models/housework_task_dto.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

@@ -4,10 +4,10 @@ import '../../../core/models/task_status.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/network/s3_url_resolver.dart';
 import '../../../features/home/data/models/household_member_dto.dart';
-import '../../../features/tasks/data/models/housework_task_dto.dart';
+import '../../../features/my_tasks/data/models/housework_task_dto.dart';
 
 export '../../../features/home/data/models/household_member_dto.dart';
-export '../../../features/tasks/data/models/housework_task_dto.dart';
+export '../../../features/my_tasks/data/models/housework_task_dto.dart';
 
 abstract class HouseworkAssignRepository {
   Future<List<HouseworkTaskDto>> fetchTasks({required int householdId});

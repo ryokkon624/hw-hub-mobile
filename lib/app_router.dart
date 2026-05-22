@@ -22,7 +22,7 @@ import 'features/shopping/presentation/shopping_item_new/shopping_item_new_page.
 import 'features/shopping/presentation/shopping_item_list/shopping_list_page.dart';
 import 'features/housework_assign/presentation/housework_assign_page.dart';
 import 'features/notifications/presentation/notification_center/notification_center_page.dart';
-import 'features/tasks/presentation/my_tasks_page.dart';
+import 'features/my_tasks/presentation/my_tasks_page.dart';
 import 'features/household_settings/presentation/household_settings_page.dart';
 import 'features/housework_settings/presentation/housework_list/housework_list_page.dart';
 import 'features/housework_settings/presentation/housework_create/housework_create_page.dart';

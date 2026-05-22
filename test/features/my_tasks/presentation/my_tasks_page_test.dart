@@ -8,10 +8,10 @@ import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/theme/app_theme.dart';
-import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart';
-import 'package:hw_hub_mobile/features/tasks/my_tasks_providers.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_page.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/widgets/swipeable_task_card.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/my_tasks_repository.dart';
+import 'package:hw_hub_mobile/features/my_tasks/my_tasks_providers.dart';
+import 'package:hw_hub_mobile/features/my_tasks/presentation/my_tasks_page.dart';
+import 'package:hw_hub_mobile/features/my_tasks/presentation/widgets/swipeable_task_card.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
