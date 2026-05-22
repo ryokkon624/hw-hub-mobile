@@ -62,11 +62,15 @@ class HouseworkAssignNotifier
     state = AsyncData(current.copyWith(filter: filter, clearError: true));
   }
 
-  void startSwipeMode(SwipeTarget target) {
+  void startSwipeMode(SwipeTarget target, int currentUserId) {
     final current = state.valueOrNull;
     if (current == null) return;
     // スワイプモード開始時に対象タスク数をスナップショットとして保持
-    final count = _swipeTargetTasksFor(current.tasks, target).length;
+    final count = _swipeTargetTasksFor(
+      current.tasks,
+      target,
+      currentUserId,
+    ).length;
     state = AsyncData(
       current.copyWith(
         mode: AssignMode.swipe,
@@ -173,8 +177,17 @@ class HouseworkAssignNotifier
   Future<void> swipeAssignToMe() async {
     final current = state.valueOrNull;
     if (current == null) return;
+    // currentUserId を取得してフィルタに渡す
+    final authState = await ref.read(authNotifierProvider.future);
+    final myUserId = authState is AuthAuthenticated
+        ? authState.user.userId
+        : -1;
     // スナップショット（swipeTaskCount）ベースで対象タスクを取得
-    final swipeTasks = _swipeTargetTasksFor(current.tasks, current.swipeTarget);
+    final swipeTasks = _swipeTargetTasksFor(
+      current.tasks,
+      current.swipeTarget,
+      myUserId,
+    );
     if (current.swipeIndex >= swipeTasks.length) return;
 
     final task = swipeTasks[current.swipeIndex];
@@ -243,12 +256,18 @@ class HouseworkAssignNotifier
   List<HouseworkTaskDto> _swipeTargetTasksFor(
     List<HouseworkTaskDto> tasks,
     SwipeTarget target,
+    int currentUserId,
   ) {
     if (target == SwipeTarget.unassigned) {
       return tasks.where((t) => t.assigneeUserId == null).toList();
     } else {
-      // others: 担当者ありのタスク
-      return tasks.where((t) => t.assigneeUserId != null).toList();
+      // others: 担当者ありかつ自分以外のタスク（自分のタスクは除外）
+      return tasks
+          .where(
+            (t) =>
+                t.assigneeUserId != null && t.assigneeUserId != currentUserId,
+          )
+          .toList();
     }
   }
 

@@ -68,8 +68,11 @@ class _ListModePage extends ConsumerWidget {
     final unassignedForSwipe = state.tasks
         .where((t) => t.assigneeUserId == null)
         .toList();
+    // #165: others は自分以外の担当者ありタスクのみ（自分のタスクを除外）
     final othersForSwipe = state.tasks
-        .where((t) => t.assigneeUserId != null)
+        .where(
+          (t) => t.assigneeUserId != null && t.assigneeUserId != currentUserId,
+        )
         .toList();
     final unassignedCount = unassignedForSwipe.length;
 
@@ -142,7 +145,10 @@ class _ListModePage extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: unassignedForSwipe.isEmpty
                   ? null
-                  : () => notifier.startSwipeMode(SwipeTarget.unassigned),
+                  : () => notifier.startSwipeMode(
+                      SwipeTarget.unassigned,
+                      currentUserId,
+                    ),
               child: Text(l10n.houseworkAssignStartSwipeUnassigned),
             ),
           ),
@@ -151,7 +157,10 @@ class _ListModePage extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: othersForSwipe.isEmpty
                   ? null
-                  : () => notifier.startSwipeMode(SwipeTarget.others),
+                  : () => notifier.startSwipeMode(
+                      SwipeTarget.others,
+                      currentUserId,
+                    ),
               child: Text(l10n.houseworkAssignStartSwipeOthers),
             ),
           ),
@@ -240,10 +249,23 @@ class _SwipeModePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final notifier = ref.read(houseworkAssignNotifierProvider.notifier);
 
+    // 現在ログインユーザーIDを取得（SwipeTarget.others フィルタに使用）
+    final authAsync = ref.watch(authNotifierProvider);
+    final currentUserId = authAsync.valueOrNull is AuthAuthenticated
+        ? (authAsync.valueOrNull! as AuthAuthenticated).user.userId
+        : -1;
+
     // スワイプ対象タスク（スナップショット時点のリストから現在 index のタスクを取得）
+    // #165: others は自分以外の担当者ありタスクのみ（自分のタスクを除外）
     final swipeTasks = state.swipeTarget == SwipeTarget.unassigned
         ? state.tasks.where((t) => t.assigneeUserId == null).toList()
-        : state.tasks.where((t) => t.assigneeUserId != null).toList();
+        : state.tasks
+              .where(
+                (t) =>
+                    t.assigneeUserId != null &&
+                    t.assigneeUserId != currentUserId,
+              )
+              .toList();
 
     final isFinished = state.swipeIndex >= state.swipeTaskCount;
     final currentTask = (!isFinished && state.swipeIndex < swipeTasks.length)

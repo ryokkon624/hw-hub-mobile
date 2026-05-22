@@ -311,7 +311,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
 
       final state = container.read(houseworkAssignNotifierProvider).value!;
       expect(state.mode, AssignMode.swipe);
@@ -330,7 +330,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
       container.read(houseworkAssignNotifierProvider.notifier).exitSwipeMode();
 
       final state = container.read(houseworkAssignNotifierProvider).value!;
@@ -351,7 +351,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
       await container
           .read(houseworkAssignNotifierProvider.notifier)
           .swipeNext();
@@ -378,7 +378,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
       await container
           .read(houseworkAssignNotifierProvider.notifier)
           .swipeAssignToMe();
@@ -406,7 +406,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
 
       // _reloadAndExitSwipe 内で _load が呼ばれるため再度stubが必要
       when(
@@ -433,7 +433,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
 
       // _reloadAndExitSwipe で再ロードされるため stub を用意
       when(
@@ -449,11 +449,13 @@ void main() {
       expect(state.mode, AssignMode.list);
     });
 
-    test('startSwipeMode(others): assignedタスクのみが対象になる', () async {
+    test('startSwipeMode(others): 他人のassignedタスクのみが対象になる', () async {
+      // currentUserId=10: 自分のタスク(id=2, assignee=10)は除外、他人のタスク(id=3, assignee=20)が対象
       when(mockRepo.fetchTasks(householdId: 1)).thenAnswer(
         (_) async => [
-          _task(id: 1, assigneeUserId: null), // unassigned
-          _task(id: 2, assigneeUserId: 10), // assigned
+          _task(id: 1, assigneeUserId: null), // unassigned → 対象外
+          _task(id: 2, assigneeUserId: 10), // 自分 → 除外
+          _task(id: 3, assigneeUserId: 20), // 他人 → 対象
         ],
       );
       when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
@@ -463,13 +465,45 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.others);
+          .startSwipeMode(SwipeTarget.others, 10);
 
       final state = container.read(houseworkAssignNotifierProvider).value!;
-      // SwipeTarget.othersなのでassigned=1枚がswipeTaskCount
+      // SwipeTarget.others: 他人(id=3)の1件のみ。自分(id=2)は除外される
       expect(state.swipeTarget, SwipeTarget.others);
       expect(state.swipeTaskCount, 1);
     });
+
+    // #165: 自分のタスクがスワイプモードから除外されることを検証
+    test(
+      'startSwipeMode(others, currentUserId): 自分のタスクは除外され他人のタスクのみが対象になる',
+      () async {
+        // currentUserId=1: 自分 / assignee=1(自分) / assignee=2(他人) / null(未割当) の3タスク
+        when(mockRepo.fetchTasks(householdId: 1)).thenAnswer(
+          (_) async => [
+            _task(id: 1, assigneeUserId: null), // 未割当 → 対象外
+            _task(id: 2, assigneeUserId: 1), // 自分 → 除外されるべき
+            _task(id: 3, assigneeUserId: 2), // 他人 → 対象
+          ],
+        );
+        when(mockRepo.fetchMembers(householdId: 1)).thenAnswer((_) async => []);
+
+        final container = _makeContainer(
+          mockRepo: mockRepo,
+          currentUserId: 1, // currentUserId=1 で実行
+        );
+        await container.read(houseworkAssignNotifierProvider.future);
+
+        // SwipeTarget.others, currentUserId=1 でスタート
+        container
+            .read(houseworkAssignNotifierProvider.notifier)
+            .startSwipeMode(SwipeTarget.others, 1);
+
+        final state = container.read(houseworkAssignNotifierProvider).value!;
+        // 他人(id=3)の1件のみが対象。自分(id=2)は除外される
+        expect(state.swipeTarget, SwipeTarget.others);
+        expect(state.swipeTaskCount, 1);
+      },
+    );
   });
 
   group('HouseworkAssignNotifier AppException キャッチ', () {
@@ -577,7 +611,7 @@ void main() {
 
       container
           .read(houseworkAssignNotifierProvider.notifier)
-          .startSwipeMode(SwipeTarget.unassigned);
+          .startSwipeMode(SwipeTarget.unassigned, 10);
 
       // _reloadAndExitSwipe の _load を失敗させる
       when(
