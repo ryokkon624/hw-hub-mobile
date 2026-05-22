@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/home/data/home_repository.dart';
 import 'package:mockito/mockito.dart';
 
@@ -55,13 +56,13 @@ void main() {
 
   setUp(() {
     mockDio = MockDio();
-    repo = HomeRepositoryImpl(mockDio);
+    repo = HomeRepositoryImpl(mockDio, const S3UrlResolver(isDebug: false));
   });
 
   group('HomeRepository.loadAll()', () {
     void stubAllApis(int householdId) {
       when(
-        mockDio.get<dynamic>('/api/households/$householdId/members'),
+        mockDio.get<List<dynamic>>('/api/households/$householdId/members'),
       ).thenAnswer(
         (_) async => Response(
           requestOptions: _req('/api/households/$householdId/members'),
@@ -70,7 +71,7 @@ void main() {
         ),
       );
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': householdId, 'status': '0'},
         ),
@@ -82,7 +83,7 @@ void main() {
         ),
       );
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': householdId, 'status': '1'},
         ),
@@ -94,7 +95,9 @@ void main() {
         ),
       );
       when(
-        mockDio.get<dynamic>('/api/households/$householdId/shopping-items'),
+        mockDio.get<Map<String, dynamic>>(
+          '/api/households/$householdId/shopping-items',
+        ),
       ).thenAnswer(
         (_) async => Response(
           requestOptions: _req('/api/households/$householdId/shopping-items'),
@@ -122,7 +125,7 @@ void main() {
     });
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/members'),
           type: DioExceptionType.connectionError,
@@ -134,7 +137,7 @@ void main() {
     });
 
     test('DioExceptionのerrorがAppExceptionの場合: そのままrethrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/members'),
           error: const UnauthorizedException('認証失敗'),

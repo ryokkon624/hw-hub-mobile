@@ -33,11 +33,29 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         .read(tokenStorageProvider)
         .saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     state = AsyncData(AuthAuthenticated(user));
+    // ログイン成功後に householdNotifierProvider を invalidate して
+    // 新しいユーザーのトークンで世帯リストを再取得させる。
+    // HouseholdNotifier を watch している HomeNotifier 等も自動的に再ビルドされる。
+    ref.invalidate(householdNotifierProvider);
   }
 
   Future<void> logout() async {
     await ref.read(tokenStorageProvider).clearTokens();
+
+    // 選択世帯IDをクリアして次のユーザーが前のユーザーの世帯IDを引き継がないようにする
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(StorageKeys.selectedHouseholdId);
+
+    // 先に未認証状態にセットする。
+    // これにより、AuthInterceptor が 401 を受け取った際に
+    // 既に AuthUnauthenticated 状態であることを検出して logout() 再入を防ぐ。
     state = const AsyncData(AuthUnauthenticated());
+
+    // householdNotifierProvider はここでは invalidate しない。
+    // トークンクリア後に invalidate するとトークンなしでビルドが走り 401 エラー状態になる。
+    // その後 saveTokens() を呼んでも HouseholdNotifier がエラー状態のまま残ってしまう。
+    // 代わりに saveTokens()（ログイン成功時）で invalidate することで
+    // 新ユーザーのトークンで正常にビルドされる。
   }
 
   // iOSはアプリ削除後もKeychain（SecureStorage）が残るため、

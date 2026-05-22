@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../core/models/task_assign_reason.dart';
 import '../../../core/models/task_status.dart';
 import '../../../core/network/app_exception.dart';
+import '../../../core/network/s3_url_resolver.dart';
 import '../../../features/home/data/models/household_member_dto.dart';
 import '../../../features/tasks/data/models/housework_task_dto.dart';
 
@@ -19,14 +20,15 @@ abstract class HouseworkAssignRepository {
 }
 
 class HouseworkAssignRepositoryImpl implements HouseworkAssignRepository {
-  HouseworkAssignRepositoryImpl(this._dio);
+  HouseworkAssignRepositoryImpl(this._dio, this._s3UrlResolver);
 
   final Dio _dio;
+  final S3UrlResolver _s3UrlResolver;
 
   @override
   Future<List<HouseworkTaskDto>> fetchTasks({required int householdId}) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/housework-tasks',
         queryParameters: {
           'householdId': householdId,
@@ -47,11 +49,22 @@ class HouseworkAssignRepositoryImpl implements HouseworkAssignRepository {
     required int householdId,
   }) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/households/$householdId/members',
       );
       return (response.data as List<dynamic>)
           .map((e) => HouseholdMemberDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (m) => HouseholdMemberDto(
+              householdId: m.householdId,
+              userId: m.userId,
+              displayName: m.displayName,
+              iconUrl: _s3UrlResolver.resolve(m.iconUrl),
+              nickname: m.nickname,
+              status: m.status,
+              role: m.role,
+            ),
+          )
           .toList();
     } on DioException catch (e) {
       if (e.error is AppException) throw e.error!;

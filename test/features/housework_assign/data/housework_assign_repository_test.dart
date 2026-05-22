@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/housework_assign/data/housework_assign_repository.dart';
 import 'package:mockito/mockito.dart';
 
@@ -39,13 +40,16 @@ void main() {
 
   setUp(() {
     mockDio = MockDio();
-    repo = HouseworkAssignRepositoryImpl(mockDio);
+    repo = HouseworkAssignRepositoryImpl(
+      mockDio,
+      const S3UrlResolver(isDebug: false),
+    );
   });
 
   group('HouseworkAssignRepository.fetchTasks()', () {
     test('成功時: タスクリストを返す（フラット配列）', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': 1, 'status': '0'},
         ),
@@ -64,7 +68,7 @@ void main() {
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': 1, 'status': '0'},
         ),
@@ -84,7 +88,7 @@ void main() {
 
     test('DioExceptionのerrorがAppExceptionの場合: そのままrethrowする', () async {
       when(
-        mockDio.get<dynamic>(
+        mockDio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': 1, 'status': '0'},
         ),
@@ -104,7 +108,7 @@ void main() {
 
   group('HouseworkAssignRepository.fetchMembers()', () {
     test('成功時: メンバーリストを返す（フラット配列）', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenAnswer(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenAnswer(
         (_) async => Response(
           requestOptions: _req('/api/households/1/members'),
           statusCode: 200,
@@ -118,7 +122,7 @@ void main() {
     });
 
     test('DioExceptionが発生した場合: NetworkExceptionをthrowする', () async {
-      when(mockDio.get<dynamic>('/api/households/1/members')).thenThrow(
+      when(mockDio.get<List<dynamic>>('/api/households/1/members')).thenThrow(
         DioException(
           requestOptions: _req('/api/households/1/members'),
           type: DioExceptionType.connectionError,

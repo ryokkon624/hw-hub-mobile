@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../auth/auth_state.dart';
 import '../di/providers.dart';
 import '../storage/storage_keys.dart';
 import 'app_exception.dart';
@@ -71,17 +72,26 @@ class AuthInterceptor extends Interceptor {
         err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
         handler.resolve(await _unauthDio.fetch(err.requestOptions));
       } else {
-        await _ref.read(authNotifierProvider.notifier).logout();
+        await _logoutIfAuthenticated();
         handler.reject(err.copyWith(error: const UnauthorizedException()));
       }
     } catch (_) {
       _refreshCompleter!.complete(null);
-      await _ref.read(authNotifierProvider.notifier).logout();
+      await _logoutIfAuthenticated();
       handler.reject(err.copyWith(error: const UnauthorizedException()));
     } finally {
       _isRefreshing = false;
       _refreshCompleter = null;
     }
+  }
+
+  /// 既に AuthUnauthenticated 状態（または logout 処理中）の場合は logout() を呼ばない。
+  /// これにより、logout 直後に invalidate された Provider の API 呼び出しが 401 になっても
+  /// logout() が再入して無限ループになるのを防ぐ。
+  Future<void> _logoutIfAuthenticated() async {
+    final authState = _ref.read(authNotifierProvider).valueOrNull;
+    if (authState is! AuthAuthenticated) return;
+    await _ref.read(authNotifierProvider.notifier).logout();
   }
 
   Future<String?> _doRefresh() async {

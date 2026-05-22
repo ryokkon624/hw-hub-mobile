@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/network/s3_url_resolver.dart';
 import 'package:hw_hub_mobile/features/household_settings/data/household_settings_repository.dart';
 import 'package:mockito/mockito.dart';
 
@@ -44,7 +45,10 @@ void main() {
 
   setUp(() {
     mockDio = MockDio();
-    repo = HouseholdSettingsRepositoryImpl(mockDio);
+    repo = HouseholdSettingsRepositoryImpl(
+      mockDio,
+      const S3UrlResolver(isDebug: false),
+    );
   });
 
   // ==================================
