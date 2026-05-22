@@ -21,7 +21,7 @@ class LoginNotifier extends AutoDisposeNotifier<LoginState> {
   Future<void> submit() async {
     if (!state.canSubmit) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
-    try {
+    await _runCatching(() async {
       final resp = await ref
           .read(authRepositoryProvider)
           .login(email: state.email, password: state.password);
@@ -33,10 +33,24 @@ class LoginNotifier extends AutoDisposeNotifier<LoginState> {
             user: resp.user,
           );
       state = state.copyWith(isLoading: false);
+    }, onError: (msg) => state.copyWith(isLoading: false, errorMessage: msg));
+  }
+
+  /// AutoDisposeNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    Future<void> Function() operation, {
+    LoginState Function(String errorMessage)? onError,
+  }) async {
+    try {
+      await operation();
     } on AppException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = onError != null
+          ? onError(e.message)
+          : state.copyWith(errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(isLoading: false, errorMessage: 'errorUnexpected');
+      state = onError != null
+          ? onError('errorUnexpected')
+          : state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 }

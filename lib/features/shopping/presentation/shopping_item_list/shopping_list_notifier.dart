@@ -50,12 +50,12 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     if (current == null) return;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateStatus(
         shoppingItemId: shoppingItemId,
         status: ShoppingItemStatus.inBasket.code,
       );
-      final updatedItems = current.items.map((item) {
+      final updatedItems = c.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
           // かごに入れる際は purchasedAt をクリア
           return _copyItemWithStatus(
@@ -66,14 +66,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         }
         return item;
       }).toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
   }
 
   Future<void> markPurchased(int shoppingItemId) async {
@@ -81,14 +75,14 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     if (current == null) return;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateStatus(
         shoppingItemId: shoppingItemId,
         status: ShoppingItemStatus.purchased.code,
       );
       // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
       final now = DateTime.now().toIso8601String();
-      final updatedItems = current.items.map((item) {
+      final updatedItems = c.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
           return _copyItemWithStatus(
             item,
@@ -98,14 +92,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         }
         return item;
       }).toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
   }
 
   Future<void> moveBackToUnpurchased(int shoppingItemId) async {
@@ -113,12 +101,12 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     if (current == null) return;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateStatus(
         shoppingItemId: shoppingItemId,
         status: ShoppingItemStatus.notPurchased.code,
       );
-      final updatedItems = current.items.map((item) {
+      final updatedItems = c.items.map((item) {
         if (item.shoppingItemId == shoppingItemId) {
           // 未購入に戻す際は purchasedAt をクリア（purchasedItems から外れる）
           return _copyItemWithStatus(
@@ -129,14 +117,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         }
         return item;
       }).toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
   }
 
   Future<void> bulkPurchase() async {
@@ -148,14 +130,14 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
 
     final ids = basketItems.map((e) => e.shoppingItemId).toList();
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.bulkUpdateStatus(
         ids: ids,
         status: ShoppingItemStatus.purchased.code,
       );
       // #88: purchasedAt を現在時刻にセットすることで purchasedItems getter が即時反映される
       final now = DateTime.now().toIso8601String();
-      final updatedItems = current.items.map((item) {
+      final updatedItems = c.items.map((item) {
         if (ids.contains(item.shoppingItemId)) {
           return _copyItemWithStatus(
             item,
@@ -165,14 +147,8 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         }
         return item;
       }).toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
   }
 
   Future<void> deleteItem(int shoppingItemId) async {
@@ -180,19 +156,13 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     if (current == null) return;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.deleteItem(shoppingItemId: shoppingItemId);
-      final updatedItems = current.items
+      final updatedItems = c.items
           .where((item) => item.shoppingItemId != shoppingItemId)
           .toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
   }
 
   Future<void> toggleFavorite(int shoppingItemId) async {
@@ -211,20 +181,30 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
         : FavoriteFlag.favorite.code;
 
     final repo = ref.read(shoppingRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.toggleFavorite(
         shoppingItemId: shoppingItemId,
         favorite: newFavorite,
       );
-      final updatedItems = current.items.map((e) {
+      final updatedItems = c.items.map((e) {
         if (e.shoppingItemId == shoppingItemId) {
           return _copyItemWithFavorite(e, newFavorite);
         }
         return e;
       }).toList();
-      state = AsyncData(
-        current.copyWith(items: List.unmodifiable(updatedItems)),
-      );
+      state = AsyncData(c.copyWith(items: List.unmodifiable(updatedItems)));
+    });
+  }
+
+  /// AsyncNotifier 向けエラーハンドリングヘルパー。
+  /// [operation] が AppException を throw した場合は errorMessage を state に格納する。
+  /// 予期しない例外は 'errorUnexpected' を格納する。
+  Future<void> _runCatching(
+    ShoppingListState current,
+    Future<void> Function(ShoppingListState c) operation,
+  ) async {
+    try {
+      await operation(current);
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {

@@ -41,21 +41,38 @@ class InquiryCreateNotifier extends AutoDisposeNotifier<InquiryCreateState> {
     }
 
     state = state.copyWith(isSubmitting: true, errorMessage: null);
+    await _runCatching(
+      () async {
+        final repo = ref.read(inquiryRepositoryProvider);
+        final inquiryId = await repo.createInquiry(
+          category: state.selectedCategory!,
+          title: state.title.trim(),
+          body: state.body.trim(),
+        );
+        state = state.copyWith(
+          isSubmitting: false,
+          createdInquiryId: inquiryId,
+        );
+      },
+      onError: (msg) => state.copyWith(isSubmitting: false, errorMessage: msg),
+    );
+  }
+
+  /// AutoDisposeNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    Future<void> Function() operation, {
+    InquiryCreateState Function(String errorMessage)? onError,
+  }) async {
     try {
-      final repo = ref.read(inquiryRepositoryProvider);
-      final inquiryId = await repo.createInquiry(
-        category: state.selectedCategory!,
-        title: state.title.trim(),
-        body: state.body.trim(),
-      );
-      state = state.copyWith(isSubmitting: false, createdInquiryId: inquiryId);
+      await operation();
     } on AppException catch (e) {
-      state = state.copyWith(isSubmitting: false, errorMessage: e.message);
+      state = onError != null
+          ? onError(e.message)
+          : state.copyWith(errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(
-        isSubmitting: false,
-        errorMessage: 'errorUnexpected',
-      );
+      state = onError != null
+          ? onError('errorUnexpected')
+          : state.copyWith(errorMessage: 'errorUnexpected');
     }
   }
 }

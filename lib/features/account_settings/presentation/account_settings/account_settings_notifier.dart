@@ -36,27 +36,19 @@ class AccountSettingsNotifier
     final current = state.valueOrNull;
     if (current == null) return;
 
-    try {
+    await _runCatching(current, (c) async {
       final updated = await _repo.updateProfile(
         displayName: displayName,
         locale: locale,
       );
       state = AsyncData(
-        current.copyWith(
+        c.copyWith(
           profile: updated,
           successMessage: 'accountSettingsProfileSaved',
           clearError: true,
         ),
       );
-    } on AppException catch (e) {
-      state = AsyncData(
-        current.copyWith(errorMessage: e.message, clearSuccess: true),
-      );
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'errorUnexpected', clearSuccess: true),
-      );
-    }
+    }, onError: (c, msg) => c.copyWith(errorMessage: msg, clearSuccess: true));
   }
 
   /// パスワードを変更する。
@@ -67,26 +59,18 @@ class AccountSettingsNotifier
     final current = state.valueOrNull;
     if (current == null) return;
 
-    try {
+    await _runCatching(current, (c) async {
       await _repo.changePassword(
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
       state = AsyncData(
-        current.copyWith(
+        c.copyWith(
           successMessage: 'accountSettingsPasswordChanged',
           clearError: true,
         ),
       );
-    } on AppException catch (e) {
-      state = AsyncData(
-        current.copyWith(errorMessage: e.message, clearSuccess: true),
-      );
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'errorUnexpected', clearSuccess: true),
-      );
-    }
+    }, onError: (c, msg) => c.copyWith(errorMessage: msg, clearSuccess: true));
   }
 
   /// アイコン画像をアップロードする。
@@ -108,59 +92,51 @@ class AccountSettingsNotifier
 
     state = AsyncData(current.copyWith(isUploadingIcon: true));
 
-    try {
-      // Step1: Presigned URL 取得
-      final urlResult = await _repo.createIconUploadUrl(
-        fileName: fileName,
-        mimeType: mimeType,
-      );
-      final uploadUrl = urlResult['uploadUrl']!;
-      final fileKey = urlResult['fileKey']!;
+    await _runCatching(
+      current,
+      (c) async {
+        // Step1: Presigned URL 取得
+        final urlResult = await _repo.createIconUploadUrl(
+          fileName: fileName,
+          mimeType: mimeType,
+        );
+        final uploadUrl = urlResult['uploadUrl']!;
+        final fileKey = urlResult['fileKey']!;
 
-      // Step2: S3 PUT
-      await _repo.uploadToS3(
-        uploadUrl: uploadUrl,
-        bytes: Uint8List.fromList(bytes),
-        mimeType: mimeType,
-      );
+        // Step2: S3 PUT
+        await _repo.uploadToS3(
+          uploadUrl: uploadUrl,
+          bytes: Uint8List.fromList(bytes),
+          mimeType: mimeType,
+        );
 
-      // Step3: fileKey 登録
-      await _repo.updateIcon(fileKey: fileKey);
+        // Step3: fileKey 登録
+        await _repo.updateIcon(fileKey: fileKey);
 
-      // Step4: プロフィール再取得（iconUrl 更新のため）
-      final updatedProfile = await _repo.fetchProfile();
+        // Step4: プロフィール再取得（iconUrl 更新のため）
+        final updatedProfile = await _repo.fetchProfile();
 
-      state = AsyncData(
-        current.copyWith(
-          profile: updatedProfile,
-          isUploadingIcon: false,
-          successMessage: 'accountSettingsIconUpdated',
-          clearError: true,
-        ),
-      );
+        state = AsyncData(
+          c.copyWith(
+            profile: updatedProfile,
+            isUploadingIcon: false,
+            successMessage: 'accountSettingsIconUpdated',
+            clearError: true,
+          ),
+        );
 
-      // Step5: 各 Provider を invalidate してアイコンを全画面に反映する（AC2, AC3）
-      ref.invalidate(authNotifierProvider);
-      ref.invalidate(homeNotifierProvider);
-      ref.invalidate(householdSettingsNotifierProvider);
-      ref.invalidate(houseworkAssignNotifierProvider);
-    } on AppException catch (e) {
-      state = AsyncData(
-        current.copyWith(
-          isUploadingIcon: false,
-          errorMessage: e.message,
-          clearSuccess: true,
-        ),
-      );
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(
-          isUploadingIcon: false,
-          errorMessage: 'errorUnexpected',
-          clearSuccess: true,
-        ),
-      );
-    }
+        // Step5: 各 Provider を invalidate してアイコンを全画面に反映する（AC2, AC3）
+        ref.invalidate(authNotifierProvider);
+        ref.invalidate(homeNotifierProvider);
+        ref.invalidate(householdSettingsNotifierProvider);
+        ref.invalidate(houseworkAssignNotifierProvider);
+      },
+      onError: (c, msg) => c.copyWith(
+        isUploadingIcon: false,
+        errorMessage: msg,
+        clearSuccess: true,
+      ),
+    );
   }
 
   /// グローバル通知設定を切り替える。
@@ -178,14 +154,10 @@ class AccountSettingsNotifier
       groupSettings: const {},
     );
 
-    try {
+    await _runCatching(current, (c) async {
       final updated = await _repo.updateNotificationSettings(payload);
-      state = AsyncData(current.copyWith(notificationSettings: updated));
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(notificationSettings: updated));
+    });
   }
 
   /// グループ通知設定を切り替える。
@@ -207,14 +179,10 @@ class AccountSettingsNotifier
       groupSettings: {groupCode: enabled},
     );
 
-    try {
+    await _runCatching(current, (c) async {
       final updated = await _repo.updateNotificationSettings(payload);
-      state = AsyncData(current.copyWith(notificationSettings: updated));
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+      state = AsyncData(c.copyWith(notificationSettings: updated));
+    });
   }
 
   /// Google アカウントを IDトークン経由で連携する。
@@ -224,37 +192,29 @@ class AccountSettingsNotifier
 
     state = AsyncData(current.copyWith(isLinkingGoogle: true));
 
-    try {
-      await _repo.linkGoogleAccount(idToken: idToken);
+    await _runCatching(
+      current,
+      (c) async {
+        await _repo.linkGoogleAccount(idToken: idToken);
 
-      // 連携後にプロフィールを再取得（authProvider が GOOGLE になる）
-      final updatedProfile = await _repo.fetchProfile();
+        // 連携後にプロフィールを再取得（authProvider が GOOGLE になる）
+        final updatedProfile = await _repo.fetchProfile();
 
-      state = AsyncData(
-        current.copyWith(
-          profile: updatedProfile,
-          isLinkingGoogle: false,
-          successMessage: 'accountSettingsGoogleLinked',
-          clearError: true,
-        ),
-      );
-    } on AppException catch (e) {
-      state = AsyncData(
-        current.copyWith(
-          isLinkingGoogle: false,
-          errorMessage: e.message,
-          clearSuccess: true,
-        ),
-      );
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(
-          isLinkingGoogle: false,
-          errorMessage: 'errorUnexpected',
-          clearSuccess: true,
-        ),
-      );
-    }
+        state = AsyncData(
+          c.copyWith(
+            profile: updatedProfile,
+            isLinkingGoogle: false,
+            successMessage: 'accountSettingsGoogleLinked',
+            clearError: true,
+          ),
+        );
+      },
+      onError: (c, msg) => c.copyWith(
+        isLinkingGoogle: false,
+        errorMessage: msg,
+        clearSuccess: true,
+      ),
+    );
   }
 
   /// アカウントを削除する（論理削除）。
@@ -264,19 +224,40 @@ class AccountSettingsNotifier
 
     state = AsyncData(current.copyWith(isDeletingAccount: true));
 
+    await _runCatching(
+      current,
+      (c) async {
+        await _repo.deleteAccount();
+        state = AsyncData(c.copyWith(isDeletingAccount: false));
+      },
+      onError: (c, msg) =>
+          c.copyWith(isDeletingAccount: false, errorMessage: msg),
+    );
+  }
+
+  /// AsyncNotifier 向けエラーハンドリングヘルパー。
+  /// [operation] が AppException を throw した場合は [onError] で state を更新する。
+  /// [onError] が省略された場合はデフォルトの errorMessage copyWith を使う。
+  /// 予期しない例外は 'errorUnexpected' を格納する。
+  Future<void> _runCatching(
+    AccountSettingsState current,
+    Future<void> Function(AccountSettingsState c) operation, {
+    AccountSettingsState Function(AccountSettingsState c, String errorMessage)?
+    onError,
+  }) async {
     try {
-      await _repo.deleteAccount();
-      state = AsyncData(current.copyWith(isDeletingAccount: false));
+      await operation(current);
     } on AppException catch (e) {
       state = AsyncData(
-        current.copyWith(isDeletingAccount: false, errorMessage: e.message),
+        onError != null
+            ? onError(current, e.message)
+            : current.copyWith(errorMessage: e.message),
       );
     } catch (_) {
       state = AsyncData(
-        current.copyWith(
-          isDeletingAccount: false,
-          errorMessage: 'errorUnexpected',
-        ),
+        onError != null
+            ? onError(current, 'errorUnexpected')
+            : current.copyWith(errorMessage: 'errorUnexpected'),
       );
     }
   }

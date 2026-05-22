@@ -108,11 +108,12 @@ class HouseworkAssignNotifier
     if (authState is! AuthAuthenticated) return false;
     final myUserId = authState.user.userId;
 
+    bool success = false;
     final repo = ref.read(houseworkAssignRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateAssignee(taskId: taskId, assigneeUserId: myUserId);
       // タスクリスト内の該当タスクの assigneeUserId を更新
-      final updated = current.tasks.map((t) {
+      final updated = c.tasks.map((t) {
         if (t.houseworkTaskId == taskId) {
           return t.copyWith(
             assigneeUserId: myUserId,
@@ -123,22 +124,15 @@ class HouseworkAssignNotifier
         return t;
       }).toList();
       state = AsyncData(
-        current.copyWith(
+        c.copyWith(
           tasks: updated,
           memberTaskCounts: _computeMemberTaskCounts(updated),
           clearError: true,
         ),
       );
-      return true;
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-      return false;
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'houseworkAssignErrorAssign'),
-      );
-      return false;
-    }
+      success = true;
+    }, unexpectedErrorKey: 'houseworkAssignErrorAssign');
+    return success;
   }
 
   /// 右スワイプ: 指定メンバーに割り当て（通常リストモード / メンバー選択モーダルから）
@@ -150,10 +144,11 @@ class HouseworkAssignNotifier
     final current = state.valueOrNull;
     if (current == null) return false;
 
+    bool success = false;
     final repo = ref.read(houseworkAssignRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateAssignee(taskId: taskId, assigneeUserId: assigneeUserId);
-      final updated = current.tasks.map((t) {
+      final updated = c.tasks.map((t) {
         if (t.houseworkTaskId == taskId) {
           return t.copyWith(
             assigneeUserId: assigneeUserId,
@@ -164,22 +159,15 @@ class HouseworkAssignNotifier
         return t;
       }).toList();
       state = AsyncData(
-        current.copyWith(
+        c.copyWith(
           tasks: updated,
           memberTaskCounts: _computeMemberTaskCounts(updated),
           clearError: true,
         ),
       );
-      return true;
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-      return false;
-    } catch (_) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'houseworkAssignErrorAssign'),
-      );
-      return false;
-    }
+      success = true;
+    }, unexpectedErrorKey: 'houseworkAssignErrorAssign');
+    return success;
   }
 
   /// スワイプモードで自分に割り当てて次へ
@@ -223,24 +211,33 @@ class HouseworkAssignNotifier
     final taskIds = pastUnassigned.map((t) => t.houseworkTaskId).toList();
 
     final repo = ref.read(houseworkAssignRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.bulkSkipPastUnassigned(taskIds: taskIds);
-      final remaining = current.tasks
+      final remaining = c.tasks
           .where((t) => !taskIds.contains(t.houseworkTaskId))
           .toList();
       state = AsyncData(
-        current.copyWith(
+        c.copyWith(
           tasks: remaining,
           memberTaskCounts: _computeMemberTaskCounts(remaining),
           clearError: true,
         ),
       );
+    }, unexpectedErrorKey: 'houseworkAssignErrorBulkSkip');
+  }
+
+  /// AsyncNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    HouseworkAssignState current,
+    Future<void> Function(HouseworkAssignState c) operation, {
+    String unexpectedErrorKey = 'errorUnexpected',
+  }) async {
+    try {
+      await operation(current);
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'houseworkAssignErrorBulkSkip'),
-      );
+      state = AsyncData(current.copyWith(errorMessage: unexpectedErrorKey));
     }
   }
 

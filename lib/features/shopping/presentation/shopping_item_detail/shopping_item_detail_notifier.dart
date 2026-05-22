@@ -79,36 +79,28 @@ class ShoppingItemDetailNotifier
         ? FavoriteFlag.normal.code
         : FavoriteFlag.favorite.code;
 
-    try {
+    await _runCatching(() async {
       final repo = ref.read(shoppingRepositoryProvider);
       await repo.toggleFavorite(
         shoppingItemId: item.shoppingItemId,
         favorite: newFavorite,
       );
       state = state.copyWith(item: _copyItemWith(item, favorite: newFavorite));
-    } on AppException catch (e) {
-      state = state.copyWith(errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(errorMessage: 'errorUnexpected');
-    }
+    });
   }
 
   Future<void> updateStatus(String status) async {
     final item = state.item;
     if (item == null) return;
 
-    try {
+    await _runCatching(() async {
       final repo = ref.read(shoppingRepositoryProvider);
       await repo.updateStatus(
         shoppingItemId: item.shoppingItemId,
         status: status,
       );
       state = state.copyWith(item: _copyItemWith(item, status: status));
-    } on AppException catch (e) {
-      state = state.copyWith(errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(errorMessage: 'errorUnexpected');
-    }
+    });
   }
 
   Future<void> save() async {
@@ -117,7 +109,7 @@ class ShoppingItemDetailNotifier
 
     state = state.copyWith(isSaving: true, errorMessage: null);
 
-    try {
+    await _runCatching(() async {
       final repo = ref.read(shoppingRepositoryProvider);
       final updated = await repo.updateItem(
         shoppingItemId: item.shoppingItemId,
@@ -138,29 +130,22 @@ class ShoppingItemDetailNotifier
         editableFavorite: null,
         isSaving: false,
       );
-    } on AppException catch (e) {
-      state = state.copyWith(isSaving: false, errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(
-        isSaving: false,
-        errorMessage: 'shoppingDetailSaveError',
-      );
-    }
+    }, onError: (msg) => state.copyWith(isSaving: false, errorMessage: msg));
   }
 
   Future<void> deleteItem() async {
     final item = state.item;
     if (item == null) return;
 
-    try {
-      final repo = ref.read(shoppingRepositoryProvider);
-      await repo.deleteItem(shoppingItemId: item.shoppingItemId);
-      state = state.copyWith(isDeleted: true);
-    } on AppException catch (e) {
-      state = state.copyWith(errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(errorMessage: 'shoppingDetailDeleteError');
-    }
+    await _runCatching(
+      () async {
+        final repo = ref.read(shoppingRepositoryProvider);
+        await repo.deleteItem(shoppingItemId: item.shoppingItemId);
+        state = state.copyWith(isDeleted: true);
+      },
+      onError: (msg) => state.copyWith(errorMessage: msg),
+      unexpectedErrorKey: 'shoppingDetailDeleteError',
+    );
   }
 
   Future<void> addImage({
@@ -170,7 +155,7 @@ class ShoppingItemDetailNotifier
     final item = state.item;
     if (item == null) return;
 
-    try {
+    await _runCatching(() async {
       final attachRepo = ref.read(shoppingAttachmentRepositoryProvider);
       final mimeType = _mimeTypeFromFileName(fileName);
 
@@ -199,18 +184,14 @@ class ShoppingItemDetailNotifier
         itemId: item.shoppingItemId,
       );
       state = state.copyWith(attachments: attachments);
-    } on AppException catch (e) {
-      state = state.copyWith(errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(errorMessage: 'errorUnexpected');
-    }
+    });
   }
 
   Future<void> deleteAttachment(int attachmentId) async {
     final item = state.item;
     if (item == null) return;
 
-    try {
+    await _runCatching(() async {
       final attachRepo = ref.read(shoppingAttachmentRepositoryProvider);
       await attachRepo.deleteAttachment(
         itemId: item.shoppingItemId,
@@ -222,10 +203,28 @@ class ShoppingItemDetailNotifier
         itemId: item.shoppingItemId,
       );
       state = state.copyWith(attachments: attachments);
+    });
+  }
+
+  /// Notifier（同期ステート）向けエラーハンドリングヘルパー。
+  /// [operation] が AppException を throw した場合は [onError] で state を更新する。
+  /// [onError] が省略された場合はデフォルトの errorMessage copyWith を使う。
+  /// 予期しない例外は [unexpectedErrorKey] の i18n キーを格納する。
+  Future<void> _runCatching(
+    Future<void> Function() operation, {
+    ShoppingItemDetailState Function(String errorMessage)? onError,
+    String unexpectedErrorKey = 'errorUnexpected',
+  }) async {
+    try {
+      await operation();
     } on AppException catch (e) {
-      state = state.copyWith(errorMessage: e.message);
+      state = onError != null
+          ? onError(e.message)
+          : state.copyWith(errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(errorMessage: 'errorUnexpected');
+      state = onError != null
+          ? onError(unexpectedErrorKey)
+          : state.copyWith(errorMessage: unexpectedErrorKey);
     }
   }
 

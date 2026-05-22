@@ -64,6 +64,9 @@ class ShoppingItemNewNotifier
     }
   }
 
+  // Note: fetchHistorySuggestions と fetchFavorites は戻り値があるため
+  // _runCatching パターンを適用せず、個別の try/catch を維持する。
+
   /// 過去履歴から選択: name / storeType / sourceShoppingItemId / memo をセット
   void setFromHistory(ShoppingItemHistorySuggestionDto suggestion) {
     state = state.copyWith(
@@ -99,41 +102,62 @@ class ShoppingItemNewNotifier
 
     state = state.copyWith(isSubmitting: true, errorMessage: null);
 
-    try {
-      final repo = ref.read(shoppingRepositoryProvider);
-      final item = await repo.createItem(
-        householdId: householdId,
-        req: CreateShoppingItemRequest(
-          name: state.name.trim(),
-          memo: state.memo?.trim().isEmpty ?? true ? null : state.memo?.trim(),
-          storeType: state.storeType,
-          favorite: state.favorite,
-          sourceShoppingItemId: state.sourceShoppingItemId,
-        ),
-      );
-
-      // 画像があればアップロード
-      final imageBytes = state.pickedImageBytes;
-      final imageName = state.pickedImageName;
-      if (imageBytes != null && imageName != null) {
-        await _uploadAttachment(
-          itemId: item.shoppingItemId,
-          bytes: imageBytes,
-          fileName: imageName,
+    await _runCatching(
+      () async {
+        final repo = ref.read(shoppingRepositoryProvider);
+        final item = await repo.createItem(
+          householdId: householdId,
+          req: CreateShoppingItemRequest(
+            name: state.name.trim(),
+            memo: state.memo?.trim().isEmpty ?? true
+                ? null
+                : state.memo?.trim(),
+            storeType: state.storeType,
+            favorite: state.favorite,
+            sourceShoppingItemId: state.sourceShoppingItemId,
+          ),
         );
-      }
 
-      state = state.copyWith(
-        isSubmitting: false,
-        successItemId: item.shoppingItemId,
-      );
+        // 画像があればアップロード
+        final imageBytes = state.pickedImageBytes;
+        final imageName = state.pickedImageName;
+        if (imageBytes != null && imageName != null) {
+          await _uploadAttachment(
+            itemId: item.shoppingItemId,
+            bytes: imageBytes,
+            fileName: imageName,
+          );
+        }
+
+        state = state.copyWith(
+          isSubmitting: false,
+          successItemId: item.shoppingItemId,
+        );
+      },
+      onError: (msg) => state.copyWith(isSubmitting: false, errorMessage: msg),
+      unexpectedErrorKey: 'shoppingNewSubmitError',
+    );
+  }
+
+  /// AutoDisposeNotifier 向けエラーハンドリングヘルパー。
+  /// [operation] が AppException を throw した場合は [onError] で state を更新する。
+  /// [onError] が省略された場合はデフォルトの errorMessage copyWith を使う。
+  /// 予期しない例外は [unexpectedErrorKey] の i18n キーを格納する。
+  Future<void> _runCatching(
+    Future<void> Function() operation, {
+    ShoppingItemNewState Function(String errorMessage)? onError,
+    String unexpectedErrorKey = 'errorUnexpected',
+  }) async {
+    try {
+      await operation();
     } on AppException catch (e) {
-      state = state.copyWith(isSubmitting: false, errorMessage: e.message);
+      state = onError != null
+          ? onError(e.message)
+          : state.copyWith(errorMessage: e.message);
     } catch (_) {
-      state = state.copyWith(
-        isSubmitting: false,
-        errorMessage: 'shoppingNewSubmitError',
-      );
+      state = onError != null
+          ? onError(unexpectedErrorKey)
+          : state.copyWith(errorMessage: unexpectedErrorKey);
     }
   }
 
