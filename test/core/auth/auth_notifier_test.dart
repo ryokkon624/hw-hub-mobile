@@ -4,6 +4,7 @@ import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
+import 'package:hw_hub_mobile/core/storage/storage_keys.dart';
 import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,6 +122,29 @@ void main() {
         container.read(authNotifierProvider).value,
         isA<AuthUnauthenticated>(),
       );
+    });
+
+    test('logout() → SharedPreferences の selectedHouseholdId が削除される', () async {
+      // ログイン前にselectedHouseholdIdを設定しておく
+      SharedPreferences.setMockInitialValues({
+        StorageKeys.selectedHouseholdId: 42,
+      });
+      when(
+        mockStorage.read(key: anyNamed('key')),
+      ).thenAnswer((_) async => null);
+
+      final container = makeContainer();
+      await container.read(authNotifierProvider.future);
+
+      // ログアウト前は selectedHouseholdId が存在する
+      final prefsBeforeLogout = await SharedPreferences.getInstance();
+      expect(prefsBeforeLogout.getInt(StorageKeys.selectedHouseholdId), 42);
+
+      await container.read(authNotifierProvider.notifier).logout();
+
+      // ログアウト後は selectedHouseholdId が削除されている
+      final prefsAfterLogout = await SharedPreferences.getInstance();
+      expect(prefsAfterLogout.getInt(StorageKeys.selectedHouseholdId), isNull);
     });
   });
 }

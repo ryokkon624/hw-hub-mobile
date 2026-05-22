@@ -6,6 +6,8 @@ import 'auth_state.dart';
 import '../di/providers.dart';
 import '../storage/storage_keys.dart';
 import '../../features/auth/auth_providers.dart';
+import '../../features/home/presentation/home_notifier.dart';
+import '../../features/housework_assign/presentation/housework_assign_notifier.dart';
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
@@ -37,6 +39,16 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   Future<void> logout() async {
     await ref.read(tokenStorageProvider).clearTokens();
+
+    // 選択世帯IDをクリアして次のユーザーが前のユーザーの世帯IDを引き継がないようにする
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(StorageKeys.selectedHouseholdId);
+
+    // 世帯・各一覧 Provider をリセットして別ユーザーでのログイン後に前ユーザーのデータが残らないようにする
+    ref.invalidate(householdNotifierProvider);
+    ref.invalidate(homeNotifierProvider);
+    ref.invalidate(houseworkAssignNotifierProvider);
+
     state = const AsyncData(AuthUnauthenticated());
   }
 
