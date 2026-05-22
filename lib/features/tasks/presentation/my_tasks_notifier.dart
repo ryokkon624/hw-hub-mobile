@@ -6,7 +6,6 @@ import '../../../core/network/app_exception.dart';
 import '../data/models/housework_task_dto.dart';
 import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
-import 'my_tasks_state.dart';
 
 class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
   @override
@@ -73,23 +72,19 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     if (current == null) return;
 
     final repo = ref.read(myTasksRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateTaskStatus(taskId: taskId, status: TaskStatus.done.code);
       state = AsyncData(
-        current.copyWith(
-          pastTasks: current.pastTasks
+        c.copyWith(
+          pastTasks: c.pastTasks
               .where((t) => t.houseworkTaskId != taskId)
               .toList(),
-          futureTasks: current.futureTasks
+          futureTasks: c.futureTasks
               .where((t) => t.houseworkTaskId != taskId)
               .toList(),
         ),
       );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+    });
   }
 
   Future<void> skipTask(int taskId) async {
@@ -97,26 +92,22 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     if (current == null) return;
 
     final repo = ref.read(myTasksRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.updateTaskStatus(
         taskId: taskId,
         status: TaskStatus.skipped.code,
       );
       state = AsyncData(
-        current.copyWith(
-          pastTasks: current.pastTasks
+        c.copyWith(
+          pastTasks: c.pastTasks
               .where((t) => t.houseworkTaskId != taskId)
               .toList(),
-          futureTasks: current.futureTasks
+          futureTasks: c.futureTasks
               .where((t) => t.houseworkTaskId != taskId)
               .toList(),
         ),
       );
-    } on AppException catch (e) {
-      state = AsyncData(current.copyWith(errorMessage: e.message));
-    } catch (_) {
-      state = AsyncData(current.copyWith(errorMessage: 'errorUnexpected'));
-    }
+    });
   }
 
   Future<void> bulkCompletePastTasks() async {
@@ -125,12 +116,22 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
 
     final taskIds = current.pastTasks.map((t) => t.houseworkTaskId).toList();
     final repo = ref.read(myTasksRepositoryProvider);
-    try {
+    await _runCatching(current, (c) async {
       await repo.bulkUpdateStatus(
         taskIds: taskIds,
         status: TaskStatus.done.code,
       );
-      state = AsyncData(current.copyWith(pastTasks: []));
+      state = AsyncData(c.copyWith(pastTasks: []));
+    });
+  }
+
+  /// AsyncNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    MyTasksState current,
+    Future<void> Function(MyTasksState c) operation,
+  ) async {
+    try {
+      await operation(current);
     } on AppException catch (e) {
       state = AsyncData(current.copyWith(errorMessage: e.message));
     } catch (_) {
@@ -138,8 +139,3 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     }
   }
 }
-
-final myTasksNotifierProvider =
-    AsyncNotifierProvider.autoDispose<MyTasksNotifier, MyTasksState>(
-      MyTasksNotifier.new,
-    );

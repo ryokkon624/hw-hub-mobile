@@ -40,23 +40,32 @@ class InquiryListNotifier extends AutoDisposeNotifier<InquiryListState> {
 
   Future<void> _fetchInquiries() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    try {
+    await _runCatching(() async {
       final repo = ref.read(inquiryRepositoryProvider);
       final inquiries = await repo.fetchInquiries();
       state = state.copyWith(inquiries: inquiries, isLoading: false);
-    } on AppException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
-    } catch (_) {
-      state = state.copyWith(isLoading: false, errorMessage: 'errorUnexpected');
-    }
+    }, onError: (msg) => state.copyWith(isLoading: false, errorMessage: msg));
   }
 
   Future<void> reload() async {
     await _fetchInquiries();
   }
-}
 
-final inquiryListNotifierProvider =
-    NotifierProvider.autoDispose<InquiryListNotifier, InquiryListState>(
-      InquiryListNotifier.new,
-    );
+  /// AutoDisposeNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    Future<void> Function() operation, {
+    InquiryListState Function(String errorMessage)? onError,
+  }) async {
+    try {
+      await operation();
+    } on AppException catch (e) {
+      state = onError != null
+          ? onError(e.message)
+          : state.copyWith(errorMessage: e.message);
+    } catch (_) {
+      state = onError != null
+          ? onError('errorUnexpected')
+          : state.copyWith(errorMessage: 'errorUnexpected');
+    }
+  }
+}

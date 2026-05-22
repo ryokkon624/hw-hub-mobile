@@ -3,7 +3,6 @@ import '../../../../core/di/providers.dart';
 import '../../../../features/home/data/models/household_member_dto.dart';
 import '../../data/models/housework_dto.dart';
 import '../../housework_settings_providers.dart';
-import 'housework_list_state.dart';
 
 class HouseworkListNotifier
     extends AutoDisposeAsyncNotifier<HouseworkListState> {
@@ -55,8 +54,3 @@ class HouseworkListNotifier
     await future;
   }
 }
-
-final houseworkListNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<HouseworkListNotifier, HouseworkListState>(
-      HouseworkListNotifier.new,
-    );

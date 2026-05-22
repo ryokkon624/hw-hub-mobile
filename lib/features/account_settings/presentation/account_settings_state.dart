@@ -1,5 +1,5 @@
-import '../../data/models/notification_settings_dto.dart';
-import '../../data/models/user_profile_dto.dart';
+import '../data/models/notification_settings_dto.dart';
+import '../data/models/user_profile_dto.dart';
 
 /// アカウント設定画面の状態。
 class AccountSettingsState {

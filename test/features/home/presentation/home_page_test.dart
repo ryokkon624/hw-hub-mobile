@@ -8,9 +8,8 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/theme/app_theme.dart';
-import 'package:hw_hub_mobile/features/home/presentation/home_notifier.dart';
+import 'package:hw_hub_mobile/features/home/home_providers.dart';
 import 'package:hw_hub_mobile/features/home/presentation/home_page.dart';
-import 'package:hw_hub_mobile/features/home/presentation/home_state.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

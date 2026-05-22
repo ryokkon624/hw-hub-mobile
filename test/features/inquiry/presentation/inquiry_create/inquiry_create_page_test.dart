@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hw_hub_mobile/features/inquiry/presentation/inquiry_create/inquiry_create_notifier.dart';
+import 'package:hw_hub_mobile/features/inquiry/inquiry_providers.dart';
 import 'package:hw_hub_mobile/features/inquiry/presentation/inquiry_create/inquiry_create_page.dart';
-import 'package:hw_hub_mobile/features/inquiry/presentation/inquiry_create/inquiry_create_state.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

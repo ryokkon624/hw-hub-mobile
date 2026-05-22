@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app_router.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'password_reset_sent_notifier.dart';
+import '../../auth_providers.dart';
 
 class PasswordResetSentPage extends ConsumerWidget {
   const PasswordResetSentPage({super.key, required this.email});

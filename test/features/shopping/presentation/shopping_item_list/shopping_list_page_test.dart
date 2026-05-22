@@ -11,15 +11,13 @@ import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/shopping/data/shopping_repository.dart';
-import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_list/shopping_list_notifier.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_list/shopping_list_page.dart';
-import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_list/shopping_list_state.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../helpers/widget_test_helpers.dart';
-import '../shopping_mocks.mocks.dart';
+import '../../../../helpers/widget_test_helpers.dart';
+import '../../shopping_mocks.mocks.dart';
 
 // テスト用データ生成
 ShoppingItemDto _item({

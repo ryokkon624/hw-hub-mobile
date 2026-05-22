@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../data/models/user_profile_dto.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../data/models/user_profile_dto.dart';
 
 /// AC3: プロフィール設定（表示名・言語、dirty 判定で保存ボタン活性化）
 class ProfileSection extends StatefulWidget {

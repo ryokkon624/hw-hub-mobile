@@ -3,8 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/notifications/data/notification_repository.dart';
 import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
-import 'package:hw_hub_mobile/features/notifications/presentation/notification_center/notification_center_notifier.dart';
-import 'package:hw_hub_mobile/features/notifications/presentation/notification_global_notifier.dart';
 import 'package:mockito/mockito.dart';
 
 import '../notifications_mocks.mocks.dart';

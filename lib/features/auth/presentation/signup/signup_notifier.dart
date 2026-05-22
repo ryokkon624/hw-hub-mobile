@@ -3,11 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'signup_state.dart';
-
-final signupNotifierProvider = NotifierProvider<SignupNotifier, SignupState>(
-  SignupNotifier.new,
-);
 
 class SignupNotifier extends Notifier<SignupState> {
   @override

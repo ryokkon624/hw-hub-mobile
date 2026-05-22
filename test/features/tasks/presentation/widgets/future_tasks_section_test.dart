@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_notifier.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_state.dart';
+import 'package:hw_hub_mobile/features/tasks/my_tasks_providers.dart';
 import 'package:hw_hub_mobile/features/tasks/presentation/widgets/future_tasks_section.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';

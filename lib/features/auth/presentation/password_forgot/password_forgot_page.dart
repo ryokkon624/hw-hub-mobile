@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'password_forgot_notifier.dart';
+import '../../auth_providers.dart';
 
 class PasswordForgotPage extends ConsumerStatefulWidget {
   const PasswordForgotPage({super.key, this.initialEmail});

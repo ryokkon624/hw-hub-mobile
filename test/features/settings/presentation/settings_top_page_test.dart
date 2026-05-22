@@ -5,10 +5,10 @@ import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
-import 'package:hw_hub_mobile/features/settings/presentation/settings_top/settings_top_page.dart';
-import 'package:hw_hub_mobile/features/settings/presentation/settings_top/widgets/settings_card.dart';
+import 'package:hw_hub_mobile/features/settings/presentation/settings_top_page.dart';
+import 'package:hw_hub_mobile/features/settings/presentation/settings_card.dart';
 
-import '../../../../helpers/widget_test_helpers.dart';
+import '../../../helpers/widget_test_helpers.dart';
 
 class _FakeAuthNotifier extends AuthNotifier {
   @override

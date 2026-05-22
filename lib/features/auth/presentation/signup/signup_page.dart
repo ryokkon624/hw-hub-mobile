@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app_router.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'signup_notifier.dart';
+import '../../auth_providers.dart';
 
 class SignupPage extends ConsumerWidget {
   const SignupPage({super.key, this.invitationToken});

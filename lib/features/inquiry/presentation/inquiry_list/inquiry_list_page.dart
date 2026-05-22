@@ -9,7 +9,7 @@ import '../../../../core/utils/date_format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/inquiry_category_badge.dart';
 import '../widgets/inquiry_status_badge.dart';
-import 'inquiry_list_notifier.dart';
+import '../../inquiry_providers.dart';
 
 class InquiryListPage extends ConsumerWidget {
   const InquiryListPage({super.key});

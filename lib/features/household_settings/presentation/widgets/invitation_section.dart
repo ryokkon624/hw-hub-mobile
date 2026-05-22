@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../../../core/models/invitation_status.dart';
-import '../../../../../core/ui/app_dialog.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../data/models/household_invitation_dto.dart';
-import '../household_settings_notifier.dart';
+import '../../../../core/models/invitation_status.dart';
+import '../../../../core/ui/app_dialog.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../data/models/household_invitation_dto.dart';
+import '../../household_settings_providers.dart';
 
 /// メンバー招待セクション（AC8・AC9）。
 class InvitationSection extends ConsumerStatefulWidget {

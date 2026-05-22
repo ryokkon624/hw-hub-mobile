@@ -6,7 +6,7 @@ import 'core/locale/locale_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_notifier.dart';
 import 'core/ui/app_snack_bar.dart';
-import 'features/notifications/presentation/notification_global_notifier.dart';
+import 'features/notifications/notifications_providers.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {

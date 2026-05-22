@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// AC2: パスワード変更セクション（StatefulWidget で入力検証）
 class PasswordChangeSection extends StatefulWidget {

@@ -1,5 +1,5 @@
-import '../../data/models/household_invitation_dto.dart';
-import '../../data/models/household_member_dto.dart';
+import '../data/models/household_invitation_dto.dart';
+import '../data/models/household_member_dto.dart';
 
 /// 世帯設定画面の状態。
 class HouseholdSettingsState {

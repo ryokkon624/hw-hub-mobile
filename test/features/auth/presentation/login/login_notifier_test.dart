@@ -6,11 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
-import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
+import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/login_response.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/login/login_notifier.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/login/login_state.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

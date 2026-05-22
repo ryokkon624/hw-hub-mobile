@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../core/theme/theme_mode_notifier.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/theme/theme_mode_notifier.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 外観設定セクション（システム連動 / ライト / ダーク の 3 択）。
 ///

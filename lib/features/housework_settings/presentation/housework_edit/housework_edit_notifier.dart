@@ -3,8 +3,6 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../../../features/home/data/models/household_member_dto.dart';
 import '../../housework_settings_providers.dart';
-import '../housework_create/housework_create_state.dart';
-import 'housework_edit_state.dart';
 
 class HouseworkEditNotifier
     extends AutoDisposeFamilyAsyncNotifier<HouseworkEditState, int> {
@@ -220,56 +218,62 @@ class HouseworkEditNotifier
 
     state = AsyncData(current.copyWith(isSaving: true, clearError: true));
 
+    await _runCatching(
+      current,
+      (c) async {
+        final repo = ref.read(houseworkSettingsRepositoryProvider);
+        final form = c.form;
+
+        await repo.updateHousework(
+          houseworkId: houseworkId,
+          householdId: householdId,
+          name: form.name,
+          description: form.description.isEmpty ? null : form.description,
+          category: form.category,
+          recurrenceType: form.recurrenceType,
+          weeklyDays: form.recurrenceType == '1' ? form.weeklyDays : null,
+          dayOfMonth: form.recurrenceType == '2' ? form.dayOfMonth : null,
+          nthWeek: form.recurrenceType == '3' ? form.nthWeek : null,
+          weekday: form.recurrenceType == '3' ? form.weekday : null,
+          startDate: form.startDate,
+          endDate: form.endDate,
+          defaultAssigneeUserId: form.defaultAssigneeUserId,
+        );
+
+        state = AsyncData(
+          c.copyWith(
+            isSaving: false,
+            successMessage: 'houseworkEditSaveSuccess',
+            clearError: true,
+          ),
+        );
+      },
+      onError: (c, msg) =>
+          c.copyWith(isSaving: false, errorMessage: msg, clearSuccess: true),
+    );
+  }
+
+  /// AsyncFamilyNotifier 向けエラーハンドリングヘルパー。
+  Future<void> _runCatching(
+    HouseworkEditState current,
+    Future<void> Function(HouseworkEditState c) operation, {
+    HouseworkEditState Function(HouseworkEditState c, String errorMessage)?
+    onError,
+  }) async {
     try {
-      final repo = ref.read(houseworkSettingsRepositoryProvider);
-      final form = current.form;
-
-      await repo.updateHousework(
-        houseworkId: houseworkId,
-        householdId: householdId,
-        name: form.name,
-        description: form.description.isEmpty ? null : form.description,
-        category: form.category,
-        recurrenceType: form.recurrenceType,
-        weeklyDays: form.recurrenceType == '1' ? form.weeklyDays : null,
-        dayOfMonth: form.recurrenceType == '2' ? form.dayOfMonth : null,
-        nthWeek: form.recurrenceType == '3' ? form.nthWeek : null,
-        weekday: form.recurrenceType == '3' ? form.weekday : null,
-        startDate: form.startDate,
-        endDate: form.endDate,
-        defaultAssigneeUserId: form.defaultAssigneeUserId,
-      );
-
-      state = AsyncData(
-        current.copyWith(
-          isSaving: false,
-          successMessage: 'houseworkEditSaveSuccess',
-          clearError: true,
-        ),
-      );
+      await operation(current);
     } on AppException catch (e) {
       state = AsyncData(
-        current.copyWith(
-          isSaving: false,
-          errorMessage: e.message,
-          clearSuccess: true,
-        ),
+        onError != null
+            ? onError(current, e.message)
+            : current.copyWith(errorMessage: e.message),
       );
     } catch (_) {
       state = AsyncData(
-        current.copyWith(
-          isSaving: false,
-          errorMessage: 'errorUnexpected',
-          clearSuccess: true,
-        ),
+        onError != null
+            ? onError(current, 'errorUnexpected')
+            : current.copyWith(errorMessage: 'errorUnexpected'),
       );
     }
   }
 }
-
-final houseworkEditNotifierProvider =
-    AutoDisposeAsyncNotifierProvider.family<
-      HouseworkEditNotifier,
-      HouseworkEditState,
-      int
-    >(HouseworkEditNotifier.new);

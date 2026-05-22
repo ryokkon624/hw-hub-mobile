@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../core/ui/app_dialog.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/app_dialog.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// AC7: 危険ゾーンセクション（アカウント削除）
 class DangerZoneSection extends StatelessWidget {

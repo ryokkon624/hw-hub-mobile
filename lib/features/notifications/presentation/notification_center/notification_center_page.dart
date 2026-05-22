@@ -5,11 +5,10 @@ import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../core/ui/main_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../notification_global_notifier.dart';
+import '../../notifications_providers.dart';
 import '../widgets/notification_link_navigator.dart';
 import '../widgets/notification_list_item.dart';
 import '../widgets/notification_message_renderer.dart';
-import 'notification_center_notifier.dart';
 
 class NotificationCenterPage extends ConsumerWidget {
   const NotificationCenterPage({super.key});

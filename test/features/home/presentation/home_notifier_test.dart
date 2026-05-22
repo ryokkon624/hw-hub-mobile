@@ -12,7 +12,6 @@ import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dar
 import 'package:hw_hub_mobile/features/home/data/models/housework_task_dto.dart';
 import 'package:hw_hub_mobile/features/home/data/models/shopping_item_dto.dart';
 import 'package:hw_hub_mobile/features/home/home_providers.dart';
-import 'package:hw_hub_mobile/features/home/presentation/home_notifier.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

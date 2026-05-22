@@ -2,12 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'invitation_state.dart';
-
-final invitationNotifierProvider = AsyncNotifierProvider.autoDispose
-    .family<InvitationNotifier, InvitationState, String>(
-      InvitationNotifier.new,
-    );
 
 class InvitationNotifier
     extends AutoDisposeFamilyAsyncNotifier<InvitationState, String> {

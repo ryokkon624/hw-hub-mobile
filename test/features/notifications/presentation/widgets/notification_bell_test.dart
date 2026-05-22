@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hw_hub_mobile/features/notifications/presentation/notification_global_notifier.dart';
+import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
 import 'package:hw_hub_mobile/features/notifications/presentation/widgets/notification_bell.dart';
 import 'package:hw_hub_mobile/features/notifications/presentation/widgets/notification_popover.dart';
-import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
 import 'package:hw_hub_mobile/features/notifications/data/notification_repository.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';

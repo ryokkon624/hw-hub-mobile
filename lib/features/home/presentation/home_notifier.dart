@@ -3,14 +3,8 @@ import '../../../core/auth/auth_state.dart';
 import '../../../core/di/providers.dart';
 import '../data/models/home_raw_data.dart';
 import '../home_providers.dart';
-import 'home_state.dart';
 import 'models/household_member.dart';
 import 'models/shopping_item.dart';
-
-final homeNotifierProvider =
-    AsyncNotifierProvider.autoDispose<HomeNotifier, HomeState>(
-      HomeNotifier.new,
-    );
 
 class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
   @override

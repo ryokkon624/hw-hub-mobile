@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
+import '../../../core/theme/app_color_scheme.dart';
 
 /// 設定トップ画面の各設定カード。
 ///

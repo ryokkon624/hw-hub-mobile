@@ -7,7 +7,6 @@ import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/housework_settings/data/housework_settings_repository.dart';
 import 'package:hw_hub_mobile/features/housework_settings/housework_settings_providers.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_create/housework_create_notifier.dart';
 
 class _FakeHouseholdNotifier extends HouseholdNotifier {
   @override

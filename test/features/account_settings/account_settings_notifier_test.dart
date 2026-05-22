@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_notifier.dart';
@@ -7,7 +6,6 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_notifier.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 

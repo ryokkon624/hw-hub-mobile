@@ -6,8 +6,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/ui/app_snack_bar.dart';
 import '../../../core/ui/main_app_bar.dart';
 import '../../../l10n/app_localizations.dart';
-import 'my_tasks_notifier.dart';
-import 'my_tasks_state.dart';
+import '../my_tasks_providers.dart';
 import 'widgets/future_tasks_section.dart';
 import 'widgets/past_tasks_section.dart';
 

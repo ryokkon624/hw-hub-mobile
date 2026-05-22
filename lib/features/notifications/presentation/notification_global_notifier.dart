@@ -35,8 +35,3 @@ class NotificationGlobalNotifier extends Notifier<NotificationGlobalState> {
     state = state.copyWith(unreadCount: 0);
   }
 }
-
-final notificationGlobalNotifierProvider =
-    NotifierProvider<NotificationGlobalNotifier, NotificationGlobalState>(
-      NotificationGlobalNotifier.new,
-    );

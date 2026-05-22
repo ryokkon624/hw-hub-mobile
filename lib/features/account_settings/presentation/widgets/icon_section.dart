@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../core/ui/user_avatar.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/user_avatar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// AC4: プロフィール画像セクション（image_picker + S3 PUT）
 class IconSection extends StatelessWidget {

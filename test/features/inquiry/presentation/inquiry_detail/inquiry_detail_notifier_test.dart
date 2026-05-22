@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/inquiry/data/inquiry_repository.dart';
 import 'package:hw_hub_mobile/features/inquiry/inquiry_providers.dart';
-import 'package:hw_hub_mobile/features/inquiry/presentation/inquiry_detail/inquiry_detail_notifier.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../inquiry_mocks.mocks.dart';
