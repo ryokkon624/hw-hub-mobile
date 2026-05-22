@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../household_settings_notifier.dart';
 
@@ -91,33 +92,21 @@ class DangerZoneSection extends ConsumerWidget {
 
     if (!context.mounted) return;
 
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.householdSettingsDeleteHouseholdConfirmTitle),
-        content: Text(
-          l10n.householdSettingsDeleteHouseholdConfirmBody(
-            houseworkCount,
-            shoppingCount,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref
-                  .read(householdSettingsNotifierProvider.notifier)
-                  .deleteHousehold();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(l10n.householdSettingsDeleteHouseholdButton),
-          ),
-        ],
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.householdSettingsDeleteHouseholdConfirmTitle,
+      message: l10n.householdSettingsDeleteHouseholdConfirmBody(
+        houseworkCount,
+        shoppingCount,
       ),
+      confirmLabel: l10n.householdSettingsDeleteHouseholdButton,
+      cancelLabel: l10n.commonCancel,
+      isDanger: true,
     );
+    if (confirmed) {
+      await ref
+          .read(householdSettingsNotifierProvider.notifier)
+          .deleteHousehold();
+    }
   }
 }

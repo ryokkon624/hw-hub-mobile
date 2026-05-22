@@ -122,7 +122,7 @@ class _ListModePage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   OutlinedButton(
                     onPressed: () async {
-                      final confirmed = await BulkSkipDialog.show(
+                      final confirmed = await showBulkSkipDialog(
                         context,
                         count: pastUnassigned.length,
                       );

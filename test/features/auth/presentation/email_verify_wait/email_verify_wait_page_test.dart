@@ -128,6 +128,7 @@ void main() {
               () => _ResentSuccessNotifier(),
             ),
           ],
+          withSnackBarKey: true,
         ),
       );
       await tester.pump();
@@ -145,6 +146,7 @@ void main() {
               () => _ErrorMessageNotifier(),
             ),
           ],
+          withSnackBarKey: true,
         ),
       );
       await tester.pump();

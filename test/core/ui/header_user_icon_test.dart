@@ -151,9 +151,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // 確認ダイアログが表示される
-      expect(find.byKey(const Key('logoutConfirmDialog')), findsOneWidget);
-      expect(find.byKey(const Key('logoutConfirmButton')), findsOneWidget);
-      expect(find.byKey(const Key('logoutCancelButton')), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      // AppDialog.confirm はキャンセル/確認の2つの TextButton を表示する
+      expect(find.byType(TextButton), findsNWidgets(2));
     });
 
     testWidgets('AuthUnauthenticated の場合でも表示エラーが発生しない', (tester) async {

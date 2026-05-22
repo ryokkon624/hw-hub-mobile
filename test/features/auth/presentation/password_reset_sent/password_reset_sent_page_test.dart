@@ -48,6 +48,7 @@ void main() {
               () => _ResentSuccessPasswordResetSentNotifier(),
             ),
           ],
+          withSnackBarKey: true,
         ),
       );
       await tester.pump();

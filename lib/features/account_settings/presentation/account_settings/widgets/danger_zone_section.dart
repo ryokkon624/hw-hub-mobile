@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_color_scheme.dart';
+import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// AC7: 危険ゾーンセクション（アカウント削除）
@@ -18,25 +19,15 @@ class DangerZoneSection extends StatelessWidget {
     BuildContext context,
     AppLocalizations l10n,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.accountSettingsDeleteAccountConfirmTitle),
-        content: Text(l10n.accountSettingsDeleteAccountConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.accountSettingsDeleteAccountCancelButton),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.accountSettingsDeleteAccountConfirmButton),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: l10n.accountSettingsDeleteAccountConfirmTitle,
+      message: l10n.accountSettingsDeleteAccountConfirmBody,
+      confirmLabel: l10n.accountSettingsDeleteAccountConfirmButton,
+      cancelLabel: l10n.accountSettingsDeleteAccountCancelButton,
+      isDanger: true,
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await onDelete();
     }
   }
