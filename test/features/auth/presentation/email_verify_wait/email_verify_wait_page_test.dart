@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_notifier.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_page.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_state.dart';
+import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 
@@ -48,7 +49,10 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('確認メールを送信しました'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(EmailVerifyWaitPage)),
+      );
+      expect(find.text(l10n.emailVerifyWaitTitle), findsOneWidget);
       expect(find.textContaining('test@example.com'), findsOneWidget);
     });
 
@@ -58,9 +62,12 @@ void main() {
       );
       await tester.pump();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(EmailVerifyWaitPage)),
+      );
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(button.onPressed, isNotNull);
-      expect(find.text('確認メールを再送'), findsOneWidget);
+      expect(find.text(l10n.emailVerifyWaitResendButton), findsOneWidget);
     });
 
     testWidgets('送信中: 再送ボタンが無効になる', (tester) async {
@@ -93,9 +100,12 @@ void main() {
       );
       await tester.pump();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(EmailVerifyWaitPage)),
+      );
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(button.onPressed, isNull);
-      expect(find.text('再送（30秒後に再試行）'), findsOneWidget);
+      expect(find.text(l10n.emailVerifyWaitResendCooldown(30)), findsOneWidget);
     });
 
     testWidgets('メールアドレスが空のとき/signupに遷移する', (tester) async {
@@ -134,7 +144,10 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('確認メールを再送しました'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(EmailVerifyWaitPage)),
+      );
+      expect(find.text(l10n.emailVerifyWaitAlertResent), findsOneWidget);
     });
 
     testWidgets('エラー発生: エラーSnackBarが表示される', (tester) async {

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/password_reset_sent/password_reset_sent_notifier.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/password_reset_sent/password_reset_sent_page.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/password_reset_sent/password_reset_sent_state.dart';
+import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 
@@ -24,7 +25,10 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('メールを確認してください'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PasswordResetSentPage)),
+      );
+      expect(find.text(l10n.passwordResetSentTitle), findsOneWidget);
       expect(find.text('(test@example.com)'), findsOneWidget);
     });
 
@@ -34,9 +38,12 @@ void main() {
       );
       await tester.pump();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PasswordResetSentPage)),
+      );
       final button = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(button.onPressed, isNotNull);
-      expect(find.text('メールを再送'), findsOneWidget);
+      expect(find.text(l10n.passwordResetSentResend), findsOneWidget);
     });
 
     testWidgets('resentSuccessがtrueになるとSnackBarが表示される', (tester) async {
@@ -54,7 +61,10 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('メールを再送しました'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PasswordResetSentPage)),
+      );
+      expect(find.text(l10n.passwordResetSentResendSuccess), findsOneWidget);
     });
 
     testWidgets('AppBarの戻るボタンタップで/forgot-passwordに遷移する', (tester) async {
@@ -103,7 +113,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('別のメールアドレスを使う'));
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PasswordResetSentPage)),
+      );
+      await tester.tap(find.text(l10n.passwordResetSentUseDifferentEmail));
       await tester.pumpAndSettle();
 
       expect(find.text('forgot-password-page'), findsOneWidget);
@@ -128,7 +141,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('ログインへ戻る'));
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PasswordResetSentPage)),
+      );
+      await tester.tap(find.text(l10n.passwordResetSentBackToLogin));
       await tester.pumpAndSettle();
 
       expect(find.text('login-page'), findsOneWidget);

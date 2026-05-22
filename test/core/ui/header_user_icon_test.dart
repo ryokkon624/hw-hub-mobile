@@ -7,6 +7,7 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/ui/header_user_icon.dart';
 import 'package:hw_hub_mobile/core/ui/user_avatar.dart';
+import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../helpers/widget_test_helpers.dart';
 
@@ -198,14 +199,17 @@ void main() {
       await tester.pump();
       await tester.pump();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(HeaderUserIcon)),
+      );
       await tester.tap(find.byType(UserAvatar));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('ログアウト'));
+      await tester.tap(find.text(l10n.commonLogout));
       await tester.pumpAndSettle();
 
       // キャンセルをタップ
-      await tester.tap(find.text('キャンセル'));
+      await tester.tap(find.text(l10n.commonCancel));
       await tester.pumpAndSettle();
 
       // ダイアログが閉じる
@@ -242,14 +246,17 @@ void main() {
       await tester.pump();
       await tester.pump();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(HeaderUserIcon)),
+      );
       await tester.tap(find.byType(UserAvatar));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('ログアウト'));
+      await tester.tap(find.text(l10n.commonLogout));
       await tester.pumpAndSettle();
 
       // はいをタップ
-      await tester.tap(find.text('はい'));
+      await tester.tap(find.text(l10n.commonYes));
       await tester.pumpAndSettle();
 
       expect(logoutCalled, isTrue);

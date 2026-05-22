@@ -73,6 +73,7 @@ class BasketTab extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return Padding(
+                        key: ValueKey(item.shoppingItemId),
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.md,
                           vertical: AppSpacing.xs,
