@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
+import 'package:hw_hub_mobile/core/household/household_notifier.dart';
+import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/core/storage/storage_keys.dart';
@@ -17,6 +19,17 @@ const _testUser = AuthUser(
   email: 'test@example.com',
   displayName: 'テスト',
 );
+
+/// HouseholdNotifier のフェイク実装（build呼び出し回数を記録する）
+class _TrackingHouseholdNotifier extends HouseholdNotifier {
+  int buildCount = 0;
+
+  @override
+  Future<HouseholdState> build() async {
+    buildCount++;
+    return const HouseholdState(households: [], selectedHousehold: null);
+  }
+}
 
 void main() {
   late MockFlutterSecureStorage mockStorage;
@@ -146,5 +159,74 @@ void main() {
       final prefsAfterLogout = await SharedPreferences.getInstance();
       expect(prefsAfterLogout.getInt(StorageKeys.selectedHouseholdId), isNull);
     });
+
+    test('saveTokens() → householdNotifierProvider が再ビルドされる', () async {
+      // logout() → エラー状態になった HouseholdNotifier が
+      // saveTokens() 後に invalidate されて正常に再ビルドされることを検証する
+      final trackingNotifier = _TrackingHouseholdNotifier();
+
+      final container = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(mockStorage),
+          authRepositoryProvider.overrideWithValue(mockAuthRepo),
+          householdNotifierProvider.overrideWith(() => trackingNotifier),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // householdNotifierProvider を初期化（build が1回目）
+      await container.read(authNotifierProvider.future);
+      await container.read(householdNotifierProvider.future);
+      final buildCountBeforeSave = trackingNotifier.buildCount;
+      expect(buildCountBeforeSave, greaterThanOrEqualTo(1));
+
+      // saveTokens() を呼ぶ
+      await container
+          .read(authNotifierProvider.notifier)
+          .saveTokens(
+            accessToken: 'access-jwt',
+            refreshToken: 'refresh-jwt',
+            user: _testUser,
+          );
+
+      // householdNotifierProvider が invalidate され再ビルドされていること
+      await container.read(householdNotifierProvider.future);
+      expect(trackingNotifier.buildCount, greaterThan(buildCountBeforeSave));
+    });
+
+    test(
+      'logout() → householdNotifierProvider はエラー状態にならない（invalidate不要）',
+      () async {
+        // logout() でトークンなしの状態で HouseholdNotifier.build() が走ると
+        // 401エラーになりエラー状態になる。logout()ではinvalidateしないことを確認する。
+        when(
+          mockStorage.read(key: anyNamed('key')),
+        ).thenAnswer((_) async => 'some-token');
+        when(mockAuthRepo.getMyProfile()).thenAnswer((_) async => _testUser);
+
+        final trackingNotifier = _TrackingHouseholdNotifier();
+
+        final container = ProviderContainer(
+          overrides: [
+            secureStorageProvider.overrideWithValue(mockStorage),
+            authRepositoryProvider.overrideWithValue(mockAuthRepo),
+            householdNotifierProvider.overrideWith(() => trackingNotifier),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // 認証済み状態にする
+        await container.read(authNotifierProvider.future);
+        await container.read(householdNotifierProvider.future);
+        final buildCountBeforeLogout = trackingNotifier.buildCount;
+
+        // logout() を呼ぶ
+        await container.read(authNotifierProvider.notifier).logout();
+
+        // logout() は householdNotifierProvider を invalidate しないため
+        // build() が追加で呼ばれないこと
+        expect(trackingNotifier.buildCount, buildCountBeforeLogout);
+      },
+    );
   });
 }

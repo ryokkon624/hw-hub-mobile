@@ -6,8 +6,6 @@ import 'auth_state.dart';
 import '../di/providers.dart';
 import '../storage/storage_keys.dart';
 import '../../features/auth/auth_providers.dart';
-import '../../features/home/presentation/home_notifier.dart';
-import '../../features/housework_assign/presentation/housework_assign_notifier.dart';
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
@@ -35,6 +33,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         .read(tokenStorageProvider)
         .saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     state = AsyncData(AuthAuthenticated(user));
+    // ログイン成功後に householdNotifierProvider を invalidate して
+    // 新しいユーザーのトークンで世帯リストを再取得させる。
+    // HouseholdNotifier を watch している HomeNotifier 等も自動的に再ビルドされる。
+    ref.invalidate(householdNotifierProvider);
   }
 
   Future<void> logout() async {
@@ -45,15 +47,15 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     await prefs.remove(StorageKeys.selectedHouseholdId);
 
     // 先に未認証状態にセットする。
-    // これにより、後続の invalidate で各 Notifier が build() を再実行して
-    // API を呼んでも、AuthInterceptor が 401 を受け取った際に
+    // これにより、AuthInterceptor が 401 を受け取った際に
     // 既に AuthUnauthenticated 状態であることを検出して logout() 再入を防ぐ。
     state = const AsyncData(AuthUnauthenticated());
 
-    // 世帯・各一覧 Provider をリセットして別ユーザーでのログイン後に前ユーザーのデータが残らないようにする
-    ref.invalidate(householdNotifierProvider);
-    ref.invalidate(homeNotifierProvider);
-    ref.invalidate(houseworkAssignNotifierProvider);
+    // householdNotifierProvider はここでは invalidate しない。
+    // トークンクリア後に invalidate するとトークンなしでビルドが走り 401 エラー状態になる。
+    // その後 saveTokens() を呼んでも HouseholdNotifier がエラー状態のまま残ってしまう。
+    // 代わりに saveTokens()（ログイン成功時）で invalidate することで
+    // 新ユーザーのトークンで正常にビルドされる。
   }
 
   // iOSはアプリ削除後もKeychain（SecureStorage）が残るため、
