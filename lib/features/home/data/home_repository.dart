@@ -20,16 +20,18 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<HomeRawData> loadAll(int householdId) async {
     try {
       final results = await Future.wait([
-        _dio.get<dynamic>('/api/households/$householdId/members'),
-        _dio.get<dynamic>(
+        _dio.get<List<dynamic>>('/api/households/$householdId/members'),
+        _dio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': householdId, 'status': '0'},
         ),
-        _dio.get<dynamic>(
+        _dio.get<List<dynamic>>(
           '/api/housework-tasks',
           queryParameters: {'householdId': householdId, 'status': '1'},
         ),
-        _dio.get<dynamic>('/api/households/$householdId/shopping-items'),
+        _dio.get<Map<String, dynamic>>(
+          '/api/households/$householdId/shopping-items',
+        ),
       ]);
 
       final members = (results[0].data as List<dynamic>)

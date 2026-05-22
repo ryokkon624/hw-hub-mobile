@@ -28,7 +28,7 @@ class HouseworkAssignRepositoryImpl implements HouseworkAssignRepository {
   @override
   Future<List<HouseworkTaskDto>> fetchTasks({required int householdId}) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/housework-tasks',
         queryParameters: {
           'householdId': householdId,
@@ -49,7 +49,7 @@ class HouseworkAssignRepositoryImpl implements HouseworkAssignRepository {
     required int householdId,
   }) async {
     try {
-      final response = await _dio.get<dynamic>(
+      final response = await _dio.get<List<dynamic>>(
         '/api/households/$householdId/members',
       );
       return (response.data as List<dynamic>)
