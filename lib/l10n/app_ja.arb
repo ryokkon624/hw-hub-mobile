@@ -260,6 +260,8 @@
   "homeOverviewTitle": "おうちの様子",
   "homeOverviewSubtitle": "家事の実施状況",
   "homeOverviewUnassigned": "未割り当て",
+  "homeOverviewEmpty": "まだデータがありません。家事テンプレートを登録し、家事割り当てを行うとここに表示されます。",
+  "homeOverviewTooltipNoData": "データなし",
 
   "homeOnboardingTitle": "ようこそ！",
   "homeOnboardingMessage": "まずはおうちを設定して、家事を登録してみましょう。",

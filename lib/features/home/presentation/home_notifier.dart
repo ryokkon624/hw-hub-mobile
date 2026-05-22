@@ -42,6 +42,9 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
     final myTasksSummary = _calcMyTasksSummary(raw, todayDate, currentUserId);
     final unassignedSummary = _calcUnassignedSummary(raw, todayDate);
     final householdOverview = _calcDailyOverview(raw, todayDate);
+    final hasOverviewData = householdOverview.any(
+      (d) => d.countsByAssignee.values.any((c) => c > 0),
+    );
 
     // DTOからプレゼンテーション用モデルに変換
     final shoppingItems = raw.shoppingItems
@@ -74,6 +77,7 @@ class HomeNotifier extends AutoDisposeAsyncNotifier<HomeState> {
       householdOverview: householdOverview,
       members: members,
       hasHousehold: true,
+      hasOverviewData: hasOverviewData,
     );
   }
 

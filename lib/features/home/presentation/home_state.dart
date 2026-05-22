@@ -9,6 +9,7 @@ class HomeState {
     this.householdOverview = const [],
     this.members = const [],
     this.hasHousehold = false,
+    this.hasOverviewData = false,
     this.isLoading = false,
     this.errorMessage,
   });
@@ -19,6 +20,9 @@ class HomeState {
   final List<DailyOverview> householdOverview;
   final List<HouseholdMember> members;
   final bool hasHousehold;
+
+  /// householdOverview に1件以上のタスクが存在するか（棒グラフの空状態表示制御用）
+  final bool hasOverviewData;
   final bool isLoading;
   final String? errorMessage;
 
@@ -29,6 +33,7 @@ class HomeState {
     List<DailyOverview>? householdOverview,
     List<HouseholdMember>? members,
     bool? hasHousehold,
+    bool? hasOverviewData,
     bool? isLoading,
     String? errorMessage,
     bool clearError = false,
@@ -40,6 +45,7 @@ class HomeState {
       householdOverview: householdOverview ?? this.householdOverview,
       members: members ?? this.members,
       hasHousehold: hasHousehold ?? this.hasHousehold,
+      hasOverviewData: hasOverviewData ?? this.hasOverviewData,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../home_state.dart';
 import '../models/household_member.dart';
+import 'overview_tooltip_builder.dart';
 
 /// メンバーカラーパレット（AppColorScheme のトークンから生成）
 List<Color> _buildMemberColors(AppColorScheme colors) => [
@@ -21,10 +22,14 @@ class HouseholdOverviewCard extends StatelessWidget {
     super.key,
     required this.overview,
     required this.members,
+    required this.hasOverviewData,
   });
 
   final List<DailyOverview> overview;
   final List<HouseholdMember> members;
+
+  /// 全期間でタスクが1件以上存在するかどうか。falseの場合は空状態を表示する。
+  final bool hasOverviewData;
 
   @override
   Widget build(BuildContext context) {
@@ -73,32 +78,47 @@ class HouseholdOverviewCard extends StatelessWidget {
               ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
             ),
             const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              height: 160,
-              child: _OverviewChart(
-                overview: overview,
-                memberColorMap: memberColorMap,
-                unassignedColor: unassignedColor,
+            if (!hasOverviewData)
+              Container(
+                key: const Key('overviewEmpty'),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: Text(
+                  l10n.homeOverviewEmpty,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else ...[
+              SizedBox(
+                height: 160,
+                child: _OverviewChart(
+                  overview: overview,
+                  memberColorMap: memberColorMap,
+                  unassignedColor: unassignedColor,
+                  members: members,
+                ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            // 凡例
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.xs,
-              children: [
-                ...members.map(
-                  (m) => _LegendDot(
-                    color: memberColorMap[m.userId] ?? unassignedColor,
-                    label: m.nickname ?? m.displayName,
+              const SizedBox(height: AppSpacing.sm),
+              // 凡例
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  ...members.map(
+                    (m) => _LegendDot(
+                      color: memberColorMap[m.userId] ?? unassignedColor,
+                      label: m.nickname ?? m.displayName,
+                    ),
                   ),
-                ),
-                _LegendDot(
-                  color: unassignedColor,
-                  label: l10n.homeOverviewUnassigned,
-                ),
-              ],
-            ),
+                  _LegendDot(
+                    color: unassignedColor,
+                    label: l10n.homeOverviewUnassigned,
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -111,16 +131,21 @@ class _OverviewChart extends StatelessWidget {
     required this.overview,
     required this.memberColorMap,
     required this.unassignedColor,
+    required this.members,
   });
 
   final List<DailyOverview> overview;
   final Map<int, Color> memberColorMap;
   final Color unassignedColor;
+  final List<HouseholdMember> members;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final l10n = AppLocalizations.of(context);
     final groups = <BarChartGroupData>[];
+    double maxY = 0;
+
     for (var i = 0; i < overview.length; i++) {
       final day = overview[i];
       final rodStackItems = <BarChartRodStackItem>[];
@@ -145,6 +170,8 @@ class _OverviewChart extends StatelessWidget {
         );
         fromY += unassignedCount;
       }
+
+      if (fromY > maxY) maxY = fromY;
 
       groups.add(
         BarChartGroupData(
@@ -171,8 +198,13 @@ class _OverviewChart extends StatelessWidget {
       );
     }
 
+    // maxYを明示的に設定することで、0件日のバーがMAX表示になるのを防ぐ
+    // maxが0の場合でも1以上を設定して軸が崩れないようにする
+    final chartMaxY = maxY > 0 ? maxY : 1.0;
+
     return BarChart(
       BarChartData(
+        maxY: chartMaxY,
         barGroups: groups,
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
@@ -228,7 +260,30 @@ class _OverviewChart extends StatelessWidget {
             ),
           ),
         ),
-        barTouchData: BarTouchData(enabled: false),
+        barTouchData: BarTouchData(
+          enabled: true,
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => colors.surfaceCard,
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              if (group.x < 0 || group.x >= overview.length) return null;
+              final day = overview[group.x];
+              final lines = buildTooltipLines(
+                day,
+                members,
+                unassignedLabel: l10n.homeOverviewUnassigned,
+                noDataLabel: l10n.homeOverviewTooltipNoData,
+              );
+              if (lines.isEmpty) return null;
+              return BarTooltipItem(
+                lines.join('\n'),
+                Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: colors.textBody) ??
+                    const TextStyle(),
+              );
+            },
+          ),
+        ),
         groupsSpace: 4,
       ),
     );
