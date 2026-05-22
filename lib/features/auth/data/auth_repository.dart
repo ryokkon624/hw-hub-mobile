@@ -80,7 +80,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      return await _api.login({'email': email, 'password': password});
+      final resp = await _api.login({'email': email, 'password': password});
+      return _applyS3UrlToLoginResponse(resp);
     } on DioException catch (e) {
       throw _convert(e);
     }
@@ -89,10 +90,27 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<LoginResponse> googleLoginMobile({required String idToken}) async {
     try {
-      return await _api.googleLoginMobile({'idToken': idToken});
+      final resp = await _api.googleLoginMobile({'idToken': idToken});
+      return _applyS3UrlToLoginResponse(resp);
     } on DioException catch (e) {
       throw _convert(e);
     }
+  }
+
+  /// LoginResponse の user.iconUrl を S3UrlResolver で変換した LoginResponse を返す。
+  LoginResponse _applyS3UrlToLoginResponse(LoginResponse resp) {
+    final resolvedIconUrl = _s3UrlResolver.resolve(resp.user.iconUrl);
+    if (resolvedIconUrl == resp.user.iconUrl) return resp;
+    return LoginResponse(
+      accessToken: resp.accessToken,
+      refreshToken: resp.refreshToken,
+      user: AuthUser(
+        userId: resp.user.userId,
+        email: resp.user.email,
+        displayName: resp.user.displayName,
+        iconUrl: resolvedIconUrl,
+      ),
+    );
   }
 
   @override

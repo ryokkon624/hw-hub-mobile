@@ -30,7 +30,7 @@ void main() {
 
   group('AuthRepositoryImpl', () {
     group('login', () {
-      test('成功時にLoginResponseを返す', () async {
+      test('成功時にLoginResponseを返す（iconUrl なし）', () async {
         const resp = LoginResponse(
           accessToken: 'access',
           refreshToken: 'refresh',
@@ -38,7 +38,29 @@ void main() {
         );
         when(mockApi.login(any)).thenAnswer((_) async => resp);
 
-        expect(await sut.login(email: 'a@b.com', password: 'pass'), resp);
+        final result = await sut.login(email: 'a@b.com', password: 'pass');
+        expect(result.accessToken, 'access');
+        expect(result.refreshToken, 'refresh');
+        expect(result.user.userId, 1);
+        expect(result.user.iconUrl, isNull);
+      });
+
+      test('成功時: iconUrl が localhost URL の場合に 10.0.2.2 に変換される', () async {
+        const resp = LoginResponse(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          user: AuthUser(
+            userId: 1,
+            email: 'a@b.com',
+            displayName: 'A',
+            iconUrl: 'http://localhost:4566/hw-hub-bucket/user-icon/1/icon.jpg',
+          ),
+        );
+        when(mockApi.login(any)).thenAnswer((_) async => resp);
+
+        final result = await sut.login(email: 'a@b.com', password: 'pass');
+        expect(result.user.iconUrl, contains('10.0.2.2'));
+        expect(result.user.iconUrl, isNot(contains('localhost')));
       });
 
       test('DioExceptionにAppExceptionが含まれる場合はそのまま再throw', () {
@@ -155,7 +177,7 @@ void main() {
     });
 
     group('googleLoginMobile', () {
-      test('成功時にLoginResponseを返す', () async {
+      test('成功時にLoginResponseを返す（iconUrl なし）', () async {
         const resp = LoginResponse(
           accessToken: 'access',
           refreshToken: 'refresh',
@@ -163,7 +185,29 @@ void main() {
         );
         when(mockApi.googleLoginMobile(any)).thenAnswer((_) async => resp);
 
-        expect(await sut.googleLoginMobile(idToken: 'id-token'), resp);
+        final result = await sut.googleLoginMobile(idToken: 'id-token');
+        expect(result.accessToken, 'access');
+        expect(result.refreshToken, 'refresh');
+        expect(result.user.userId, 1);
+        expect(result.user.iconUrl, isNull);
+      });
+
+      test('成功時: iconUrl が localhost URL の場合に 10.0.2.2 に変換される', () async {
+        const resp = LoginResponse(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          user: AuthUser(
+            userId: 1,
+            email: 'a@b.com',
+            displayName: 'A',
+            iconUrl: 'http://localhost:4566/hw-hub-bucket/user-icon/1/icon.jpg',
+          ),
+        );
+        when(mockApi.googleLoginMobile(any)).thenAnswer((_) async => resp);
+
+        final result = await sut.googleLoginMobile(idToken: 'id-token');
+        expect(result.user.iconUrl, contains('10.0.2.2'));
+        expect(result.user.iconUrl, isNot(contains('localhost')));
       });
 
       test('DioException → NetworkException', () {
