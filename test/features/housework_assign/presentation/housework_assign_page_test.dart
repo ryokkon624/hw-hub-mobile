@@ -7,7 +7,7 @@ import 'package:hw_hub_mobile/features/home/data/models/household_member_dto.dar
 import 'package:hw_hub_mobile/features/housework_assign/housework_assign_providers.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_page.dart';
 import 'package:hw_hub_mobile/features/housework_assign/presentation/widgets/swipe_date_calendar.dart';
-import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/models/housework_task_dto.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../helpers/widget_test_helpers.dart';

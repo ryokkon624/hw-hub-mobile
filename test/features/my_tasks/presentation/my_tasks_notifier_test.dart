@@ -8,9 +8,9 @@ import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/models/task_status.dart';
-import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
-import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart';
-import 'package:hw_hub_mobile/features/tasks/my_tasks_providers.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/models/housework_task_dto.dart';
+import 'package:hw_hub_mobile/features/my_tasks/data/my_tasks_repository.dart';
+import 'package:hw_hub_mobile/features/my_tasks/my_tasks_providers.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
