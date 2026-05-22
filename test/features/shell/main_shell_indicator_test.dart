@@ -65,6 +65,21 @@ GoRouter _buildRouter(String initialLocation) {
               ),
             ],
           ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (_, _) => const Scaffold(body: Text('settings-top')),
+                routes: [
+                  GoRoute(
+                    path: 'household',
+                    builder: (_, _) =>
+                        const Scaffold(body: Text('settings-household')),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     ],
@@ -115,6 +130,37 @@ void main() {
       expect(find.text('shopping-new'), findsOneWidget);
       // HouseholdIndicatorBar が非表示（世帯名が表示されない）
       expect(find.text('我が家'), findsNothing);
+    });
+
+    testWidgets(
+      'おうち設定画面（/settings/household）では HouseholdIndicatorBar が非表示になる（#133）',
+      (tester) async {
+        final router = _buildRouter('/shopping');
+        await tester.pumpWidget(_buildApp(router));
+        await tester.pumpAndSettle();
+        await tester.pump();
+
+        // /settings/household に遷移
+        router.go('/settings/household');
+        await tester.pumpAndSettle();
+
+        expect(find.text('settings-household'), findsOneWidget);
+        // HouseholdIndicatorBar が非表示（世帯名が表示されない）
+        expect(find.text('我が家'), findsNothing);
+      },
+    );
+
+    testWidgets('設定トップ（/settings）では HouseholdIndicatorBar が表示される（#133）', (
+      tester,
+    ) async {
+      final router = _buildRouter('/settings');
+      await tester.pumpWidget(_buildApp(router));
+      await tester.pumpAndSettle();
+      await tester.pump();
+
+      expect(find.text('settings-top'), findsOneWidget);
+      // 設定トップは非表示対象外なのでインジケーターは表示される
+      expect(find.byType(HouseholdIndicatorBar), findsOneWidget);
     });
 
     testWidgets('買い物アイテム詳細（/shopping/:id）では HouseholdIndicatorBar が非表示になる', (
