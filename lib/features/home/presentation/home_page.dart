@@ -88,6 +88,7 @@ class _HomeBody extends ConsumerWidget {
           HouseholdOverviewCard(
             overview: state.householdOverview,
             members: state.members,
+            hasOverviewData: state.hasOverviewData,
           ),
           const SizedBox(height: AppSpacing.lg),
         ],

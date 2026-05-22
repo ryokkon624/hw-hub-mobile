@@ -260,6 +260,8 @@
   "homeOverviewTitle": "Household Overview",
   "homeOverviewSubtitle": "Task completion status",
   "homeOverviewUnassigned": "Unassigned",
+  "homeOverviewEmpty": "No data to display yet. Create templates and assign housework to see the overview here.",
+  "homeOverviewTooltipNoData": "No data",
 
   "homeOnboardingTitle": "Welcome!",
   "homeOnboardingMessage": "Start by setting up your household and adding housework tasks.",

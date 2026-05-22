@@ -260,6 +260,8 @@
   "homeOverviewTitle": "Resumen del Hogar",
   "homeOverviewSubtitle": "Estado de completado de tareas",
   "homeOverviewUnassigned": "Sin asignar",
+  "homeOverviewEmpty": "Aún no hay datos. Crea plantillas y asigna tareas para ver el resumen aquí.",
+  "homeOverviewTooltipNoData": "Sin datos",
 
   "homeOnboardingTitle": "¡Bienvenido!",
   "homeOnboardingMessage": "Empiece configurando su hogar y añadiendo tareas del hogar.",
