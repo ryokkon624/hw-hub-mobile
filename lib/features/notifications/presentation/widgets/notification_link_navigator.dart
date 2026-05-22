@@ -20,6 +20,13 @@ abstract class NotificationLinkNavigator {
     final type = NotificationLinkType.fromCode(linkType);
     if (type == null || type == NotificationLinkType.none) return;
 
+    // 通知センター（/notifications）から遷移する場合、シェル外Navigatorとシェル内Navigatorで
+    // HeroControllerキーが重複しアサーション失敗するため、先にpopしてから遷移先へpushする。
+    final currentLocation = GoRouterState.of(context).matchedLocation;
+    if (currentLocation == AppRoutes.notifications && context.canPop()) {
+      context.pop();
+    }
+
     switch (type) {
       case NotificationLinkType.myTasks:
         context.push(AppRoutes.tasks);
