@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
-import '../notification_global_notifier.dart';
+import '../../notifications_providers.dart';
 import 'notification_popover.dart';
 
 /// ヘッダー用のベルアイコン。

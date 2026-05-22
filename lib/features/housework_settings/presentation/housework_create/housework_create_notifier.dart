@@ -4,7 +4,6 @@ import '../../../../core/network/app_exception.dart';
 import '../../data/models/housework_template_dto.dart';
 import '../../housework_settings_providers.dart';
 import '../../../../features/home/data/models/household_member_dto.dart';
-import 'housework_create_state.dart';
 
 class HouseworkCreateNotifier
     extends AutoDisposeAsyncNotifier<HouseworkCreateState> {
@@ -316,9 +315,3 @@ class HouseworkCreateNotifier
     }
   }
 }
-
-final houseworkCreateNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      HouseworkCreateNotifier,
-      HouseworkCreateState
-    >(HouseworkCreateNotifier.new);

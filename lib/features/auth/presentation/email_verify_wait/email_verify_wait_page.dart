@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app_router.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'email_verify_wait_notifier.dart';
+import '../../auth_providers.dart';
 
 class EmailVerifyWaitPage extends ConsumerWidget {
   const EmailVerifyWaitPage({super.key, required this.email});

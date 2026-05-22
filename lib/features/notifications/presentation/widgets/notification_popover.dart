@@ -9,7 +9,6 @@ import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/notification_repository.dart';
 import '../../notifications_providers.dart';
-import '../notification_global_notifier.dart';
 import 'notification_link_navigator.dart';
 import 'notification_list_item.dart';
 import 'notification_message_renderer.dart';

@@ -7,7 +7,7 @@ import '../../../../app_router.dart';
 import '../../../../core/auth/auth_state.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'invitation_notifier.dart';
+import '../../auth_providers.dart';
 
 class InvitationPage extends ConsumerWidget {
   const InvitationPage({super.key, required this.token});

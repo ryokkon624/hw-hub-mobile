@@ -5,8 +5,7 @@ import '../../../../app_router.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'housework_list_notifier.dart';
-import 'housework_list_state.dart';
+import '../../housework_settings_providers.dart';
 import 'widgets/housework_card.dart';
 
 /// 家事設定一覧画面（#20）。

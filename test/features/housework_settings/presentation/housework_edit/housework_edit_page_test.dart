@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_create/housework_create_state.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_edit/housework_edit_notifier.dart';
+import 'package:hw_hub_mobile/features/housework_settings/housework_settings_providers.dart';
 import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_edit/housework_edit_page.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_edit/housework_edit_state.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_list/housework_list_notifier.dart';
-import 'package:hw_hub_mobile/features/housework_settings/presentation/housework_list/housework_list_state.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

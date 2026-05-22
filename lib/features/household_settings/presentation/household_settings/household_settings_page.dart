@@ -6,7 +6,7 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'household_settings_notifier.dart';
+import '../../household_settings_providers.dart';
 import 'widgets/danger_zone_section.dart';
 import 'widgets/household_list_section.dart';
 import 'widgets/household_name_section.dart';

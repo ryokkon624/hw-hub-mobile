@@ -2,12 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'password_reset_state.dart';
-
-final passwordResetNotifierProvider =
-    NotifierProvider<PasswordResetNotifier, PasswordResetState>(
-      PasswordResetNotifier.new,
-    );
 
 class PasswordResetNotifier extends Notifier<PasswordResetState> {
   @override

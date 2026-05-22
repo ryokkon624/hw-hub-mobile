@@ -3,8 +3,6 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../../../features/home/data/models/household_member_dto.dart';
 import '../../housework_settings_providers.dart';
-import '../housework_create/housework_create_state.dart';
-import 'housework_edit_state.dart';
 
 class HouseworkEditNotifier
     extends AutoDisposeFamilyAsyncNotifier<HouseworkEditState, int> {
@@ -279,10 +277,3 @@ class HouseworkEditNotifier
     }
   }
 }
-
-final houseworkEditNotifierProvider =
-    AutoDisposeAsyncNotifierProvider.family<
-      HouseworkEditNotifier,
-      HouseworkEditState,
-      int
-    >(HouseworkEditNotifier.new);

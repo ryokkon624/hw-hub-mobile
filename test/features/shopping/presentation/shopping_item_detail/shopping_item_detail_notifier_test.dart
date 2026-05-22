@@ -10,7 +10,6 @@ import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/home/data/models/shopping_item_dto.dart';
 import 'package:hw_hub_mobile/features/shopping/data/models/create_upload_url_response.dart';
 import 'package:hw_hub_mobile/features/shopping/data/models/shopping_attachment_dto.dart';
-import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_detail/shopping_item_detail_notifier.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
 import 'package:mockito/mockito.dart';
 

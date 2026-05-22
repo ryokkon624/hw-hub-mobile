@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/inquiry/inquiry_providers.dart';
-import 'package:hw_hub_mobile/features/inquiry/presentation/inquiry_create/inquiry_create_notifier.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../inquiry_mocks.mocks.dart';

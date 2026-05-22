@@ -6,8 +6,7 @@ import '../../../../core/models/inquiry_category.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'inquiry_create_notifier.dart';
-import 'inquiry_create_state.dart';
+import '../../inquiry_providers.dart';
 
 class InquiryCreatePage extends ConsumerStatefulWidget {
   const InquiryCreatePage({super.key});

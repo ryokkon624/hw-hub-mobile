@@ -7,11 +7,10 @@ import '../../../../core/models/favorite_flag.dart';
 import '../../../../core/models/purchase_location_type.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../shopping_item_list/shopping_list_notifier.dart';
+import '../../shopping_providers.dart';
 import '../widgets/favorite_picker_bottom_sheet.dart';
 import '../widgets/history_picker_bottom_sheet.dart';
 import '../widgets/image_picker_field.dart';
-import 'shopping_item_new_notifier.dart';
 
 class ShoppingItemNewPage extends ConsumerWidget {
   const ShoppingItemNewPage({super.key});

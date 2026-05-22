@@ -5,7 +5,7 @@ import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../core/ui/user_avatar.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/models/household_member_dto.dart';
-import '../household_settings_notifier.dart';
+import '../../../household_settings_providers.dart';
 
 /// メンバー一覧セクション（AC5・AC6・AC7）。
 class MembersSection extends ConsumerWidget {

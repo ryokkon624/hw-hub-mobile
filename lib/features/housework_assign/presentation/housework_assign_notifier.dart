@@ -5,7 +5,6 @@ import '../../../core/models/task_assign_reason.dart';
 import '../../../core/network/app_exception.dart';
 import '../data/housework_assign_repository.dart';
 import '../housework_assign_providers.dart';
-import 'housework_assign_state.dart';
 
 class HouseworkAssignNotifier
     extends AutoDisposeAsyncNotifier<HouseworkAssignState> {
@@ -275,9 +274,3 @@ class HouseworkAssignNotifier
     }
   }
 }
-
-final houseworkAssignNotifierProvider =
-    AsyncNotifierProvider.autoDispose<
-      HouseworkAssignNotifier,
-      HouseworkAssignState
-    >(HouseworkAssignNotifier.new);

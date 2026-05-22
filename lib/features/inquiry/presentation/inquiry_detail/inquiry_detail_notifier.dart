@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../inquiry_providers.dart';
-import 'inquiry_detail_state.dart';
 
 class InquiryDetailNotifier
     extends AutoDisposeFamilyNotifier<InquiryDetailState, int> {
@@ -80,8 +79,3 @@ class InquiryDetailNotifier
     state = state.copyWith(replySent: false);
   }
 }
-
-final inquiryDetailNotifierProvider = NotifierProvider.autoDispose
-    .family<InquiryDetailNotifier, InquiryDetailState, int>(
-      InquiryDetailNotifier.new,
-    );

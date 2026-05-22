@@ -4,8 +4,7 @@ import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/shopping_repository.dart';
-import '../shopping_item_list/shopping_list_notifier.dart';
-import '../shopping_item_list/shopping_list_state.dart';
+import '../../shopping_providers.dart';
 import 'swipeable_shopping_card.dart';
 
 /// 購入済みタブのカードで左スワイプしたときに表示するSnackBar

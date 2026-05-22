@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../notifications_providers.dart';
-import '../notification_global_notifier.dart';
-import 'notification_center_state.dart';
 
 class NotificationCenterNotifier extends Notifier<NotificationCenterState> {
   @override
@@ -58,8 +56,3 @@ class NotificationCenterNotifier extends Notifier<NotificationCenterState> {
     await _fetchNotifications();
   }
 }
-
-final notificationCenterNotifierProvider =
-    NotifierProvider<NotificationCenterNotifier, NotificationCenterState>(
-      NotificationCenterNotifier.new,
-    );

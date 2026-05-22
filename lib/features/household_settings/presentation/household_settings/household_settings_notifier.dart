@@ -6,7 +6,6 @@ import '../../../../core/network/app_exception.dart';
 import '../../data/models/household_invitation_dto.dart';
 import '../../data/models/household_member_dto.dart';
 import '../../household_settings_providers.dart';
-import 'household_settings_state.dart';
 
 class HouseholdSettingsNotifier
     extends AutoDisposeAsyncNotifier<HouseholdSettingsState> {
@@ -403,9 +402,3 @@ class HouseholdSettingsNotifier
     await future;
   }
 }
-
-final householdSettingsNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      HouseholdSettingsNotifier,
-      HouseholdSettingsState
-    >(HouseholdSettingsNotifier.new);

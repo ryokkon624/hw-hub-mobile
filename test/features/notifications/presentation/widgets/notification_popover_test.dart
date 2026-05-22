@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/notifications/data/notification_repository.dart';
 import 'package:hw_hub_mobile/features/notifications/notifications_providers.dart';
-import 'package:hw_hub_mobile/features/notifications/presentation/notification_global_notifier.dart';
 import 'package:hw_hub_mobile/features/notifications/presentation/widgets/notification_popover.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';

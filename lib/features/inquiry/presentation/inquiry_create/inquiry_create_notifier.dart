@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../inquiry_providers.dart';
-import 'inquiry_create_state.dart';
 
 class InquiryCreateNotifier extends AutoDisposeNotifier<InquiryCreateState> {
   @override
@@ -76,8 +75,3 @@ class InquiryCreateNotifier extends AutoDisposeNotifier<InquiryCreateState> {
     }
   }
 }
-
-final inquiryCreateNotifierProvider =
-    NotifierProvider.autoDispose<InquiryCreateNotifier, InquiryCreateState>(
-      InquiryCreateNotifier.new,
-    );

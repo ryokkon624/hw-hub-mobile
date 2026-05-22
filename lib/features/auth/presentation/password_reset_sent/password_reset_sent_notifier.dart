@@ -2,12 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'password_reset_sent_state.dart';
-
-final passwordResetSentNotifierProvider = NotifierProvider.autoDispose
-    .family<PasswordResetSentNotifier, PasswordResetSentState, String>(
-      PasswordResetSentNotifier.new,
-    );
 
 class PasswordResetSentNotifier
     extends AutoDisposeFamilyNotifier<PasswordResetSentState, String> {

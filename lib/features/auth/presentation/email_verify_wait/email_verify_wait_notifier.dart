@@ -4,12 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'email_verify_wait_state.dart';
-
-final emailVerifyWaitNotifierProvider = NotifierProvider.autoDispose
-    .family<EmailVerifyWaitNotifier, EmailVerifyWaitState, String>(
-      EmailVerifyWaitNotifier.new,
-    );
 
 class EmailVerifyWaitNotifier
     extends AutoDisposeFamilyNotifier<EmailVerifyWaitState, String> {

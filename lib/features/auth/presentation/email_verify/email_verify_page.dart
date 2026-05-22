@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app_router.dart';
-import 'email_verify_notifier.dart';
+import '../../auth_providers.dart';
 
 class EmailVerifyPage extends ConsumerWidget {
   const EmailVerifyPage({super.key, required this.token});

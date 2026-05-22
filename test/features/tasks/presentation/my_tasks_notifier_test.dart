@@ -11,8 +11,6 @@ import 'package:hw_hub_mobile/core/models/task_status.dart';
 import 'package:hw_hub_mobile/features/tasks/data/models/housework_task_dto.dart';
 import 'package:hw_hub_mobile/features/tasks/data/my_tasks_repository.dart';
 import 'package:hw_hub_mobile/features/tasks/my_tasks_providers.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_notifier.dart';
-import 'package:hw_hub_mobile/features/tasks/presentation/my_tasks_state.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

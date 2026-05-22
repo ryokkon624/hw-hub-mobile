@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/password_reset/password_reset_notifier.dart';
+import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/password_reset/password_reset_page.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/password_reset/password_reset_state.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

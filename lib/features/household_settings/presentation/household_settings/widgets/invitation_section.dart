@@ -5,7 +5,7 @@ import '../../../../../core/models/invitation_status.dart';
 import '../../../../../core/ui/app_dialog.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/models/household_invitation_dto.dart';
-import '../household_settings_notifier.dart';
+import '../../../household_settings_providers.dart';
 
 /// メンバー招待セクション（AC8・AC9）。
 class InvitationSection extends ConsumerStatefulWidget {

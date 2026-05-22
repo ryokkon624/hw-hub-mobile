@@ -2,12 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'password_forgot_state.dart';
-
-final passwordForgotNotifierProvider =
-    NotifierProvider<PasswordForgotNotifier, PasswordForgotState>(
-      PasswordForgotNotifier.new,
-    );
 
 class PasswordForgotNotifier extends Notifier<PasswordForgotState> {
   @override

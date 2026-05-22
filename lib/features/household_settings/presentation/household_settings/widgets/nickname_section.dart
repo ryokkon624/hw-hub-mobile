@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../household_settings_notifier.dart';
+import '../../../household_settings_providers.dart';
 
 /// ニックネーム設定セクション（AC4）。
 class NicknameSection extends ConsumerStatefulWidget {

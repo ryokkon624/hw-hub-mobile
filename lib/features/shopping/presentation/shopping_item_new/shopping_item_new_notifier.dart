@@ -7,7 +7,6 @@ import '../../data/models/create_shopping_item_request.dart';
 import '../../data/models/create_upload_url_request.dart';
 import '../../data/shopping_repository.dart';
 import '../../shopping_providers.dart';
-import 'shopping_item_new_state.dart';
 
 export 'shopping_item_new_state.dart';
 
@@ -207,8 +206,3 @@ class ShoppingItemNewNotifier
     }
   }
 }
-
-final shoppingItemNewNotifierProvider =
-    NotifierProvider.autoDispose<ShoppingItemNewNotifier, ShoppingItemNewState>(
-      ShoppingItemNewNotifier.new,
-    );

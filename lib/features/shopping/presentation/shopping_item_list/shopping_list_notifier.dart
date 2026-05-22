@@ -5,7 +5,6 @@ import '../../../../core/models/shopping_item_status.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../data/shopping_repository.dart';
 import '../../shopping_providers.dart';
-import 'shopping_list_state.dart';
 
 class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
   @override
@@ -248,8 +247,3 @@ class ShoppingListNotifier extends AutoDisposeAsyncNotifier<ShoppingListState> {
     );
   }
 }
-
-final shoppingListNotifierProvider =
-    AsyncNotifierProvider.autoDispose<ShoppingListNotifier, ShoppingListState>(
-      ShoppingListNotifier.new,
-    );

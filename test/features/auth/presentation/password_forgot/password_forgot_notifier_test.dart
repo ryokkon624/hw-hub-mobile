@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/password_forgot/password_forgot_notifier.dart';
 
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';

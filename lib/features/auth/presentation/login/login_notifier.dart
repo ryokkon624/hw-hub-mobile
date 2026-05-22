@@ -3,10 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../auth_providers.dart';
-import 'login_state.dart';
-
-final loginNotifierProvider =
-    NotifierProvider.autoDispose<LoginNotifier, LoginState>(LoginNotifier.new);
 
 class LoginNotifier extends AutoDisposeNotifier<LoginState> {
   @override

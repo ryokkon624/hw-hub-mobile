@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/email_verify/email_verify_notifier.dart';
+import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/email_verify/email_verify_page.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';

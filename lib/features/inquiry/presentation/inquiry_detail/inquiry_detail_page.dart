@@ -10,8 +10,7 @@ import '../../../../core/ui/main_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/inquiry_category_badge.dart';
 import '../widgets/inquiry_status_badge.dart';
-import 'inquiry_detail_notifier.dart';
-import 'inquiry_detail_state.dart';
+import '../../inquiry_providers.dart';
 import 'widgets/message_bubble.dart';
 
 class InquiryDetailPage extends ConsumerStatefulWidget {

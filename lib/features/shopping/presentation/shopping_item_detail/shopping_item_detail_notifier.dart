@@ -9,7 +9,6 @@ import '../../data/models/create_upload_url_request.dart';
 import '../../data/models/update_shopping_item_request.dart';
 import '../../data/shopping_repository.dart';
 import '../../shopping_providers.dart';
-import 'shopping_item_detail_state.dart';
 
 export 'shopping_item_detail_state.dart';
 
@@ -263,8 +262,3 @@ class ShoppingItemDetailNotifier
     }
   }
 }
-
-final shoppingItemDetailNotifierProvider = NotifierProvider.autoDispose
-    .family<ShoppingItemDetailNotifier, ShoppingItemDetailState, int>(
-      ShoppingItemDetailNotifier.new,
-    );

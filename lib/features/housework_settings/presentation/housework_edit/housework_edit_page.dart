@@ -5,11 +5,8 @@ import '../../../../app_router.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../housework_create/housework_create_state.dart';
-import '../housework_list/housework_list_notifier.dart';
+import '../../housework_settings_providers.dart';
 import '../widgets/housework_form.dart';
-import 'housework_edit_notifier.dart';
-import 'housework_edit_state.dart';
 
 /// 家事編集画面（#22）。
 class HouseworkEditPage extends ConsumerStatefulWidget {

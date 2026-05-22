@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_notifier.dart';
+import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_page.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/email_verify_wait/email_verify_wait_state.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';

@@ -5,7 +5,6 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/auth/auth_providers.dart';
 import 'package:hw_hub_mobile/features/auth/data/models/invitation_info.dart';
-import 'package:hw_hub_mobile/features/auth/presentation/invitation/invitation_notifier.dart';
 
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';

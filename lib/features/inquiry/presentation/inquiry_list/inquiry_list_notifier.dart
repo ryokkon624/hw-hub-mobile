@@ -69,8 +69,3 @@ class InquiryListNotifier extends AutoDisposeNotifier<InquiryListState> {
     }
   }
 }
-
-final inquiryListNotifierProvider =
-    NotifierProvider.autoDispose<InquiryListNotifier, InquiryListState>(
-      InquiryListNotifier.new,
-    );

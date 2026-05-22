@@ -6,7 +6,6 @@ import '../../../core/network/app_exception.dart';
 import '../data/models/housework_task_dto.dart';
 import '../data/my_tasks_repository.dart';
 import '../my_tasks_providers.dart';
-import 'my_tasks_state.dart';
 
 class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
   @override
@@ -140,8 +139,3 @@ class MyTasksNotifier extends AutoDisposeAsyncNotifier<MyTasksState> {
     }
   }
 }
-
-final myTasksNotifierProvider =
-    AsyncNotifierProvider.autoDispose<MyTasksNotifier, MyTasksState>(
-      MyTasksNotifier.new,
-    );

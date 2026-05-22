@@ -10,8 +10,6 @@ import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/network/app_exception.dart';
 import 'package:hw_hub_mobile/features/housework_assign/data/housework_assign_repository.dart';
 import 'package:hw_hub_mobile/features/housework_assign/housework_assign_providers.dart';
-import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_notifier.dart';
-import 'package:hw_hub_mobile/features/housework_assign/presentation/housework_assign_state.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

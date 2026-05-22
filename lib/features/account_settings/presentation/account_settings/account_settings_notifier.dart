@@ -5,10 +5,9 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/network/app_exception.dart';
 import '../../account_settings_providers.dart';
 import '../../data/account_settings_repository.dart';
-import '../../../home/presentation/home_notifier.dart';
-import '../../../household_settings/presentation/household_settings/household_settings_notifier.dart';
-import '../../../housework_assign/presentation/housework_assign_notifier.dart';
-import 'account_settings_state.dart';
+import '../../../home/home_providers.dart';
+import '../../../household_settings/household_settings_providers.dart';
+import '../../../housework_assign/housework_assign_providers.dart';
 
 class AccountSettingsNotifier
     extends AutoDisposeAsyncNotifier<AccountSettingsState> {
@@ -293,9 +292,3 @@ class AccountSettingsNotifier
     await future;
   }
 }
-
-final accountSettingsNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      AccountSettingsNotifier,
-      AccountSettingsState
-    >(AccountSettingsNotifier.new);
