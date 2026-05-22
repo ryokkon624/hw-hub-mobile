@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/app_error_view.dart';
 import '../../../../core/ui/app_snack_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../housework_settings_providers.dart';
@@ -56,7 +57,10 @@ class _HouseworkCreatePageState extends ConsumerState<HouseworkCreatePage> {
       ),
       body: asyncState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString())),
+        error: (e, _) => AppErrorView(
+          message: resolveErrorMessage(e, l10n),
+          onRetry: () => ref.invalidate(houseworkCreateNotifierProvider),
+        ),
         data: (state) => _HouseworkCreateBody(
           state: state,
           errors: _errors,

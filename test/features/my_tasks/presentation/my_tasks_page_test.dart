@@ -155,7 +155,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.byType(TextButton), findsWidgets);
+      expect(find.byKey(const Key('appErrorViewRetryButton')), findsOneWidget);
     });
 
     testWidgets('過去タスクが0件の場合: 過去の家事セクションが非表示になる', (tester) async {

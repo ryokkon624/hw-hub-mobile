@@ -32,16 +32,20 @@ void main() {
       expect(find.byKey(const Key('nthWeekdaySelector')), findsOneWidget);
     });
 
-    testWidgets('nthWeekSelectorは第1〜第5の5項目を持つ', (tester) async {
+    testWidgets('nthWeekSelectorは第1週〜最終週の5項目を持つ（AC1）', (tester) async {
       await tester.pumpWidget(_buildSelector(nthWeek: 1));
       await tester.pump();
 
-      // Dropdownを開いて項目数を確認
+      // Dropdownを開いて項目を確認
       await tester.tap(find.byKey(const Key('nthWeekSelector')));
       await tester.pumpAndSettle();
 
-      expect(find.text('第1'), findsWidgets);
-      expect(find.text('第5'), findsOneWidget);
+      expect(find.text('第1週'), findsWidgets);
+      expect(find.text('第2週'), findsOneWidget);
+      expect(find.text('第3週'), findsOneWidget);
+      expect(find.text('第4週'), findsOneWidget);
+      // 最終週が表示されること（AC1の核心）
+      expect(find.text('最終週'), findsOneWidget);
     });
 
     testWidgets('nthWeekdaySelectorは7曜日を持つ', (tester) async {
@@ -66,11 +70,29 @@ void main() {
       await tester.tap(find.byKey(const Key('nthWeekSelector')));
       await tester.pumpAndSettle();
 
-      // 第3を選択
-      await tester.tap(find.text('第3').last);
+      // 第3週を選択
+      await tester.tap(find.text('第3週').last);
       await tester.pumpAndSettle();
 
       expect(changed, 3);
+    });
+
+    testWidgets('最終週（値=5）を選択するとonNthChangedが5で呼ばれる（AC1）', (tester) async {
+      int? changed;
+      await tester.pumpWidget(
+        _buildSelector(nthWeek: 1, onNthChanged: (v) => changed = v),
+      );
+      await tester.pump();
+
+      // Dropdownを開く
+      await tester.tap(find.byKey(const Key('nthWeekSelector')));
+      await tester.pumpAndSettle();
+
+      // 最終週を選択
+      await tester.tap(find.text('最終週').last);
+      await tester.pumpAndSettle();
+
+      expect(changed, 5);
     });
 
     testWidgets('nthWeekdaySelectorで値を変更するとonWeekdayChangedが呼ばれる', (

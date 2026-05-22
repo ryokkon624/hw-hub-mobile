@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hw_hub_mobile/core/auth/auth_state.dart';
 import 'package:hw_hub_mobile/core/di/providers.dart';
+import 'package:hw_hub_mobile/core/ui/app_error_view.dart';
 import 'package:hw_hub_mobile/core/ui/main_app_bar.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 import '../data/housework_assign_repository.dart';
@@ -32,7 +33,10 @@ class HouseworkAssignPage extends ConsumerWidget {
         appBar: MainAppBar(
           title: AppLocalizations.of(context).houseworkAssignTitle,
         ),
-        body: Center(child: Text(e.toString())),
+        body: AppErrorView(
+          message: resolveErrorMessage(e, AppLocalizations.of(context)),
+          onRetry: () => ref.invalidate(houseworkAssignNotifierProvider),
+        ),
       ),
       data: (state) {
         if (state.mode == AssignMode.swipe) {
