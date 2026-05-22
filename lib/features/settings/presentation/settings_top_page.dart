@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app_router.dart';
-import '../../../../core/theme/app_color_scheme.dart';
-import '../../../../core/ui/main_app_bar.dart';
-import '../../../../l10n/app_localizations.dart';
-import 'widgets/settings_card.dart';
+import '../../../app_router.dart';
+import '../../../core/theme/app_color_scheme.dart';
+import '../../../core/ui/main_app_bar.dart';
+import '../../../l10n/app_localizations.dart';
+import 'settings_card.dart';
 
 /// 設定トップ画面（#17）。
 ///

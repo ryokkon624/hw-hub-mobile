@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/di/providers.dart';
-import '../../../../../core/models/household.dart';
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../core/models/household.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 所属世帯一覧セクション（AC1・AC2）。
 class HouseholdListSection extends ConsumerWidget {

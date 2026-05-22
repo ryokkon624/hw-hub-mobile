@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/models/user_profile_dto.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/profile_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/profile_section.dart';
 
 import '../../../helpers/widget_test_helpers.dart';
 

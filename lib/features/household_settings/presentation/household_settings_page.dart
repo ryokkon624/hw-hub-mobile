@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/auth/auth_state.dart';
-import '../../../../core/di/providers.dart';
-import '../../../../core/theme/app_color_scheme.dart';
-import '../../../../core/ui/app_snack_bar.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../household_settings_providers.dart';
+import '../../../core/auth/auth_state.dart';
+import '../../../core/di/providers.dart';
+import '../../../core/theme/app_color_scheme.dart';
+import '../../../core/ui/app_snack_bar.dart';
+import '../../../l10n/app_localizations.dart';
+import '../household_settings_providers.dart';
 import 'widgets/danger_zone_section.dart';
 import 'widgets/household_list_section.dart';
 import 'widgets/household_name_section.dart';

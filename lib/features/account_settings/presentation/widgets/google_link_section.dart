@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../../../../core/config/app_config.dart';
-import '../../../../../core/network/app_exception.dart';
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../core/ui/app_snack_bar.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/config/app_config.dart';
+import '../../../../core/network/app_exception.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/ui/app_snack_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// AC6: Google アカウント連携セクション（@gmail.com のみ表示）
 class GoogleLinkSection extends StatefulWidget {

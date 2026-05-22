@@ -6,7 +6,7 @@ import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/features/household_settings/household_settings_providers.dart';
-import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/household_name_section.dart';
+import 'package:hw_hub_mobile/features/household_settings/presentation/widgets/household_name_section.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

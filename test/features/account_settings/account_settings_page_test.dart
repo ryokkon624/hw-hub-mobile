@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
 import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/account_settings_page.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings_page.dart';
 
 import '../../helpers/widget_test_helpers.dart';
 

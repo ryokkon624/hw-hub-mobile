@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/ui/app_dialog.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../household_settings_providers.dart';
+import '../../../../core/ui/app_dialog.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../household_settings_providers.dart';
 
 /// 危険ゾーンセクション（AC10）。OWNERかつ自分以外のACTIVEメンバーがいない場合のみ表示。
 class DangerZoneSection extends ConsumerWidget {

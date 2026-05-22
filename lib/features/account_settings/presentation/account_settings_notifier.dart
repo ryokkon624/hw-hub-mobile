@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/providers.dart';
-import '../../../../core/network/app_exception.dart';
-import '../../account_settings_providers.dart';
-import '../../data/account_settings_repository.dart';
-import '../../../home/home_providers.dart';
-import '../../../household_settings/household_settings_providers.dart';
-import '../../../housework_assign/housework_assign_providers.dart';
+import '../../../core/di/providers.dart';
+import '../../../core/network/app_exception.dart';
+import '../account_settings_providers.dart';
+import '../data/account_settings_repository.dart';
+import '../../home/home_providers.dart';
+import '../../household_settings/household_settings_providers.dart';
+import '../../housework_assign/housework_assign_providers.dart';
 
 class AccountSettingsNotifier
     extends AutoDisposeAsyncNotifier<AccountSettingsState> {

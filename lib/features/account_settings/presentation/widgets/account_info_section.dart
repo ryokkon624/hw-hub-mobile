@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../data/models/user_profile_dto.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../data/models/user_profile_dto.dart';
 
 /// AC1: アカウント情報（メール・表示名の読み取り専用表示）
 class AccountInfoSection extends StatelessWidget {

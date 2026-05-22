@@ -4,7 +4,7 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/features/household_settings/household_settings_providers.dart';
-import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/nickname_section.dart';
+import 'package:hw_hub_mobile/features/household_settings/presentation/widgets/nickname_section.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/danger_zone_section.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/google_link_section.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/icon_section.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/password_change_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/danger_zone_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/google_link_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/icon_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/password_change_section.dart';
 
 import '../../../helpers/widget_test_helpers.dart';
 

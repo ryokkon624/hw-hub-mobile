@@ -11,7 +11,7 @@ import 'package:hw_hub_mobile/core/models/auth_user.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/features/household_settings/data/household_settings_repository.dart';
 import 'package:hw_hub_mobile/features/household_settings/household_settings_providers.dart';
-import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/invitation_section.dart';
+import 'package:hw_hub_mobile/features/household_settings/presentation/widgets/invitation_section.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 

@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/auth/auth_state.dart';
-import '../../../../core/di/providers.dart';
-import '../../../../core/models/household_member_status.dart';
-import '../../../../core/network/app_exception.dart';
-import '../../data/models/household_invitation_dto.dart';
-import '../../data/models/household_member_dto.dart';
-import '../../household_settings_providers.dart';
+import '../../../core/auth/auth_state.dart';
+import '../../../core/di/providers.dart';
+import '../../../core/models/household_member_status.dart';
+import '../../../core/network/app_exception.dart';
+import '../data/models/household_invitation_dto.dart';
+import '../data/models/household_member_dto.dart';
+import '../household_settings_providers.dart';
 
 class HouseholdSettingsNotifier
     extends AutoDisposeAsyncNotifier<HouseholdSettingsState> {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hw_hub_mobile/core/theme/theme_mode_notifier.dart';
-import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings/widgets/appearance_section.dart';
+import 'package:hw_hub_mobile/features/account_settings/presentation/widgets/appearance_section.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/widget_test_helpers.dart';

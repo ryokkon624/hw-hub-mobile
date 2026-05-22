@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_color_scheme.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../data/models/notification_settings_dto.dart';
+import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../data/models/notification_settings_dto.dart';
 
 /// AC5: 通知設定セクション（即時反映トグル）
 class NotificationSettingsSection extends StatelessWidget {

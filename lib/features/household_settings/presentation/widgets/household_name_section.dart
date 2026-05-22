@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/di/providers.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../household_settings_providers.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../household_settings_providers.dart';
 
 /// 世帯名変更セクション（AC3）。
 class HouseholdNameSection extends ConsumerStatefulWidget {

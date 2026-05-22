@@ -7,7 +7,7 @@ import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
 import 'package:hw_hub_mobile/core/theme/app_color_scheme.dart';
 import 'package:hw_hub_mobile/core/theme/app_theme.dart';
-import 'package:hw_hub_mobile/features/household_settings/presentation/household_settings/widgets/household_list_section.dart';
+import 'package:hw_hub_mobile/features/household_settings/presentation/widgets/household_list_section.dart';
 import 'package:hw_hub_mobile/l10n/app_localizations.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
