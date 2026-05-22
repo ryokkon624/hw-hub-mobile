@@ -44,12 +44,16 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(StorageKeys.selectedHouseholdId);
 
+    // 先に未認証状態にセットする。
+    // これにより、後続の invalidate で各 Notifier が build() を再実行して
+    // API を呼んでも、AuthInterceptor が 401 を受け取った際に
+    // 既に AuthUnauthenticated 状態であることを検出して logout() 再入を防ぐ。
+    state = const AsyncData(AuthUnauthenticated());
+
     // 世帯・各一覧 Provider をリセットして別ユーザーでのログイン後に前ユーザーのデータが残らないようにする
     ref.invalidate(householdNotifierProvider);
     ref.invalidate(homeNotifierProvider);
     ref.invalidate(houseworkAssignNotifierProvider);
-
-    state = const AsyncData(AuthUnauthenticated());
   }
 
   // iOSはアプリ削除後もKeychain（SecureStorage）が残るため、
