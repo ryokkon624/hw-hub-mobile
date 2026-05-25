@@ -23,7 +23,7 @@ Widget _buildSection({
       body: SingleChildScrollView(
         child: ProfileSection(
           profile: profile,
-          onSave: onSave ?? (_, __) async {},
+          onSave: onSave ?? (_, _) async {},
         ),
       ),
     ),
@@ -154,7 +154,7 @@ void main() {
                   SingleChildScrollView(
                     child: ProfileSection(
                       profile: currentProfile,
-                      onSave: (_, __) async {},
+                      onSave: (_, _) async {},
                     ),
                   ),
                 ],

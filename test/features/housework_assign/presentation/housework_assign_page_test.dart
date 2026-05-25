@@ -309,7 +309,6 @@ void main() {
 
   group('HouseworkAssignPage フィルタ', () {
     testWidgets('未割当フィルタ選択時: 未割当タスクのみ表示される', (tester) async {
-      bool filterCalled = false;
       final trackingNotifier = _FilterTrackingNotifier(
         HouseworkAssignState(
           tasks: [
@@ -319,7 +318,7 @@ void main() {
           members: [],
           filter: AssignFilter.unassignedOnly,
         ),
-        onFilterChanged: (_) => filterCalled = true,
+        onFilterChanged: (_) {},
       );
       await tester.pumpWidget(
         buildTestPage(

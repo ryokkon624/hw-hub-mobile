@@ -29,7 +29,7 @@ Widget _buildSheet({
     Scaffold(
       body: MemberPickerBottomSheet(
         members: members,
-        onSelected: onSelected ?? (_, __) {},
+        onSelected: onSelected ?? (_, _) {},
       ),
     ),
   );

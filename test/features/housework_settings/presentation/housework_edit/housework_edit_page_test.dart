@@ -38,11 +38,11 @@ Widget _buildPage(HouseworkEditState state) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (_, __) => const HouseworkEditPage(houseworkId: 1),
+        builder: (_, _) =>const HouseworkEditPage(houseworkId: 1),
       ),
       GoRoute(
         path: '/settings/housework',
-        builder: (_, __) => const Scaffold(body: Text('一覧画面')),
+        builder: (_, _) =>const Scaffold(body: Text('一覧画面')),
       ),
     ],
   );
