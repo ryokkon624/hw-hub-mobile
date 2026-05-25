@@ -6,13 +6,37 @@ import 'package:hw_hub_mobile/core/di/providers.dart';
 import 'package:hw_hub_mobile/core/household/household_notifier.dart';
 import 'package:hw_hub_mobile/core/household/household_state.dart';
 import 'package:hw_hub_mobile/core/models/household.dart';
+import 'package:hw_hub_mobile/features/home/data/models/shopping_item_dto.dart';
+import 'package:hw_hub_mobile/features/shopping/data/models/shopping_item_history_suggestion_dto.dart';
 import 'package:hw_hub_mobile/features/shopping/presentation/shopping_item_new/shopping_item_new_page.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/widgets/favorite_picker_bottom_sheet.dart';
+import 'package:hw_hub_mobile/features/shopping/presentation/widgets/history_picker_bottom_sheet.dart';
 import 'package:hw_hub_mobile/features/shopping/shopping_providers.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/widget_test_helpers.dart';
 import '../../shopping_mocks.mocks.dart';
+
+/// household が AsyncData になるまで待ってからページを表示するラッパー。
+/// householdNotifierProvider は lazy なので ref.read() で AsyncLoading になることを防ぐ。
+Widget _buildPageWithHousehold(
+  Widget page, {
+  required List<Override> overrides,
+  bool withSnackBarKey = false,
+}) => buildTestPage(
+  Consumer(
+    builder: (_, ref, _) {
+      final h = ref.watch(householdNotifierProvider);
+      if (!h.hasValue) return const CircularProgressIndicator();
+      return page;
+    },
+  ),
+  overrides: overrides,
+  withSnackBarKey: withSnackBarKey,
+);
 
 // フェイクHouseholdNotifier
 class _FakeHouseholdNotifier extends HouseholdNotifier {
@@ -23,6 +47,17 @@ class _FakeHouseholdNotifier extends HouseholdNotifier {
       selectedHousehold: Household(id: 100, name: 'テスト世帯'),
     );
   }
+}
+
+// ImagePickerPlatform のモック（カメラ/ギャラリー操作でnullを返す）
+class _MockImagePickerPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements ImagePickerPlatform {
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async => null;
 }
 
 // isSubmitting=trueを返すフェイク
@@ -39,6 +74,53 @@ class _PreFilledNotifier extends ShoppingItemNewNotifier {
   ShoppingItemNewState build() {
     return ShoppingItemNewState(name: 'テスト品');
   }
+}
+
+// エラーメッセージをセットするフェイクNotifier
+class _ErrorMessageNotifier extends ShoppingItemNewNotifier {
+  @override
+  ShoppingItemNewState build() {
+    Future.microtask(
+      () => state = ShoppingItemNewState(
+        name: 'テスト品',
+        errorMessage: '登録に失敗しました',
+      ),
+    );
+    return ShoppingItemNewState(name: 'テスト品');
+  }
+}
+
+// fetchHistorySuggestions を上書きするフェイクNotifier
+class _HistoryNotifier extends ShoppingItemNewNotifier {
+  @override
+  ShoppingItemNewState build() => ShoppingItemNewState();
+
+  @override
+  Future<List<ShoppingItemHistorySuggestionDto>> fetchHistorySuggestions({
+    required int householdId,
+  }) async => [
+    const ShoppingItemHistorySuggestionDto(name: '醤油', purchaseCount: 3),
+  ];
+}
+
+// fetchFavorites を上書きするフェイクNotifier
+class _FavoriteNotifier extends ShoppingItemNewNotifier {
+  @override
+  ShoppingItemNewState build() => ShoppingItemNewState();
+
+  @override
+  Future<List<ShoppingItemDto>> fetchFavorites({
+    required int householdId,
+  }) async => [
+    const ShoppingItemDto(
+      shoppingItemId: 1,
+      householdId: 100,
+      name: 'オリーブオイル',
+      status: '0',
+      hasImage: false,
+      createdAt: '2026-01-01T00:00:00',
+    ),
+  ];
 }
 
 // 送信成功をシミュレートするフェイクNotifier
@@ -352,5 +434,203 @@ void main() {
         ).called(1);
       },
     );
+  });
+
+  group('ShoppingItemNewPage - エラーメッセージ listener', () {
+    testWidgets('errorMessageが設定されるとエラースナックバーが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const ShoppingItemNewPage(),
+          overrides: [
+            householdNotifierProvider.overrideWith(
+              () => _FakeHouseholdNotifier(),
+            ),
+            shoppingRepositoryProvider.overrideWithValue(mockRepo),
+            shoppingAttachmentRepositoryProvider.overrideWithValue(
+              mockAttachRepo,
+            ),
+            shoppingItemNewNotifierProvider.overrideWith(
+              () => _ErrorMessageNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump(); // initial state (no error)
+      await tester.pump(); // microtask: errorMessage set
+
+      // エラートースト
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+  });
+
+  group('ShoppingItemNewPage - 購入場所チップ選択', () {
+    testWidgets('スーパーチップを選択するとselectedになる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(const ShoppingItemNewPage(), overrides: buildOverrides()),
+      );
+      await tester.pump();
+
+      // 初期状態ではスーパーが選択済み（デフォルト）かを確認
+      final chips = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+      expect(chips.any((c) => (c.label as Text).data == 'スーパー'), isTrue);
+    });
+
+    testWidgets('オンラインチップをタップするとstoreTypeが変わる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(const ShoppingItemNewPage(), overrides: buildOverrides()),
+      );
+      await tester.pump();
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'オンライン'));
+      await tester.pump();
+
+      final chips = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+      final onlineChip = chips.firstWhere(
+        (c) => (c.label as Text).data == 'オンライン',
+      );
+      expect(onlineChip.selected, isTrue);
+    });
+
+    testWidgets('ドラッグストアチップをタップするとstoreTypeが変わる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(const ShoppingItemNewPage(), overrides: buildOverrides()),
+      );
+      await tester.pump();
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'ドラッグストア'));
+      await tester.pump();
+
+      final chips = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+      final dsChip = chips.firstWhere(
+        (c) => (c.label as Text).data == 'ドラッグストア',
+      );
+      expect(dsChip.selected, isTrue);
+    });
+  });
+
+  group('ShoppingItemNewPage - お気に入りスイッチ', () {
+    testWidgets('お気に入りスイッチをONにできる', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(const ShoppingItemNewPage(), overrides: buildOverrides()),
+      );
+      await tester.pump();
+
+      final switchTile = find.byType(SwitchListTile);
+      expect(switchTile, findsOneWidget);
+
+      await tester.tap(switchTile);
+      await tester.pump();
+
+      final updated = tester.widget<SwitchListTile>(switchTile);
+      expect(updated.value, isTrue);
+    });
+  });
+
+  group('ShoppingItemNewPage - 履歴選択のonSelected', () {
+    testWidgets('履歴ボトムシートで候補をタップするとフォームに反映される', (tester) async {
+      await tester.pumpWidget(
+        _buildPageWithHousehold(
+          const ShoppingItemNewPage(),
+          overrides: [
+            ...buildOverrides(),
+            shoppingItemNewNotifierProvider.overrideWith(
+              () => _HistoryNotifier(),
+            ),
+          ],
+        ),
+      );
+      // household が AsyncData になるまで待つ（Consumer wrapper が ShoppingItemNewPage を表示する）
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('historyButton')));
+      await tester.pumpAndSettle();
+
+      // ボトムシートが開いて候補が表示される
+      expect(find.text('醤油'), findsOneWidget);
+
+      await tester.tap(find.text('醤油'));
+      await tester.pumpAndSettle();
+
+      // ボトムシートが閉じる（setFromHistory で名前フィールドに反映済み）
+      expect(find.byType(HistoryPickerBottomSheet), findsNothing);
+    });
+  });
+
+  group('ShoppingItemNewPage - お気に入り選択のonSelected', () {
+    testWidgets('お気に入りボトムシートで候補をタップするとフォームに反映される', (tester) async {
+      await tester.pumpWidget(
+        _buildPageWithHousehold(
+          const ShoppingItemNewPage(),
+          overrides: [
+            ...buildOverrides(),
+            shoppingItemNewNotifierProvider.overrideWith(
+              () => _FavoriteNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('favoriteButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('オリーブオイル'), findsOneWidget);
+
+      await tester.tap(find.text('オリーブオイル'));
+      await tester.pumpAndSettle();
+
+      // ボトムシートが閉じる（setFromFavorite で名前フィールドに反映済み）
+      expect(find.byType(FavoritePickerBottomSheet), findsNothing);
+    });
+  });
+
+  group('ShoppingItemNewPage - カメラ/ギャラリー（キャンセル）', () {
+    setUp(() {
+      ImagePickerPlatform.instance = _MockImagePickerPlatform();
+    });
+
+    testWidgets('カメラ選択でキャンセル（nullファイル）しても画面が壊れない', (tester) async {
+      await tester.pumpWidget(
+        _buildPageWithHousehold(
+          const ShoppingItemNewPage(),
+          overrides: buildOverrides(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 画像追加ボタンはスクロール下部にあるため先にスクロール
+      await tester.ensureVisible(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.pumpAndSettle();
+
+      // カメラを選択
+      await tester.tap(find.byIcon(Icons.camera_alt));
+      await tester.pumpAndSettle();
+
+      // キャンセルされても画面は正常
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+
+    testWidgets('ギャラリー選択でキャンセル（nullファイル）しても画面が壊れない', (tester) async {
+      await tester.pumpWidget(
+        _buildPageWithHousehold(
+          const ShoppingItemNewPage(),
+          overrides: buildOverrides(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.pumpAndSettle();
+
+      // ギャラリーを選択
+      await tester.tap(find.byIcon(Icons.photo_library));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
   });
 }

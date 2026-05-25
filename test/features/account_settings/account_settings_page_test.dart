@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hw_hub_mobile/features/account_settings/data/account_settings_repository.dart';
 import 'package:hw_hub_mobile/features/account_settings/account_settings_providers.dart';
 import 'package:hw_hub_mobile/features/account_settings/presentation/account_settings_page.dart';
@@ -57,6 +59,38 @@ const _notificationSettings = NotificationSettingsDto(
   notificationEnabled: true,
   groupSettings: {'100': true, '200': true},
 );
+
+// successMessage をセットして listener を発火させる FakeNotifier
+class _SuccessMessageNotifier extends AccountSettingsNotifier {
+  @override
+  Future<AccountSettingsState> build() async =>
+      _localState().copyWith(successMessage: '保存しました');
+
+  @override
+  void clearSuccess() {
+    if (state.hasValue) {
+      state = AsyncData(state.value!.copyWith(clearSuccess: true));
+    }
+  }
+
+  @override
+  void clearError() {}
+}
+
+// reload() が呼ばれたことを記録する FakeNotifier
+class _RecordingNotifier extends AccountSettingsNotifier {
+  _RecordingNotifier(this._initialState);
+  final AccountSettingsState _initialState;
+  bool reloadCalled = false;
+
+  @override
+  Future<AccountSettingsState> build() async => _initialState;
+
+  @override
+  Future<void> reload() async {
+    reloadCalled = true;
+  }
+}
 
 AccountSettingsState _localState() => AccountSettingsState(
   profile: _localProfile,
@@ -242,6 +276,83 @@ void main() {
       await tester.pump();
 
       expect(find.byType(Scaffold), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - successMessage listener', () {
+    testWidgets('successMessageがセットされるとスナックバーが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          withSnackBarKey: true,
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(
+              () => _SuccessMessageNotifier(),
+            ),
+          ],
+        ),
+      );
+      await tester.pump(); // AsyncLoading → AsyncData with successMessage
+
+      expect(find.text('保存しました'), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - 戻るボタンのナビゲーション', () {
+    testWidgets('戻るボタンタップで /settings へ遷移する', (tester) async {
+      await tester.pumpWidget(
+        buildTestPageWithRouter(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('settings-page')),
+            ),
+            GoRoute(
+              path: '/settings/account',
+              builder: (_, _) => ProviderScope(
+                overrides: [
+                  accountSettingsNotifierProvider.overrideWith(
+                    () => _FakeNotifier(_localState()),
+                  ),
+                ],
+                child: const AccountSettingsPage(),
+              ),
+            ),
+          ],
+          initialLocation: '/settings/account',
+        ),
+      );
+      await tester.pump(); // load state
+
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pumpAndSettle();
+
+      expect(find.text('settings-page'), findsOneWidget);
+    });
+  });
+
+  group('AccountSettingsPage - RefreshIndicator', () {
+    testWidgets('引っ張ってリフレッシュするとreloadが呼ばれる', (tester) async {
+      final notifier = _RecordingNotifier(_localState());
+      await tester.pumpWidget(
+        buildTestPage(
+          const AccountSettingsPage(),
+          overrides: [
+            accountSettingsNotifierProvider.overrideWith(() => notifier),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.drag(
+        find.byType(RefreshIndicator),
+        const Offset(0, 400),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      expect(notifier.reloadCalled, isTrue);
     });
   });
 }
