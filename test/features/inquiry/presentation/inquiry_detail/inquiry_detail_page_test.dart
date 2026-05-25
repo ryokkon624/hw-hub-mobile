@@ -111,7 +111,10 @@ class _EscalatedTransitionNotifier extends InquiryDetailNotifier {
         escalated: true,
       ),
     );
-    return InquiryDetailState(isLoading: false, detail: _detailDto(status: '10'));
+    return InquiryDetailState(
+      isLoading: false,
+      detail: _detailDto(status: '10'),
+    );
   }
 }
 
@@ -558,7 +561,9 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
     });
 
-    testWidgets('errorMessage(fetchFailed=false)が設定されるとエラースナックバーが表示される', (tester) async {
+    testWidgets('errorMessage(fetchFailed=false)が設定されるとエラースナックバーが表示される', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestPage(
           const InquiryDetailPage(inquiryId: 1),
@@ -588,10 +593,7 @@ void main() {
       );
       await tester.pump();
 
-      await tester.drag(
-        find.byType(RefreshIndicator),
-        const Offset(0, 400),
-      );
+      await tester.drag(find.byType(RefreshIndicator), const Offset(0, 400));
       await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
 

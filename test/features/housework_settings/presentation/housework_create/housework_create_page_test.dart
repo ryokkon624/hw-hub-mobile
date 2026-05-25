@@ -49,7 +49,7 @@ Widget _buildPage(HouseworkCreateState state) {
       ),
     ],
     routes: [
-      GoRoute(path: '/', builder: (_, _) =>const HouseworkCreatePage()),
+      GoRoute(path: '/', builder: (_, _) => const HouseworkCreatePage()),
     ],
   );
 }
@@ -133,7 +133,7 @@ void main() {
             ),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, _) =>const HouseworkCreatePage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkCreatePage()),
           ],
         ),
       );
@@ -154,7 +154,7 @@ void main() {
             ),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, _) =>const HouseworkCreatePage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkCreatePage()),
           ],
         ),
       );

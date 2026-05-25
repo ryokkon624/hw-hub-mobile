@@ -29,9 +29,7 @@ void main() {
   group('AppExceptionSnackBar.showAsSnackBar', () {
     testWidgets('NetworkException: エラースナックバーが表示される', (tester) async {
       await tester.pumpWidget(
-        _buildHost(
-          () => const NetworkException('ネットワークエラー').showAsSnackBar(),
-        ),
+        _buildHost(() => const NetworkException('ネットワークエラー').showAsSnackBar()),
       );
       await tester.tap(find.text('show'));
       await tester.pump();
@@ -42,9 +40,7 @@ void main() {
 
     testWidgets('UnauthorizedException: エラースナックバーが表示される', (tester) async {
       await tester.pumpWidget(
-        _buildHost(
-          () => const UnauthorizedException('認証エラー').showAsSnackBar(),
-        ),
+        _buildHost(() => const UnauthorizedException('認証エラー').showAsSnackBar()),
       );
       await tester.tap(find.text('show'));
       await tester.pump();
@@ -66,9 +62,7 @@ void main() {
 
     testWidgets('ApiException: エラースナックバーが表示される', (tester) async {
       await tester.pumpWidget(
-        _buildHost(
-          () => const ApiException('APIエラー').showAsSnackBar(),
-        ),
+        _buildHost(() => const ApiException('APIエラー').showAsSnackBar()),
       );
       await tester.tap(find.text('show'));
       await tester.pump();

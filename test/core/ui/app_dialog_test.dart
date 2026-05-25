@@ -37,11 +37,8 @@ void main() {
           Scaffold(
             body: Builder(
               builder: (context) => TextButton(
-                onPressed: () => AppDialog.alert(
-                  context,
-                  title: 'タイトル',
-                  message: 'メッセージ',
-                ),
+                onPressed: () =>
+                    AppDialog.alert(context, title: 'タイトル', message: 'メッセージ'),
                 child: const Text('open'),
               ),
             ),

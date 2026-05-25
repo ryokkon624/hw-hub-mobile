@@ -81,10 +81,8 @@ class _ErrorMessageNotifier extends ShoppingItemNewNotifier {
   @override
   ShoppingItemNewState build() {
     Future.microtask(
-      () => state = ShoppingItemNewState(
-        name: 'テスト品',
-        errorMessage: '登録に失敗しました',
-      ),
+      () =>
+          state = ShoppingItemNewState(name: 'テスト品', errorMessage: '登録に失敗しました'),
     );
     return ShoppingItemNewState(name: 'テスト品');
   }
@@ -599,7 +597,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // 画像追加ボタンはスクロール下部にあるため先にスクロール
-      await tester.ensureVisible(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.ensureVisible(
+        find.byIcon(Icons.add_photo_alternate_outlined),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.add_photo_alternate_outlined));
       await tester.pumpAndSettle();
@@ -621,7 +621,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.byIcon(Icons.add_photo_alternate_outlined));
+      await tester.ensureVisible(
+        find.byIcon(Icons.add_photo_alternate_outlined),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.add_photo_alternate_outlined));
       await tester.pumpAndSettle();

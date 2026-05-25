@@ -305,8 +305,7 @@ void main() {
           routes: [
             GoRoute(
               path: '/settings',
-              builder: (_, _) =>
-                  const Scaffold(body: Text('settings-page')),
+              builder: (_, _) => const Scaffold(body: Text('settings-page')),
             ),
             GoRoute(
               path: '/settings/account',
@@ -345,10 +344,7 @@ void main() {
       );
       await tester.pump();
 
-      await tester.drag(
-        find.byType(RefreshIndicator),
-        const Offset(0, 400),
-      );
+      await tester.drag(find.byType(RefreshIndicator), const Offset(0, 400));
       await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
 
