@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/models/nth_week.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 第n週+曜日選択ウィジェット。
@@ -35,8 +36,13 @@ class NthWeekdaySelector extends StatelessWidget {
           child: DropdownButtonFormField<int>(
             key: const Key('nthWeekSelector'),
             initialValue: nthWeek,
-            items: List.generate(5, (i) => i + 1)
-                .map((n) => DropdownMenuItem<int>(value: n, child: Text('第$n')))
+            items: NthWeek.values
+                .map(
+                  (week) => DropdownMenuItem<int>(
+                    value: int.parse(week.code),
+                    child: Text(_nthWeekLabel(week, l10n)),
+                  ),
+                )
                 .toList(),
             onChanged: (val) {
               if (val != null) onNthChanged(val);
@@ -79,5 +85,21 @@ class NthWeekdaySelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// NthWeek enum を i18n 済みラベルに変換する。
+  String _nthWeekLabel(NthWeek week, AppLocalizations l10n) {
+    switch (week) {
+      case NthWeek.firstWeek:
+        return l10n.houseworkNthWeekFirst;
+      case NthWeek.secondWeek:
+        return l10n.houseworkNthWeekSecond;
+      case NthWeek.thirdWeek:
+        return l10n.houseworkNthWeekThird;
+      case NthWeek.fourthWeek:
+        return l10n.houseworkNthWeekFourth;
+      case NthWeek.lastWeek:
+        return l10n.houseworkNthWeekLast;
+    }
   }
 }

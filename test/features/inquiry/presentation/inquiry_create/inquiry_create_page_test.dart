@@ -208,18 +208,18 @@ void main() {
       expect(find.byKey(const Key('bodyField')), findsOneWidget);
     });
 
-    testWidgets('送信成功時: 詳細画面へ遷移する', (tester) async {
+    testWidgets('送信成功時: 問い合わせ一覧画面へ遷移する（AC1）', (tester) async {
       await tester.pumpWidget(
         buildTestPageWithRouter(
           routes: [
             GoRoute(
-              path: '/settings/inquiries/new',
-              builder: (_, _) => const InquiryCreatePage(),
+              path: '/settings/inquiries',
+              builder: (_, _) =>
+                  const Scaffold(body: Text('inquiry-list-page')),
             ),
             GoRoute(
-              path: '/settings/inquiries/:id',
-              builder: (_, _) =>
-                  const Scaffold(body: Text('inquiry-detail-page')),
+              path: '/settings/inquiries/new',
+              builder: (_, _) => const InquiryCreatePage(),
             ),
           ],
           overrides: [
@@ -235,62 +235,8 @@ void main() {
       await tester.pump();
       await tester.pumpAndSettle();
 
-      expect(find.text('inquiry-detail-page'), findsOneWidget);
-    });
-
-    testWidgets('送信成功時: 詳細画面から戻ると新規作成画面ではなく一覧画面が表示される', (tester) async {
-      // 一覧から新規作成に push し、送信成功後に詳細に遷移したとき
-      // context.go を使うことで新規作成画面がスタックから除去される
-      // そのため詳細から Back すると一覧画面が表示される（新規作成画面ではない）
-      await tester.pumpWidget(
-        buildTestPageWithRouter(
-          routes: [
-            GoRoute(
-              path: '/settings/inquiries',
-              builder: (_, _) =>
-                  const Scaffold(body: Text('inquiry-list-page')),
-              routes: [
-                GoRoute(
-                  path: 'new',
-                  builder: (_, _) => const InquiryCreatePage(),
-                ),
-                GoRoute(
-                  path: ':id',
-                  builder: (_, _) => Scaffold(
-                    body: const Text('inquiry-detail-page'),
-                    appBar: AppBar(title: const Text('詳細')),
-                  ),
-                ),
-              ],
-            ),
-          ],
-          overrides: [
-            inquiryCreateNotifierProvider.overrideWith(
-              () => _SuccessNotifier(),
-            ),
-          ],
-          // 一覧から新規作成に遷移した状態をシミュレート
-          initialLocation: '/settings/inquiries/new',
-        ),
-      );
-      // microtaskとアニメーション完了を待つ（成功後に詳細に遷移）
-      await tester.pump();
-      await tester.pump();
-      await tester.pumpAndSettle();
-
-      // 詳細画面に遷移している
-      expect(find.text('inquiry-detail-page'), findsOneWidget);
-
-      // Back ボタンで戻る
-      final NavigatorState navigator = tester.state(
-        find.byType(Navigator).first,
-      );
-      navigator.pop();
-      await tester.pumpAndSettle();
-
-      // 一覧画面が表示される（新規作成画面ではない）
+      // 一覧画面に遷移していること（AC1）
       expect(find.text('inquiry-list-page'), findsOneWidget);
-      expect(find.byType(InquiryCreatePage), findsNothing);
     });
   });
 }

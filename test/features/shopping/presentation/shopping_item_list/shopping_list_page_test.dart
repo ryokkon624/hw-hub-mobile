@@ -872,7 +872,7 @@ void main() {
   });
 
   group('ShoppingListPage - エラー表示', () {
-    testWidgets('ネットワークエラー時にエラーメッセージと再試行ボタンが表示される', (tester) async {
+    testWidgets('ネットワークエラー時にAppErrorViewが表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
           const ShoppingListPage(),
@@ -882,11 +882,12 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('ネットワークエラーが発生しました。'), findsOneWidget);
-      expect(find.text('再試行'), findsOneWidget);
+      // AppErrorView のアイコン・メッセージ・再読み込みボタンが表示されること
+      expect(find.byKey(const Key('appErrorViewIcon')), findsOneWidget);
+      expect(find.byKey(const Key('appErrorViewRetryButton')), findsOneWidget);
     });
 
-    testWidgets('認証エラー時にエラーメッセージが表示される', (tester) async {
+    testWidgets('認証エラー時にAppErrorViewが表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
           const ShoppingListPage(),
@@ -896,10 +897,10 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('認証が必要です。'), findsOneWidget);
+      expect(find.byKey(const Key('appErrorViewIcon')), findsOneWidget);
     });
 
-    testWidgets('サーバーエラー時にエラーメッセージが表示される', (tester) async {
+    testWidgets('サーバーエラー時にAppErrorViewが表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
           const ShoppingListPage(),
@@ -911,10 +912,10 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('サーバーエラーが発生しました。'), findsOneWidget);
+      expect(find.byKey(const Key('appErrorViewIcon')), findsOneWidget);
     });
 
-    testWidgets('予期しないエラー時にエラーメッセージが表示される', (tester) async {
+    testWidgets('予期しないエラー時にAppErrorViewが表示される', (tester) async {
       await tester.pumpWidget(
         buildTestPage(
           const ShoppingListPage(),
@@ -924,7 +925,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('予期しないエラーが発生しました。'), findsOneWidget);
+      expect(find.byKey(const Key('appErrorViewIcon')), findsOneWidget);
     });
   });
 

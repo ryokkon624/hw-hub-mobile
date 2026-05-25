@@ -39,14 +39,14 @@ class _InquiryCreatePageState extends ConsumerState<InquiryCreatePage> {
     final colors = Theme.of(context).extension<AppColorScheme>()!;
     final state = ref.watch(inquiryCreateNotifierProvider);
 
-    // 送信成功後: スナックバー表示→詳細画面へ遷移
+    // 送信成功後: スナックバー表示→一覧画面へ遷移（AC1）
+    // 一覧Providerをinvalidateして最新状態を反映（AC2）
     ref.listen(inquiryCreateNotifierProvider, (prev, next) {
       if (next.createdInquiryId != null &&
           next.createdInquiryId != prev?.createdInquiryId) {
         AppSnackBar.showSuccess(l10n.inquiryCreateSuccessMessage);
-        context.go(
-          AppRoutes.settingsInquiryDetail(next.createdInquiryId.toString()),
-        );
+        ref.invalidate(inquiryListNotifierProvider);
+        context.go(AppRoutes.settingsInquiries);
       }
       if (next.errorMessage != null &&
           next.errorMessage != prev?.errorMessage &&
