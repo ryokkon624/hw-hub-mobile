@@ -10,8 +10,8 @@ NotificationDto _dto({int id = 1, bool isRead = false}) => NotificationDto(
   notificationId: id,
   isRead: isRead,
   occurredAt: '2026-05-01T10:00:00',
-  titleKey: 'taskAssigned',
-  bodyKey: 'taskAssigned',
+  titleKey: 'notifications.messages.taskAssigned.title',
+  bodyKey: 'notifications.messages.taskAssigned.body',
   params: {
     'actorName': 'ママ',
     'household': '自宅',

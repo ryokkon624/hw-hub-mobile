@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,13 +114,6 @@ class _FakeOwnerDeleteableNotifier extends HouseholdSettingsNotifier {
   Future<void> deleteHousehold() async {
     deleteHouseholdCalled = true;
   }
-}
-
-/// ローディング状態
-class _FakeLoadingNotifier extends HouseholdSettingsNotifier {
-  @override
-  Future<HouseholdSettingsState> build() =>
-      Completer<HouseholdSettingsState>().future;
 }
 
 List<Override> _ownerOverrides(HouseholdSettingsNotifier notifier) => [

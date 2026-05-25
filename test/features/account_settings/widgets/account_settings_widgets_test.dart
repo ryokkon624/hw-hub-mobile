@@ -16,7 +16,7 @@ Widget _buildDangerZone({bool isDeleting = false}) => buildTestPage(
 Widget _buildPasswordChange() => buildTestPage(
   Scaffold(
     body: SingleChildScrollView(
-      child: PasswordChangeSection(onSave: (_, __) async {}),
+      child: PasswordChangeSection(onSave: (_, _) async {}),
     ),
   ),
 );
@@ -146,7 +146,7 @@ void main() {
           Scaffold(
             body: SingleChildScrollView(
               child: PasswordChangeSection(
-                onSave: (_, __) async {
+                onSave: (_, _) async {
                   saveCalled = true;
                 },
               ),
@@ -172,7 +172,7 @@ void main() {
         buildTestPage(
           Scaffold(
             body: SingleChildScrollView(
-              child: PasswordChangeSection(onSave: (_, __) async {}),
+              child: PasswordChangeSection(onSave: (_, _) async {}),
             ),
           ),
         ),
@@ -200,7 +200,7 @@ void main() {
           Scaffold(
             body: SingleChildScrollView(
               child: PasswordChangeSection(
-                onSave: (_, __) async {
+                onSave: (_, _) async {
                   throw Exception('パスワード変更に失敗しました');
                 },
               ),
@@ -290,7 +290,7 @@ void main() {
               iconUrl: null,
               displayName: 'テストユーザー',
               isUploading: false,
-              onImageSelected: (_, __, ___) async {},
+              onImageSelected: (_, _, _) async {},
             ),
           ),
         ),
@@ -311,7 +311,7 @@ void main() {
               iconUrl: null,
               displayName: 'テストユーザー',
               isUploading: true,
-              onImageSelected: (_, __, ___) async {},
+              onImageSelected: (_, _, _) async {},
             ),
           ),
         ),
@@ -329,7 +329,7 @@ void main() {
               iconUrl: 'https://example.com/icon.jpg',
               displayName: 'テストユーザー',
               isUploading: false,
-              onImageSelected: (_, __, ___) async {},
+              onImageSelected: (_, _, _) async {},
             ),
           ),
         ),

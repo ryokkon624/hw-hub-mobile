@@ -22,7 +22,9 @@ abstract class NotificationLinkNavigator {
 
     // 通知センター（/notifications）から遷移する場合、シェル外Navigatorとシェル内Navigatorで
     // HeroControllerキーが重複しアサーション失敗するため、先にpopしてから遷移先へpushする。
-    final currentLocation = GoRouterState.of(context).matchedLocation;
+    // GoRouterState.of はRouteBase.builder外（ダイアログ等）で例外を投げるため
+    // GoRouter.of(context).state を使う。
+    final currentLocation = GoRouter.of(context).state.matchedLocation;
     if (currentLocation == AppRoutes.notifications && context.canPop()) {
       context.pop();
     }

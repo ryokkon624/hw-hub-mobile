@@ -102,7 +102,7 @@ Widget _buildPage(HouseworkListState state) {
         () => _FakeHouseworkListNotifier(state),
       ),
     ],
-    routes: [GoRoute(path: '/', builder: (_, __) => const HouseworkListPage())],
+    routes: [GoRoute(path: '/', builder: (_, _) => const HouseworkListPage())],
   );
 }
 
@@ -207,7 +207,7 @@ void main() {
             ),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -223,7 +223,7 @@ void main() {
             houseworkListNotifierProvider.overrideWith(() => _ErrorNotifier()),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -320,7 +320,7 @@ void main() {
             houseworkListNotifierProvider.overrideWith(() => notifier),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -349,7 +349,7 @@ void main() {
             houseworkListNotifierProvider.overrideWith(() => notifier),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -375,7 +375,7 @@ void main() {
             houseworkListNotifierProvider.overrideWith(() => notifier),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -398,10 +398,10 @@ void main() {
             ),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
             GoRoute(
               path: '/settings/housework/new',
-              builder: (_, __) =>
+              builder: (_, _) =>
                   const Scaffold(body: Text('housework-new-page')),
             ),
           ],
@@ -425,7 +425,7 @@ void main() {
             houseworkListNotifierProvider.overrideWith(() => notifier),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
           ],
         ),
       );
@@ -452,10 +452,10 @@ void main() {
             ),
           ],
           routes: [
-            GoRoute(path: '/', builder: (_, __) => const HouseworkListPage()),
+            GoRoute(path: '/', builder: (_, _) => const HouseworkListPage()),
             GoRoute(
               path: '/settings/housework/:id',
-              builder: (_, __) =>
+              builder: (_, _) =>
                   const Scaffold(body: Text('housework-detail-page')),
             ),
           ],
