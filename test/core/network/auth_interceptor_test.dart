@@ -163,7 +163,7 @@ void main() {
         final handler = _CapturingErrorHandler();
         await interceptor.onError(error500, handler);
 
-        // 501 エラーはハンドラに何も渡さないが、
+        // 500 エラーはハンドラに何も渡さないが、
         // _CapturingErrorHandler.next()もnullのまま。
         // ここでは reject/resolve が呼ばれないことを確認する
         expect(handler.rejectedError, isNull);
