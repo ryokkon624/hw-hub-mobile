@@ -889,6 +889,9 @@
   "inquiryDetailClosedMessage": "Inquiry closed",
   "inquiryDetailEscalatedMessage": "Escalated to staff",
   "inquiryDetailErrorMessage": "Operation failed",
+  "inquiryDetailClientInfoUi": "Client",
+  "inquiryDetailClientInfoUiVersion": "UI Version",
+  "inquiryDetailClientInfoApiVersion": "API Version",
 
   "appInfoDescription": "Here you can check the version of Housework Hub and read the terms of use and privacy information.",
   "appInfoVersionSectionTitle": "Version",

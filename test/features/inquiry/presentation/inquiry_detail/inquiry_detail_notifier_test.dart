@@ -17,6 +17,9 @@ InquiryDetailDto _detailDto({
   status: status,
   title: 'テスト問い合わせ',
   createdAt: '2026-05-01T10:00:00',
+  uiClient: 'mobile',
+  uiVersion: '1.0.0',
+  apiVersion: '2.0.0',
   messages: messages ?? [],
 );
 

@@ -100,9 +100,44 @@ void main() {
         category: '10',
         title: 'テスト',
         body: '内容',
+        uiClient: 'mobile',
+        uiVersion: '1.0.0',
+        apiVersion: '2.0.0',
       );
 
       expect(result, 42);
+    });
+
+    test('uiClient/uiVersion/apiVersion が POST ペイロードに含まれる', () async {
+      Map<String, dynamic>? capturedData;
+      when(
+        mockDio.post<Map<String, dynamic>>(
+          '/api/inquiries',
+          data: anyNamed('data'),
+        ),
+      ).thenAnswer((invocation) async {
+        capturedData =
+            invocation.namedArguments[const Symbol('data')]
+                as Map<String, dynamic>;
+        return Response(
+          data: {'inquiryId': 1},
+          statusCode: 201,
+          requestOptions: RequestOptions(path: '/api/inquiries'),
+        );
+      });
+
+      await repo.createInquiry(
+        category: '10',
+        title: 'タイトル',
+        body: '本文',
+        uiClient: 'mobile',
+        uiVersion: '1.2.3',
+        apiVersion: '3.0.0',
+      );
+
+      expect(capturedData?['uiClient'], 'mobile');
+      expect(capturedData?['uiVersion'], '1.2.3');
+      expect(capturedData?['apiVersion'], '3.0.0');
     });
 
     test('DioException 時: NetworkException をスローする', () async {
@@ -116,7 +151,14 @@ void main() {
       );
 
       expect(
-        () => repo.createInquiry(category: '10', title: 'テスト', body: '内容'),
+        () => repo.createInquiry(
+          category: '10',
+          title: 'テスト',
+          body: '内容',
+          uiClient: 'mobile',
+          uiVersion: '1.0.0',
+          apiVersion: '2.0.0',
+        ),
         throwsA(isA<NetworkException>()),
       );
     });
@@ -132,6 +174,9 @@ void main() {
             'status': '10',
             'title': '詳細テスト',
             'createdAt': '2026-05-01T10:00:00',
+            'uiClient': 'mobile',
+            'uiVersion': '1.0.0',
+            'apiVersion': '2.0.0',
             'messages': [
               {
                 'messageId': 1,
@@ -152,6 +197,9 @@ void main() {
       expect(result.inquiryId, 1);
       expect(result.category, '10');
       expect(result.status, '10');
+      expect(result.uiClient, 'mobile');
+      expect(result.uiVersion, '1.0.0');
+      expect(result.apiVersion, '2.0.0');
       expect(result.messages, hasLength(1));
       expect(result.messages.first.senderType, 'AI');
     });

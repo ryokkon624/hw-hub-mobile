@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../core/network/app_exception.dart';
-import '../../inquiry_providers.dart';
+import '../../../app_info/app_info_providers.dart';
+import '../../../inquiry/inquiry_providers.dart';
+import '../../../../core/models/ui_client.dart';
 
 class InquiryCreateNotifier extends AutoDisposeNotifier<InquiryCreateState> {
   @override
@@ -43,10 +46,23 @@ class InquiryCreateNotifier extends AutoDisposeNotifier<InquiryCreateState> {
     await _runCatching(
       () async {
         final repo = ref.read(inquiryRepositoryProvider);
+        final appInfoRepo = ref.read(appInfoRepositoryProvider);
+
+        // バージョン情報を並行取得
+        final results = await Future.wait([
+          PackageInfo.fromPlatform(),
+          appInfoRepo.fetchApiVersion(),
+        ]);
+        final packageInfo = results[0] as PackageInfo;
+        final apiVersion = (results[1] as String?) ?? 'unknown';
+
         final inquiryId = await repo.createInquiry(
           category: state.selectedCategory!,
           title: state.title.trim(),
           body: state.body.trim(),
+          uiClient: UiClient.mobile.code,
+          uiVersion: packageInfo.version,
+          apiVersion: apiVersion,
         );
         state = state.copyWith(
           isSubmitting: false,
