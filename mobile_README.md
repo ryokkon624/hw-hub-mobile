@@ -99,6 +99,13 @@ core/network/ (Dio・例外・インターセプター)
 
 将来的に複数機能をまたぐビジネスロジックが必要になった場合は、`domain/usecase/` を切り出します。
 
+**依存方向ルール（厳守）**
+
+- **Page は Notifier を呼ぶ**。Repository を直接呼んではならない
+- **Notifier は Repository interface に依存する**。実装クラスには依存しない
+- **Notifier 内で `Dio` を直接使用してはならない**。必ず Repository 経由で API を呼ぶこと（`Page → Notifier → Repository → Api` の依存方向を守ること）
+- `core/` 配下は全機能から参照できる共通基盤
+
 ### 4.2 状態管理（Riverpod）
 
 | 種別 | 用途 |
@@ -162,6 +169,27 @@ flutter run
 ```bash
 flutter test
 ```
+
+**テスト対象の分類**
+
+| 種別 | テスト | 備考 |
+|------|--------|------|
+| Repository impl | **必須** | 成功パス + DioException→AppException 変換 |
+| Notifier | **必須** | 各操作の状態遷移（成功・エラー） |
+| Page（ウィジェット） | **必須** | 主要な表示確認・ユーザー操作のゴールデンパス |
+| 操作ロジックを持つウィジェット | **必須** | コールバックが Notifier 呼び出しを含む場合 |
+| 見た目のみの子ウィジェット | **不要** | 表示ロジックがない純粋な描画ウィジェット |
+
+**TDD 方針（RED → GREEN → REFACTOR）**
+
+Repository impl・Notifier・Page のすべてでテストを先に書いてから実装すること。
+
+```bash
+# カバレッジ計測（Windows）
+.\coverage.ps1
+```
+
+除外パターンは `lcov_exclude.txt` で管理。実行後 `coverage/html/index.html` がブラウザで開く。
 
 ### 6.2 静的解析
 
