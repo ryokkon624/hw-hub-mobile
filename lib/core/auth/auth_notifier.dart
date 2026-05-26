@@ -39,6 +39,25 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     ref.invalidate(householdNotifierProvider);
   }
 
+  /// トークンリフレッシュ専用: 既存ユーザー情報を保持したままトークンのみ差し替える。
+  /// リフレッシュ成功時に AuthInterceptor から呼び出される。
+  /// saveTokens() と異なり householdNotifierProvider の invalidate は行わない
+  /// （リフレッシュはセッション継続であり、世帯切替は不要なため）。
+  Future<void> updateTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    await ref
+        .read(tokenStorageProvider)
+        .saveTokens(accessToken: accessToken, refreshToken: refreshToken);
+
+    // 現在の AuthAuthenticated 状態のユーザー情報を保持したまま state を更新する
+    final currentUser = state.valueOrNull;
+    if (currentUser is AuthAuthenticated) {
+      state = AsyncData(AuthAuthenticated(currentUser.user));
+    }
+  }
+
   Future<void> logout() async {
     await ref.read(tokenStorageProvider).clearTokens();
 

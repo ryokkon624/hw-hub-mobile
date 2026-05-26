@@ -95,16 +95,21 @@ class AuthInterceptor extends Interceptor {
   }
 
   Future<String?> _doRefresh() async {
-    // TODO: POST /api/auth/refresh バックエンド実装後に追加
-    // final refreshToken = await _storage.read(key: StorageKeys.refreshToken);
-    // if (refreshToken == null) return null;
-    // final res = await _unauthDio.post('/api/auth/refresh',
-    //     data: {'refreshToken': refreshToken});
-    // final newAccess = res.data['accessToken'] as String;
-    // final newRefresh = res.data['refreshToken'] as String;
-    // await _ref.read(authNotifierProvider.notifier).saveTokens(
-    //       accessToken: newAccess, refreshToken: newRefresh);
-    // return newAccess;
-    return null;
+    final refreshToken = await _storage.read(key: StorageKeys.refreshToken);
+    if (refreshToken == null) return null;
+
+    final res = await _unauthDio.post<Map<String, dynamic>>(
+      '/api/auth/refresh',
+      data: {'refreshToken': refreshToken},
+    );
+
+    final newAccess = res.data!['accessToken'] as String;
+    final newRefresh = res.data!['refreshToken'] as String;
+
+    await _ref
+        .read(authNotifierProvider.notifier)
+        .updateTokens(accessToken: newAccess, refreshToken: newRefresh);
+
+    return newAccess;
   }
 }
