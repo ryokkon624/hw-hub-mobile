@@ -17,6 +17,9 @@ InquiryDetailDto _detailDto({
   status: status,
   title: 'テスト問い合わせ',
   createdAt: '2026-05-01T10:00:00',
+  uiClient: 'mobile',
+  uiVersion: '1.0.0',
+  apiVersion: '2.0.0',
   messages: messages ?? [],
 );
 
@@ -598,6 +601,20 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(notifier.reloadCalled, isTrue);
+    });
+
+    testWidgets('クライアント情報セクションが表示される', (tester) async {
+      await tester.pumpWidget(
+        buildTestPage(
+          const InquiryDetailPage(inquiryId: 1),
+          overrides: [
+            inquiryDetailNotifierProvider.overrideWith(() => _LoadedNotifier()),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('clientInfoSection')), findsOneWidget);
     });
   });
 }

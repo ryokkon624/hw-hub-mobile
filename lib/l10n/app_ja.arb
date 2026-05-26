@@ -889,6 +889,11 @@
   "inquiryDetailClosedMessage": "クローズしました",
   "inquiryDetailEscalatedMessage": "スタッフへ引き継ぎました",
   "inquiryDetailErrorMessage": "操作に失敗しました",
+  "inquiryDetailClientInfoUi": "クライアント",
+  "inquiryDetailClientUiWeb": "Web",
+  "inquiryDetailClientUiMobile": "モバイル",
+  "inquiryDetailClientInfoUiVersion": "UIバージョン",
+  "inquiryDetailClientInfoApiVersion": "APIバージョン",
 
   "appInfoDescription": "Housework Hub のバージョンや、利用規約・プライバシー情報などを確認できます。",
   "appInfoVersionSectionTitle": "バージョン",

@@ -56,12 +56,18 @@ class MockInquiryRepository extends _i1.Mock implements _i3.InquiryRepository {
     required String? category,
     required String? title,
     required String? body,
+    required String? uiClient,
+    required String? uiVersion,
+    required String? apiVersion,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#createInquiry, [], {
               #category: category,
               #title: title,
               #body: body,
+              #uiClient: uiClient,
+              #uiVersion: uiVersion,
+              #apiVersion: apiVersion,
             }),
             returnValue: _i4.Future<int>.value(0),
           )

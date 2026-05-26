@@ -127,6 +127,39 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
                 maxLines: 2,
               ),
               const SizedBox(height: 8),
+              // クライアント情報
+              Container(
+                key: const Key('clientInfoSection'),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.surfaceSubtle,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: DefaultTextStyle(
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall!.copyWith(color: colors.textMuted),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${l10n.inquiryDetailClientInfoUi}: ${_uiClientLabel(detail.uiClient, l10n)}',
+                      ),
+                      Text(
+                        '${l10n.inquiryDetailClientInfoUiVersion}: ${detail.uiVersion}',
+                      ),
+                      Text(
+                        '${l10n.inquiryDetailClientInfoApiVersion}: ${detail.apiVersion}',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   InquiryCategoryBadge(categoryCode: detail.category),
@@ -319,6 +352,14 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
       InquiryStatus.staffAnswered => l10n.inquiryDetailStatusStaffAnswered,
       InquiryStatus.closed => l10n.inquiryDetailStatusClosed,
       null => '',
+    };
+  }
+
+  String _uiClientLabel(String uiClient, AppLocalizations l10n) {
+    return switch (uiClient) {
+      'web' => l10n.inquiryDetailClientUiWeb,
+      'mobile' => l10n.inquiryDetailClientUiMobile,
+      _ => uiClient,
     };
   }
 

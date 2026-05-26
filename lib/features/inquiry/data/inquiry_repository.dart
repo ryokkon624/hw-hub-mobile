@@ -13,6 +13,9 @@ abstract class InquiryRepository {
     required String category,
     required String title,
     required String body,
+    required String uiClient,
+    required String uiVersion,
+    required String apiVersion,
   });
 
   Future<InquiryDetailDto> fetchInquiry(int inquiryId);
@@ -48,11 +51,21 @@ class InquiryRepositoryImpl implements InquiryRepository {
     required String category,
     required String title,
     required String body,
+    required String uiClient,
+    required String uiVersion,
+    required String apiVersion,
   }) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/inquiries',
-        data: {'category': category, 'title': title, 'body': body},
+        data: {
+          'category': category,
+          'title': title,
+          'body': body,
+          'uiClient': uiClient,
+          'uiVersion': uiVersion,
+          'apiVersion': apiVersion,
+        },
       );
       return response.data!['inquiryId'] as int;
     } on DioException catch (e) {

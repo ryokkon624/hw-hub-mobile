@@ -10,6 +10,9 @@ class InquiryDetailDto {
     required this.title,
     required this.createdAt,
     required this.messages,
+    required this.uiClient,
+    required this.uiVersion,
+    required this.apiVersion,
   });
 
   final int inquiryId;
@@ -18,6 +21,9 @@ class InquiryDetailDto {
   final String title;
   final String createdAt;
   final List<InquiryMessageDto> messages;
+  final String uiClient;
+  final String uiVersion;
+  final String apiVersion;
 
   factory InquiryDetailDto.fromJson(Map<String, dynamic> json) {
     return InquiryDetailDto(
@@ -29,6 +35,9 @@ class InquiryDetailDto {
       messages: (json['messages'] as List<dynamic>)
           .map((e) => InquiryMessageDto.fromJson(e as Map<String, dynamic>))
           .toList(),
+      uiClient: json['uiClient'] as String,
+      uiVersion: json['uiVersion'] as String,
+      apiVersion: json['apiVersion'] as String,
     );
   }
 }
