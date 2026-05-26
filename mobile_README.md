@@ -62,6 +62,16 @@ lib/
 │   │       ├── password_reset/
 │   │       ├── password_reset_sent/
 │   │       └── auth_result/
+│   ├── housework_settings/       # 家事設定機能（例：auth 以外の機能）
+│   │   ├── housework_settings_providers.dart
+│   │   ├── data/
+│   │   │   ├── housework_settings_repository.dart  # interface + impl
+│   │   │   └── models/
+│   │   └── presentation/
+│   │       ├── housework_list/   # 家事一覧画面
+│   │       ├── housework_create/ # 家事作成画面
+│   │       ├── housework_edit/   # 家事編集画面
+│   │       └── widgets/          # 画面内共通ウィジェット
 │   └── shell/                    # ナビゲーションシェル（BottomNav・世帯切替）
 └── l10n/                         # gen-l10n 生成ファイル（編集禁止）
 ```
