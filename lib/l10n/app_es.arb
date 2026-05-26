@@ -890,6 +890,8 @@
   "inquiryDetailEscalatedMessage": "Escalado al personal",
   "inquiryDetailErrorMessage": "Operación fallida",
   "inquiryDetailClientInfoUi": "Cliente",
+  "inquiryDetailClientUiWeb": "Web",
+  "inquiryDetailClientUiMobile": "Móvil",
   "inquiryDetailClientInfoUiVersion": "Versión UI",
   "inquiryDetailClientInfoApiVersion": "Versión API",
 

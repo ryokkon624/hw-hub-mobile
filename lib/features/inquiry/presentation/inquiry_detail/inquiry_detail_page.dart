@@ -147,7 +147,7 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${l10n.inquiryDetailClientInfoUi}: ${detail.uiClient}',
+                        '${l10n.inquiryDetailClientInfoUi}: ${_uiClientLabel(detail.uiClient, l10n)}',
                       ),
                       Text(
                         '${l10n.inquiryDetailClientInfoUiVersion}: ${detail.uiVersion}',
@@ -352,6 +352,14 @@ class _InquiryDetailPageState extends ConsumerState<InquiryDetailPage> {
       InquiryStatus.staffAnswered => l10n.inquiryDetailStatusStaffAnswered,
       InquiryStatus.closed => l10n.inquiryDetailStatusClosed,
       null => '',
+    };
+  }
+
+  String _uiClientLabel(String uiClient, AppLocalizations l10n) {
+    return switch (uiClient) {
+      'web' => l10n.inquiryDetailClientUiWeb,
+      'mobile' => l10n.inquiryDetailClientUiMobile,
+      _ => uiClient,
     };
   }
 

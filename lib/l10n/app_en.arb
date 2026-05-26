@@ -890,6 +890,8 @@
   "inquiryDetailEscalatedMessage": "Escalated to staff",
   "inquiryDetailErrorMessage": "Operation failed",
   "inquiryDetailClientInfoUi": "Client",
+  "inquiryDetailClientUiWeb": "Web",
+  "inquiryDetailClientUiMobile": "Mobile",
   "inquiryDetailClientInfoUiVersion": "UI Version",
   "inquiryDetailClientInfoApiVersion": "API Version",
 
